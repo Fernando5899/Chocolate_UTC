@@ -3,15 +3,16 @@ interface Props {
     title: string;
 }
 
+// 1. Estilos globales
 import '../styles/global.css';
 
-// 1. Importamos las herramientas de Auth.js
+// 2. Herramientas de Ciberseguridad (Auth.js)
 import { getSession } from 'auth-astro/server';
 import { SignOut } from 'auth-astro/components';
 
 const { title } = Astro.props;
 
-// 2. Le preguntamos al servidor si hay alguien con sesión activa
+// 3. Le preguntamos al servidor si el administrador está conectado
 const session = await getSession(Astro.request);
 ---
 
@@ -25,42 +26,72 @@ const session = await getSession(Astro.request);
     <title>{title}</title>
 </head>
 <body class="bg-orange-50 text-stone-800 font-sans antialiased min-h-screen flex flex-col">
-<nav class="bg-stone-900 text-orange-50 py-4 shadow-md">
+
+<nav class="bg-stone-900 text-orange-50 py-4 shadow-md sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
         <a href="/" class="text-2xl font-bold tracking-wider hover:text-orange-300 transition-colors">
             🍫 Museo de Chocolate
         </a>
 
-        <div class="space-x-4 flex items-center">
-            <a href="/" class="hover:text-orange-300 transition-colors">Inicio</a>
-            <a href="#" class="hover:text-orange-300 transition-colors">Catálogo</a>
+        <div class="space-x-6 flex items-center">
+            <a href="/" class="hover:text-orange-300 transition-colors font-medium">Inicio</a>
+            <a href="/tienda/chocolates" class="hover:text-orange-300 transition-colors font-medium">Catálogo</a>
 
-            {/* 3. Lógica Dinámica: Si hay sesión, mostramos controles de Admin */}
+            <a href="/tienda/carrito" class="hover:text-orange-300 transition-colors flex items-center gap-1 group font-medium">
+                Carrito 🛒
+                <span id="contador-carrito" class="bg-stone-600 text-white text-xs font-bold px-2 py-0.5 rounded-full transition-all duration-300 group-hover:scale-110">
+							0
+						</span>
+            </a>
+
+            <div class="w-px h-6 bg-stone-700 mx-2"></div> {/* LÓGICA DE SESIÓN (ADMIN vs CLIENTE) */}
             {session ? (
-                    <>
-                        <a href="/admin" class="text-orange-400 font-semibold hover:text-orange-300 transition-colors">
+                    <div class="flex items-center gap-4">
+                        <a href="/admin" class="text-orange-400 font-bold hover:text-orange-300 transition-colors">
                             Panel Admin
                         </a>
                         <SignOut class="bg-stone-800 hover:bg-stone-700 text-sm px-4 py-2 rounded-lg transition-colors border border-stone-700 cursor-pointer">
                             Cerrar Sesión
                         </SignOut>
-                    </>
+                    </div>
             ) : (
-                /* Si NO hay sesión, mostramos el acceso genérico */
                     <a href="/cuenta/login" class="text-stone-300 hover:text-white border border-stone-600 hover:border-orange-400 text-sm px-4 py-2 rounded-lg transition-all">
-                        Login
+                        Login Admin
                     </a>
             )}
         </div>
     </div>
 </nav>
 
-<main class="max-w-5xl mx-auto px-6 py-8 flex-grow w-full">
+<main class="max-w-5xl mx-auto px-6 py-10 flex-grow w-full">
     <slot />
 </main>
 
-<footer class="text-center py-6 text-stone-500 text-sm mt-auto border-t border-stone-200">
+<footer class="text-center py-8 text-stone-500 text-sm mt-auto border-t border-stone-200 bg-orange-100/50">
     &copy; {new Date().getFullYear()} Museo de Chocolate. Todos los derechos reservados.
 </footer>
+
+<script>
+    import { carrito } from '../store/carrito';
+
+    // Buscamos la burbuja del contador en el HTML
+    const contador = document.getElementById('contador-carrito');
+
+    if (contador) {
+        // Nos suscribimos a los cambios. Si Nano Stores detecta un nuevo chocolate, ejecuta esto:
+        carrito.subscribe((items) => {
+            // Sumamos cuántos chocolates hay en total
+            const totalItems = Object.values(items).reduce((suma, item) => suma + item.cantidad, 0);
+            contador.innerText = totalItems.toString();
+
+            // Cambiamos el color de la burbuja para llamar la atención si hay productos
+            if (totalItems > 0) {
+                contador.classList.replace('bg-stone-600', 'bg-orange-600');
+            } else {
+                contador.classList.replace('bg-orange-600', 'bg-stone-600');
+            }
+        });
+    }
+</script>
 </body>
 </html>
