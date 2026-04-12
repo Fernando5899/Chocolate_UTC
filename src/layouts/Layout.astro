@@ -1,0 +1,42 @@
+---
+interface Props {
+    title: string;
+}
+
+// ¡Esta es la línea que enciende Tailwind 4!
+import '../styles/global.css';
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Catálogo virtual del Museo de Chocolate" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+</head>
+<body class="bg-orange-50 text-stone-800 font-sans antialiased min-h-screen">
+<nav class="bg-stone-900 text-orange-50 py-4 shadow-md">
+    <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
+        <a href="/" class="text-2xl font-bold tracking-wider hover:text-orange-300 transition-colors">
+            🍫 Museo de Chocolate
+        </a>
+        <div class="space-x-4">
+            <a href="/" class="hover:text-orange-300 transition-colors">Inicio</a>
+            <a href="#" class="hover:text-orange-300 transition-colors">Catálogo</a>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-5xl mx-auto px-6 py-8">
+    <slot />
+</main>
+
+<footer class="text-center py-6 text-stone-500 text-sm mt-auto">
+    &copy; {new Date().getFullYear()} Museo de Chocolate. Todos los derechos reservados.
+</footer>
+</body>
+</html>

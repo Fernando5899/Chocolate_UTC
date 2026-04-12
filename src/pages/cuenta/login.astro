@@ -1,0 +1,29 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { SignIn } from 'auth-astro/components';
+import { getSession } from 'auth-astro/server';
+
+// Si el usuario YA inició sesión, lo mandamos directo al admin para que no vea esta pantalla
+const session = await getSession(Astro.request);
+if (session) {
+    return Astro.redirect('/admin');
+}
+---
+
+<Layout title="Iniciar Sesión | Museo">
+    <div class="min-h-[70vh] flex items-center justify-center">
+        <div class="bg-white p-10 rounded-2xl shadow-md border border-stone-100 max-w-md w-full text-center">
+            <div class="text-4xl mb-4">🍫</div>
+            <h1 class="text-2xl font-bold text-stone-800 mb-2">Acceso Administrativo</h1>
+            <p class="text-stone-500 mb-8">Inicia sesión para gestionar el museo</p>
+
+            <SignIn provider="google" class="w-full bg-stone-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-stone-800 transition-colors shadow-sm">
+                Continuar con Google
+            </SignIn>
+
+            <div class="mt-6">
+                <a href="/" class="text-sm text-stone-400 hover:text-orange-600 transition-colors">Volver a la tienda</a>
+            </div>
+        </div>
+    </div>
+</Layout>

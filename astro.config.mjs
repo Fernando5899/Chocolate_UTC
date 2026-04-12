@@ -1,5 +1,22 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// https://astro.build/config
-export default defineConfig({});
+import tailwindcss from '@tailwindcss/vite';
+
+import auth from 'auth-astro';
+
+import node from '@astrojs/node';
+
+export default defineConfig({
+  output: 'server',
+
+  vite: {
+    plugins: [tailwindcss()]
+  },
+
+  integrations: [auth()],
+
+  adapter: node({
+    mode: 'standalone'
+  })
+});
