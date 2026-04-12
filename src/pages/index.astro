@@ -1,17 +1,30 @@
 ---
+import prisma from '../lib/prisma';
 
+// Intentamos obtener las categorías de la base de datos
+const categorias = await prisma.categoria.findMany();
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="es">
+<head>
+	<meta charset="utf-8" />
+	<title>Museo de Chocolate</title>
+</head>
+<body style="font-family: system-ui, sans-serif; background: #faf3e0; color: #3e2723; padding: 2rem;">
+<h1>🍫 Museo de Chocolate</h1>
+<p>Estado de la conexión: <strong style="color: green;">¡Conectado a Render!</strong></p>
+
+<hr />
+
+<h2>Nuestras Categorías</h2>
+{categorias.length === 0 ? (
+	<p>Aún no hay categorías. ¡Es momento de crear la primera!</p>
+) : (
+	<ul>
+		{categorias.map(cat => (
+			<li>{cat.nombre}</li>
+		))}
+	</ul>
+)}
+</body>
 </html>
