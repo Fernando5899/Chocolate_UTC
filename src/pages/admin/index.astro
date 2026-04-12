@@ -1,95 +1,123 @@
 ---
-// 1. Importamos al guardia de seguridad de auth-astro
-import { getSession } from 'auth-astro/server';
 import Layout from '../../layouts/Layout.astro';
 import prisma from '../../lib/prisma';
+import { getSession } from 'auth-astro/server';
 
-// 2. Le preguntamos al guardia si el visitante tiene gafete
 const session = await getSession(Astro.request);
-
-// 3. Si NO hay sesión, lo pateamos a la ruta de login
 if (!session) {
     return Astro.redirect('/cuenta/login');
 }
 
 let mensaje = "";
+let tipoMensaje = ""; // "error" o "success"
 
-// Lógica blindada para manejar el formulario
 if (Astro.request.method === 'POST') {
-    try {
-        // 1. Verificamos la etiqueta de seguridad antes de abrir el paquete
-        const contentType = Astro.request.headers.get('Content-Type') || '';
+    const data = await Astro.request.formData();
+    const action = data.get('action')?.toString();
 
-        if (contentType.includes('multipart/form-data') || contentType.includes('form-urlencoded')) {
-            // 2. Si es seguro, extraemos los datos
-            const data = await Astro.request.formData();
+    try {
+        // 1. CREAR CATEGORÍA
+        if (action === 'create') {
             const nombre = data.get('nombre')?.toString();
             const descripcion = data.get('descripcion')?.toString();
-
             if (nombre) {
-                await prisma.categoria.create({
-                    data: { nombre, descripcion }
-                });
-                mensaje = "✅ Categoría guardada con éxito";
+                await prisma.categoria.create({ data: { nombre, descripcion: descripcion || '' } });
+                mensaje = "✅ Categoría creada exitosamente.";
+                tipoMensaje = "success";
             }
-        } else {
-            console.warn("⚠️ Petición ignorada por formato extraño:", contentType);
         }
-    } catch (error) {
-        console.error("🔥 ERROR EN LA BASE DE DATOS:", error);
-        // Si falla aquí, es casi seguro que la categoría ya existe en PostgreSQL
-        mensaje = "❌ Error: Ese nombre de categoría ya existe.";
+        // 2. BORRAR UNA CATEGORÍA INDIVIDUAL
+        else if (action === 'delete') {
+            const id = data.get('id')?.toString();
+            if (id) {
+                await prisma.categoria.delete({ where: { id } });
+                mensaje = "🗑️ Categoría eliminada.";
+                tipoMensaje = "success";
+            }
+        }
+        // 3. BOTÓN DE PÁNICO: BORRAR TODO EL CONTENIDO DEL MUSEO
+        else if (action === 'reset_all') {
+            // EL ORDEN IMPORTA: Primero los hijos (chocolates), luego los padres (categorías)
+            await prisma.chocolate.deleteMany({});
+            await prisma.categoria.deleteMany({});
+            mensaje = "💥 Base de datos limpiada por completo (Chocolates y Categorías).";
+            tipoMensaje = "success";
+        }
+    } catch (error: any) {
+        console.error("🚨 ERROR EN DB:", error.code);
+        tipoMensaje = "error";
+        if (error.code === 'P2003') {
+            mensaje = "❌ Error de Integridad: No puedes borrar esta categoría porque tiene chocolates asociados. Bórralos primero en la pestaña de Chocolates.";
+        } else {
+            mensaje = "❌ Error inesperado: " + (error.message || "Consulta la terminal.");
+        }
     }
 }
+
+const categorias = await prisma.categoria.findMany({ orderBy: { nombre: 'asc' } });
 ---
 
-<Layout title="Admin | Museo de Chocolate">
-    <div class="max-w-2xl mx-auto">
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-stone-800">Panel de Administración</h1>
-            <p class="text-stone-600">Gestiona las categorías de tu museo</p>
-        </header>
+<Layout title="Categorías | Admin">
+    <div class="max-w-4xl mx-auto">
+
+        <nav class="flex space-x-4 mb-8 border-b border-stone-200 pb-4">
+            <a href="/admin" class="text-orange-600 font-bold border-b-2 border-orange-600 pb-4 -mb-4">Categorías</a>
+            <a href="/admin/chocolates" class="text-stone-500 hover:text-orange-600 font-medium transition-colors">Chocolates</a>
+        </nav>
 
         {mensaje && (
-                <div class={`p-4 mb-6 rounded-lg font-medium shadow-sm ${mensaje.includes('✅') ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                <div class={`p-4 mb-6 rounded-lg font-medium shadow-sm border ${tipoMensaje === 'error' ? 'bg-red-100 text-red-800 border-red-200' : 'bg-green-100 text-green-800 border-green-200'}`}>
                     {mensaje}
                 </div>
         )}
 
-        <form method="POST" enctype="multipart/form-data" class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200 space-y-6">
-            <div>
-                <label for="nombre" class="block text-sm font-semibold text-stone-700 mb-2">Nombre de la Categoría</label>
-                <input
-                        type="text"
-                        name="nombre"
-                        id="nombre"
-                        required
-                        placeholder="Ej. Chocolates Blancos"
-                        class="w-full px-4 py-3 rounded-xl border border-stone-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all"
-                />
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <div class="lg:col-span-1">
+                <form method="POST" class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 space-y-4">
+                    <input type="hidden" name="action" value="create" />
+                    {/* CAMBIO 1: Aquí decía "Nueva Sala" */}
+                    <h2 class="font-bold text-stone-800">Nueva Categoría</h2>
+                    <input type="text" name="nombre" required placeholder="Nombre..." class="w-full px-4 py-2 rounded-xl border border-stone-300 outline-none focus:ring-2 focus:ring-orange-500"/>
+                    <textarea name="descripcion" placeholder="Descripción..." rows="2" class="w-full px-4 py-2 rounded-xl border border-stone-300 outline-none focus:ring-2 focus:ring-orange-500"></textarea>
+                    {/* CAMBIO 2: Aquí decía "Crear Sala" */}
+                    <button type="submit" class="w-full bg-stone-900 text-white font-bold py-2 rounded-xl hover:bg-stone-800 transition-colors cursor-pointer">Crear Categoría</button>
+                </form>
             </div>
 
-            <div>
-                <label for="descripcion" class="block text-sm font-semibold text-stone-700 mb-2">Descripción (Opcional)</label>
-                <textarea
-                        name="descripcion"
-                        id="descripcion"
-                        rows="3"
-                        placeholder="Describe qué hace especial a esta categoría..."
-                        class="w-full px-4 py-3 rounded-xl border border-stone-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all"
-                ></textarea>
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-stone-100 text-stone-600 text-sm">
+                        <tr><th class="p-4">Categoría</th><th class="p-4 text-right">Acción</th></tr>
+                        </thead>
+                        <tbody>
+                        {categorias.map((cat) => (
+                                <tr class="border-b border-stone-100">
+                                    <td class="p-4 font-medium">{cat.nombre}</td>
+                                    <td class="p-4 text-right">
+                                        <form method="POST" onsubmit="return confirm('¿Borrar categoría?');">
+                                            <input type="hidden" name="action" value="delete" />
+                                            <input type="hidden" name="id" value={cat.id} />
+                                            <button type="submit" class="text-red-500 bg-red-50 px-3 py-1 rounded-lg text-sm font-bold hover:bg-red-100 cursor-pointer">Borrar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
+        </div>
 
-            <button
-                    type="submit"
-                    class="w-full bg-stone-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-stone-800 transform active:scale-95 transition-all shadow-lg cursor-pointer"
-            >
-                Guardar Categoría
-            </button>
-        </form>
-
-        <div class="mt-8 text-center">
-            <a href="/" class="text-stone-500 hover:text-orange-600 font-medium transition-colors">← Volver al inicio</a>
+        <div class="bg-red-50 border border-red-200 p-8 rounded-2xl">
+            <h3 class="text-red-800 font-bold text-xl mb-2">Zona de Peligro ⚠️</h3>
+            <p class="text-red-600 mb-6 text-sm">Usa esta opción solo si quieres reiniciar el museo desde cero. Borrará todos los chocolates registrados y todas las categorías de forma irreversible.</p>
+            <form method="POST" onsubmit="return confirm('¡PELIGRO! Esto borrará TODOS los chocolates y categorías. ¿Estás absolutamente seguro?');">
+                <input type="hidden" name="action" value="reset_all" />
+                <button type="submit" class="bg-red-600 text-white font-black py-3 px-8 rounded-xl hover:bg-red-700 transition-all shadow-lg cursor-pointer">
+                    LIMPIAR TODA LA BASE DE DATOS
+                </button>
+            </form>
         </div>
     </div>
 </Layout>
