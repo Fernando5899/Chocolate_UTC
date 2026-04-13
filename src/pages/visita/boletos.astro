@@ -1,13 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+// Importamos la estructura base del calendario desde nuestros archivos locales
+import 'flatpickr/dist/flatpickr.min.css';
 ---
 
 <Layout title="Taquilla Digital | Museo">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
-    <script is:inline src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script is:inline src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-
     <div class="max-w-5xl mx-auto px-8 py-20 transition-colors duration-500">
         <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 text-center transition-colors duration-500">
             <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-4">Planea tu visita</span>
@@ -29,8 +26,7 @@ import Layout from '../../layouts/Layout.astro';
                 <select id="selector-hora" disabled class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all cursor-not-allowed disabled:opacity-50 appearance-none">
                     <option value="" disabled selected>Primero selecciona una fecha...</option>
                 </select>
-                <p id="info-horario" class="text-[10px] uppercase tracking-widest text-orange-600 dark:text-orange-500 mt-3 font-bold hidden">
-                </p>
+                <p id="info-horario" class="text-[10px] uppercase tracking-widest text-orange-600 dark:text-orange-500 mt-3 font-bold hidden"></p>
             </div>
         </div>
 
@@ -81,6 +77,10 @@ import Layout from '../../layouts/Layout.astro';
         import { carrito } from '../../store/carrito';
         import { agregarAlCarrito } from '../../store/carrito';
 
+        // Importamos la librería y el idioma desde el disco duro local
+        import flatpickr from 'flatpickr';
+        import { Spanish } from 'flatpickr/dist/l10n/es.js';
+
         const LIMITE_BOLETOS_POR_PERSONA = 10;
 
         const inputFecha = document.getElementById('input-fecha') as HTMLInputElement;
@@ -89,9 +89,8 @@ import Layout from '../../layouts/Layout.astro';
         const alertaError = document.getElementById('alerta-error');
 
         // INICIALIZACIÓN DE FLATPICKR
-        // @ts-ignore
         flatpickr("#input-fecha", {
-            locale: "es",
+            locale: Spanish, // Usamos el idioma importado
             minDate: "today",
             disableMobile: "true",
             onChange: function(selectedDates: Date[]) {
@@ -115,7 +114,7 @@ import Layout from '../../layouts/Layout.astro';
             }
         });
 
-        // 3. Procesamiento de la Reserva
+        // Procesamiento de la Reserva
         document.querySelectorAll('.btn-agregar').forEach(btn => {
             btn.addEventListener('click', () => {
                 const fecha = inputFecha?.value;
@@ -149,7 +148,6 @@ import Layout from '../../layouts/Layout.astro';
                         return;
                     }
 
-                    // En Flatpickr, la fecha ya viene legible (Y-m-d), le damos un formato suave
                     const fechaFormateada = new Date(fecha + 'T00:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
                     const nombreCompleto = `${baseNombre} (${fechaFormateada} - ${hora})`;
 
@@ -177,3 +175,81 @@ import Layout from '../../layouts/Layout.astro';
         });
     </script>
 </Layout>
+
+<style is:global>
+    /* Fondo General del Calendario */
+    .flatpickr-calendar {
+        background: #ffffff !important;
+        border: 1px solid #e7e5e4 !important;
+        border-radius: 24px !important;
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25) !important;
+        font-family: 'Inter', sans-serif !important;
+        padding: 10px !important;
+        /* SOLUCIÓN: Ancho fijo exacto para contener los 7 días sin deformarlos */
+        width: 330px !important;
+    }
+
+    /* Modo Oscuro del Calendario */
+    html.dark .flatpickr-calendar {
+        background: #110e0d !important;
+        border-color: #292524 !important;
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.7) !important;
+    }
+
+    /* Mes y Año (Cabecera) */
+    .flatpickr-months .flatpickr-month {
+        background: transparent !important;
+        color: #1c1917 !important;
+        margin-bottom: 10px !important;
+    }
+    html.dark .flatpickr-months .flatpickr-month {
+        color: #ffffff !important;
+    }
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+        font-weight: 800 !important;
+    }
+
+    /* Días de la semana (L, M, M, J...) */
+    span.flatpickr-weekday {
+        color: #78716c !important;
+        font-weight: 700 !important;
+    }
+
+    /* Los días normales */
+    .flatpickr-day {
+        color: #44403c !important;
+        border-radius: 12px !important;
+        border: 1px solid transparent !important;
+    }
+    html.dark .flatpickr-day {
+        color: #d6d3d1 !important;
+    }
+
+    /* Hover sobre los días */
+    .flatpickr-day:hover {
+        background: #f5f5f4 !important;
+        border-color: #f5f5f4 !important;
+        color: #1c1917 !important;
+    }
+    html.dark .flatpickr-day:hover {
+        background: #292524 !important;
+        border-color: #292524 !important;
+        color: #ffffff !important;
+    }
+
+    /* EL DÍA SELECCIONADO (Acento Naranja del Museo) */
+    .flatpickr-day.selected, .flatpickr-day.selected:hover {
+        background: #ea580c !important;
+        border-color: #ea580c !important;
+        color: #ffffff !important;
+        font-weight: bold;
+    }
+
+    /* Flechas de Mes Anterior/Siguiente */
+    .flatpickr-prev-month, .flatpickr-next-month {
+        fill: #78716c !important;
+    }
+    .flatpickr-prev-month:hover svg, .flatpickr-next-month:hover svg {
+        fill: #ea580c !important;
+    }
+</style>
