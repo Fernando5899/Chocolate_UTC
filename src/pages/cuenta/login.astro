@@ -3,27 +3,34 @@ import Layout from '../../layouts/Layout.astro';
 import { SignIn } from 'auth-astro/components';
 import { getSession } from 'auth-astro/server';
 
-// Si el usuario YA inició sesión, lo mandamos directo al admin para que no vea esta pantalla
 const session = await getSession(Astro.request);
-if (session) {
-    return Astro.redirect('/admin');
-}
+// Si ya está logueado, lo mandamos a su credencial
+if (session) return Astro.redirect('/cuenta/perfil');
 ---
 
-<Layout title="Iniciar Sesión | Museo">
-    <div class="min-h-[70vh] flex items-center justify-center">
-        <div class="bg-white p-10 rounded-2xl shadow-md border border-stone-100 max-w-md w-full text-center">
-            <div class="text-4xl mb-4">🍫</div>
-            <h1 class="text-2xl font-bold text-stone-800 mb-2">Acceso Administrativo</h1>
-            <p class="text-stone-500 mb-8">Inicia sesión para gestionar el museo</p>
+<Layout title="Acceso al Museo">
+    <div class="max-w-md mx-auto py-32 px-6">
 
-            <SignIn provider="google" class="w-full bg-stone-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-stone-800 transition-colors shadow-sm">
-                Continuar con Google
+        <div class="bg-white/60 dark:bg-[#110e0d]/80 backdrop-blur-xl p-10 md:p-14 rounded-[40px] border border-white/50 dark:border-stone-800 shadow-2xl text-center transition-colors duration-500">
+
+            <span class="text-6xl mb-8 block opacity-80 grayscale">🎫</span>
+            <h1 class="text-4xl font-black italic text-stone-900 dark:text-white mb-4">Acceso al Museo</h1>
+            <p class="text-stone-500 dark:text-stone-400 text-sm mb-12 leading-relaxed">
+                Inicia sesión para gestionar tus boletos, guardar tu historial de expediciones y acceder a la tienda exclusiva.
+            </p>
+
+            <SignIn provider="google" class="w-full bg-stone-900 dark:bg-white text-white dark:text-black font-black py-5 px-6 rounded-full hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-xl flex items-center justify-center gap-3 cursor-pointer uppercase text-[10px] tracking-widest active:scale-95">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Ingresar con Google
             </SignIn>
 
-            <div class="mt-6">
-                <a href="/" class="text-sm text-stone-400 hover:text-orange-600 transition-colors">Volver a la tienda</a>
-            </div>
+            <a href="/" class="block mt-10 text-[10px] font-bold text-stone-400 hover:text-orange-500 uppercase tracking-widest transition-colors">← Volver a la galería</a>
         </div>
+
     </div>
 </Layout>

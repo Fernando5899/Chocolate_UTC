@@ -12,13 +12,13 @@ datasource db {
   // ¡NADA DE URL AQUÍ!
 }
 
-// --- TABLAS DEL MUSEO DE CHOCOLATE ---
+// --- MÓDULO: CATÁLOGO DEL MUSEO ---
 
 model Categoria {
   id          String      @id @default(uuid())
   nombre      String      @unique
   descripcion String?
-  chocolates  Chocolate[] // Relación: Una categoría tiene muchos chocolates
+  chocolates  Chocolate[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -31,15 +31,15 @@ model Chocolate {
   stock       Int     @default(0)
   imagenUrl   String?
 
-  // Llave foránea para la relación
   categoriaId String
   categoria   Categoria @relation(fields: [categoriaId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  detalleOrdens DetalleOrden[]
 }
 
-// --- TABLAS DE SEGURIDAD (Auth.js) ---
+// --- MÓDULO: SEGURIDAD Y PERFIL DE USUARIO (Auth.js) ---
 
 model User {
   id            String    @id @default(uuid())
@@ -47,8 +47,17 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
+
+  // 🆕 CAMPOS DE PERFIL PARA ENVÍOS NACIONALES
+  telefono     String?
+  direccion    String?
+  ciudad       String?
+  codigoPostal String?
+  estado       String? // "CDMX" o "Edomex"
+
+  accounts Account[]
+  sessions Session[]
+  ordenes  Orden[] // Relación: Un usuario puede ver su historial de compras
 }
 
 model Account {
@@ -76,4 +85,31 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// --- MÓDULO: LOGÍSTICA Y VENTAS ---
+
+model Orden {
+  id            String         @id @default(cuid())
+  fecha         DateTime       @default(now())
+  clienteNombre String
+  estadoEnvio   String // "CDMX" o "Edomex"
+  direccion     String
+  codigoPostal  String
+  total         Float
+  detalles      DetalleOrden[]
+
+  // 🔗 VINCULACIÓN OPCIONAL CON USUARIO REGISTRADO
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+}
+
+model DetalleOrden {
+  id          String    @id @default(cuid())
+  ordenId     String
+  orden       Orden     @relation(fields: [ordenId], references: [id])
+  chocolateId String
+  chocolate   Chocolate @relation(fields: [chocolateId], references: [id])
+  cantidad    Int
+  precioUnit  Float
 }

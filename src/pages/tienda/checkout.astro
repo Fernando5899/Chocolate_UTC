@@ -1,90 +1,95 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
+import { getSession } from 'auth-astro/server';
+
+// 1. Obtener sesión y datos del perfil para autocompletar
+const session = await getSession(Astro.request);
+let usuario = null;
+
+if (session) {
+    usuario = await prisma.user.findUnique({
+        where: { email: session.user?.email || '' }
+    });
+}
 ---
 
-<Layout title="Finalizar Compra | Museo">
-    <div class="max-w-5xl mx-auto">
-        <h1 class="text-3xl font-bold text-stone-800 mb-8">Finalizar Pedido</h1>
+<Layout title="Finalizar Pedido | Museo">
+    <div class="max-w-5xl mx-auto py-12">
+        <header class="mb-12">
+            <span class="text-orange-500 uppercase tracking-[0.4em] text-[10px] font-bold block mb-4">Proceso de Pago</span>
+            <h1 class="text-5xl font-black italic">Finalizar Pedido</h1>
+        </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div class="lg:col-span-2 space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div class="lg:col-span-2 space-y-8">
 
-                <section class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
-                    <h2 class="text-xl font-bold text-stone-800 mb-6 flex items-center gap-2">
-                        <span>📍</span> Datos de Entrega (Solo Área Metropolitana)
+                {!session && (
+                        <div class="bg-orange-950/20 border border-orange-900/50 p-6 rounded-2xl flex items-center justify-between">
+                            <p class="text-sm text-orange-200/70 italic">¿Tienes una cuenta? Inicia sesión para usar tus datos guardados.</p>
+                            <a href="/cuenta/login" class="text-[10px] font-bold uppercase tracking-widest text-white border-b border-white hover:text-orange-400 hover:border-orange-400 transition-all">Ingresar</a>
+                        </div>
+                )}
+
+                <section class="bg-stone-900/40 p-10 rounded-3xl border border-stone-800 shadow-2xl">
+                    <h2 class="text-xl font-bold italic mb-8 flex items-center gap-3">
+                        <span class="text-orange-500">📍</span> Detalles de Entrega
                     </h2>
 
-                    <form id="form-checkout" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form id="form-checkout" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <input type="hidden" id="user-id" value={usuario?.id} />
+
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-semibold text-stone-600 mb-1">Nombre Completo</label>
-                            <input type="text" required class="w-full px-4 py-2 rounded-xl border border-stone-300 outline-none focus:ring-2 focus:ring-orange-500" />
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-2 font-bold">Nombre Completo</label>
+                            <input type="text" id="input-nombre" value={usuario?.name} required class="w-full bg-black/40 border border-stone-800 p-3 rounded-xl focus:border-orange-500 outline-none transition-all text-stone-200" />
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-stone-600 mb-1">Entidad Federativa</label>
-                            <select id="selector-estado" required class="w-full px-4 py-2 rounded-xl border border-stone-300 outline-none focus:ring-2 focus:ring-orange-500 bg-white">
-                                <option value="" disabled selected>Selecciona tu zona...</option>
-                                <option value="CDMX">Ciudad de México (Envío Gratis)</option>
-                                <option value="Edomex">Estado de México ($99 MXN)</option>
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-2 font-bold">Entidad</label>
+                            <select id="selector-estado" required class="w-full bg-black/40 border border-stone-800 p-3 rounded-xl focus:border-orange-500 outline-none transition-all text-stone-200 appearance-none">
+                                <option value="" disabled selected>Selecciona...</option>
+                                <option value="CDMX" selected={usuario?.estado === 'CDMX'}>Ciudad de México</option>
+                                <option value="Edomex" selected={usuario?.estado === 'Edomex'}>Estado de México</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-stone-600 mb-1">Código Postal</label>
-                            <input type="text" maxlength="5" required class="w-full px-4 py-2 rounded-xl border border-stone-300 outline-none focus:ring-2 focus:ring-orange-500" />
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-2 font-bold">Código Postal</label>
+                            <input type="text" id="input-cp" value={usuario?.codigoPostal} maxlength="5" required class="w-full bg-black/40 border border-stone-800 p-3 rounded-xl focus:border-orange-500 outline-none transition-all text-stone-200" />
                         </div>
 
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-semibold text-stone-600 mb-1">Dirección (Calle y Número)</label>
-                            <input type="text" required class="w-full px-4 py-2 rounded-xl border border-stone-300 outline-none focus:ring-2 focus:ring-orange-500" />
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-2 font-bold">Dirección Completa</label>
+                            <input type="text" id="input-direccion" value={usuario?.direccion} required class="w-full bg-black/40 border border-stone-800 p-3 rounded-xl focus:border-orange-500 outline-none transition-all text-stone-200" />
                         </div>
                     </form>
-                </section>
-
-                <section class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
-                    <h2 class="text-xl font-bold text-stone-800 mb-2 flex items-center gap-2">
-                        <span>🏛️</span> Ubicación de Origen
-                    </h2>
-                    <p class="text-stone-500 text-sm mb-6">Todos nuestros pedidos salen directamente de nuestra sede central.</p>
-
-                    <div class="w-full h-64 rounded-xl overflow-hidden border border-stone-200">
-                        <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.6617066804555!2d-99.15783308509355!3d19.427024586887556!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff2c68616127%3A0xc391b1a77df179fb!2sMUCHO%20Mundo%20Chocolate!5e0!3m2!1ses-419!2smx!4v1700000000000!5m2!1ses-419!2smx"
-                                width="100%"
-                                height="100%"
-                                style="border:0;"
-                                allowfullscreen=""
-                                loading="lazy"
-                                referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
-                    </div>
                 </section>
             </div>
 
             <div class="lg:col-span-1">
-                <div class="bg-stone-900 text-white p-8 rounded-2xl shadow-xl sticky top-28">
-                    <h2 class="text-xl font-bold mb-6 border-b border-stone-700 pb-4">Resumen de Orden</h2>
+                <div class="bg-black p-10 rounded-3xl border border-stone-800 shadow-2xl sticky top-28">
+                    <h2 class="text-xl font-bold italic mb-8 border-b border-stone-900 pb-6">Resumen</h2>
 
-                    <div class="space-y-3 text-stone-400 text-sm mb-6" id="lista-resumen">
+                    <div class="space-y-4 text-stone-400 text-sm mb-8 italic" id="lista-resumen">
                     </div>
 
-                    <div class="space-y-3 border-t border-stone-700 pt-6 mb-8">
-                        <div class="flex justify-between">
+                    <div class="space-y-4 border-t border-stone-900 pt-8 mb-10">
+                        <div class="flex justify-between text-stone-500 uppercase tracking-tighter text-xs">
                             <span>Subtotal</span>
                             <span id="subtotal-final">$0.00</span>
                         </div>
-                        <div class="flex justify-between text-orange-400 font-bold">
-                            <span>Envío (Área Metro)</span>
+                        <div class="flex justify-between text-orange-500 font-bold uppercase tracking-tighter text-xs">
+                            <span>Logística Metro</span>
                             <span id="envio-costo">$0.00</span>
                         </div>
-                        <div class="flex justify-between text-xl font-black text-white pt-4">
-                            <span>Total</span>
+                        <div class="flex justify-between text-2xl font-black text-white pt-6 border-t border-stone-900 mt-4">
+                            <span class="italic">Total</span>
                             <span id="total-final">$0.00</span>
                         </div>
                     </div>
 
-                    <button id="btn-pagar" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-lg transform active:scale-95 cursor-pointer">
-                        CONFIRMAR ORDEN
+                    <button id="btn-pagar" class="w-full bg-white text-black hover:bg-orange-600 hover:text-white font-black py-5 rounded-full transition-all shadow-xl transform active:scale-95 cursor-pointer uppercase text-[10px] tracking-[0.3em]">
+                        Confirmar Orden
                     </button>
                 </div>
             </div>
@@ -100,10 +105,9 @@ import Layout from '../../layouts/Layout.astro';
         const totalTxt = document.getElementById('total-final');
         const listaResumen = document.getElementById('lista-resumen');
 
-        // LÓGICA REDUCIDA: SOLO CDMX Y EDOMEX
         const COSTOS_ENVIO: Record<string, number> = {
-            'CDMX': 0,      // Gratis en la ciudad
-            'Edomex': 99    // Tarifa Estado de México
+            'CDMX': 0,
+            'Edomex': 99
         };
 
         function actualizarResumen() {
@@ -115,9 +119,9 @@ import Layout from '../../layouts/Layout.astro';
             items.forEach(item => {
                 subtotal += item.precio * item.cantidad;
                 listaResumen?.insertAdjacentHTML('beforeend', `
-                    <div class="flex justify-between italic">
+                    <div class="flex justify-between">
                         <span>${item.cantidad}x ${item.nombre}</span>
-                        <span>$${(item.precio * item.cantidad).toFixed(2)}</span>
+                        <span class="text-white">$${(item.precio * item.cantidad).toFixed(2)}</span>
                     </div>
                 `);
             });
@@ -131,23 +135,55 @@ import Layout from '../../layouts/Layout.astro';
             if (totalTxt) totalTxt.innerText = `$${total.toFixed(2)}`;
         }
 
-        // Escuchar cuando el usuario cambie de estado
         selectorEstado?.addEventListener('change', actualizarResumen);
-
-        // Inicializar
         actualizarResumen();
 
-        // Simulación de pago
-        document.getElementById('btn-pagar')?.addEventListener('click', () => {
+        document.getElementById('btn-pagar')?.addEventListener('click', async () => {
             const btn = document.getElementById('btn-pagar') as HTMLButtonElement;
-            btn.disabled = true;
-            btn.innerText = "Procesando orden...";
 
-            setTimeout(() => {
-                alert("¡Orden confirmada! Preparando envío desde nuestra sede.");
-                carrito.set({}); // Vaciamos el carrito
-                window.location.href = "/"; // Redirigimos al inicio
-            }, 3000);
+            const nombre = (document.getElementById('input-nombre') as HTMLInputElement)?.value;
+            const cp = (document.getElementById('input-cp') as HTMLInputElement)?.value;
+            const direccion = (document.getElementById('input-direccion') as HTMLInputElement)?.value;
+            const estado = selectorEstado.value;
+            const userId = (document.getElementById('user-id') as HTMLInputElement)?.value;
+
+            if (!nombre || !direccion || !cp || !estado) {
+                alert("⚠️ Por favor, completa tu información de entrega.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Sincronizando con Tesorería...";
+
+            const ordenData = {
+                clienteNombre: nombre,
+                estadoEnvio: estado,
+                direccion: direccion,
+                codigoPostal: cp,
+                total: parseFloat(totalTxt?.innerText.replace('$', '') || '0'),
+                items: Object.values(carrito.get()),
+                userId: userId || null // Aquí vinculamos la orden al usuario real
+            };
+
+            try {
+                const response = await fetch('/api/ordenes', {
+                    method: 'POST',
+                    body: JSON.stringify(ordenData),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    alert("✅ ¡Pago Exitoso! Tu orden institucional ha sido registrada.");
+                    carrito.set({});
+                    window.location.href = "/";
+                } else {
+                    throw new Error("Rechazo de servidor");
+                }
+            } catch (error) {
+                alert("❌ Fallo en la conexión. Reintenta.");
+                btn.disabled = false;
+                btn.innerText = "CONFIRMAR ORDEN";
+            }
         });
     </script>
 </Layout>

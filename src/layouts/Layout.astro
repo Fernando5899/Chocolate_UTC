@@ -1,95 +1,139 @@
 ---
-interface Props {
-    title: string;
-}
-
-// 1. Estilos globales
+interface Props { title: string; }
 import '../styles/global.css';
-
-// 2. Herramientas de Ciberseguridad (Auth.js)
 import { getSession } from 'auth-astro/server';
 import { SignOut } from 'auth-astro/components';
 
 const { title } = Astro.props;
-
-// 3. Le preguntamos al servidor si el administrador está conectado
 const session = await getSession(Astro.request);
+const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 ---
 
 <!doctype html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Catálogo virtual del Museo de Chocolate" />
+    <meta name="description" content="Portal Institucional del Museo de Chocolate" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <title>{title}</title>
-</head>
-<body class="bg-orange-50 text-stone-800 font-sans antialiased min-h-screen flex flex-col">
 
-<nav class="bg-stone-900 text-orange-50 py-4 shadow-md sticky top-0 z-50">
-    <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
-        <a href="/" class="text-2xl font-bold tracking-wider hover:text-orange-300 transition-colors">
-            🍫 Museo de Chocolate
+    <script is:inline>
+        const theme = localStorage.getItem('theme') || 'dark';
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+
+<body class="bg-stone-50 text-stone-900 dark:bg-[#0c0a09] dark:text-stone-100 transition-colors duration-500 min-h-screen flex flex-col">
+
+<nav class="bg-white/80 dark:bg-black/80 backdrop-blur-md py-8 border-b border-stone-200 dark:border-stone-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-8 flex justify-between items-center">
+        <a href="/" class="flex flex-col">
+            <span class="text-2xl font-bold tracking-[0.1em] uppercase leading-none text-stone-900 dark:text-white">Museo de Chocolate</span>
+            <span class="text-xs text-stone-500 uppercase tracking-[0.3em] mt-1">Cultura y Tradición</span>
         </a>
 
-        <div class="space-x-6 flex items-center">
-            <a href="/" class="hover:text-orange-300 transition-colors font-medium">Inicio</a>
-            <a href="/tienda/chocolates" class="hover:text-orange-300 transition-colors font-medium">Catálogo</a>
+        <div class="hidden md:flex items-center gap-8 uppercase text-xs md:text-sm tracking-widest font-bold">
+            <a href="/" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">Inicio</a>
+            <a href="/exposiciones" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">Exposiciones</a>
+            <a href="/tienda/chocolates" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">Chocolates</a>
+            <a href="/visita/boletos" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">Boletos</a>
 
-            <a href="/tienda/carrito" class="hover:text-orange-300 transition-colors flex items-center gap-1 group font-medium">
-                Carrito 🛒
-                <span id="contador-carrito" class="bg-stone-600 text-white text-xs font-bold px-2 py-0.5 rounded-full transition-all duration-300 group-hover:scale-110">
-							0
-						</span>
+            <a href="/tienda/carrito" class="flex items-center gap-2 text-stone-600 dark:text-stone-300 hover:text-orange-500 transition-colors">
+                Carrito
+                <span id="contador-carrito" class="border border-stone-300 dark:border-stone-700 px-3 py-1 rounded-full text-xs">0</span>
             </a>
 
-            <div class="w-px h-6 bg-stone-700 mx-2"></div> {/* LÓGICA DE SESIÓN (ADMIN vs CLIENTE) */}
+            <button id="theme-toggle" class="p-2 rounded-lg border border-stone-300 dark:border-stone-800 hover:border-orange-500 transition-all cursor-pointer bg-transparent">
+                <span id="theme-icon" class="text-stone-600 dark:text-orange-400 text-xl leading-none"></span>
+            </button>
+
+            <div class="w-px h-6 bg-stone-300 dark:bg-stone-800"></div>
+
             {session ? (
-                    <div class="flex items-center gap-4">
-                        <a href="/admin" class="text-orange-400 font-bold hover:text-orange-300 transition-colors">
-                            Panel Admin
-                        </a>
-                        <SignOut class="bg-stone-800 hover:bg-stone-700 text-sm px-4 py-2 rounded-lg transition-colors border border-stone-700 cursor-pointer">
-                            Cerrar Sesión
-                        </SignOut>
+                    <div class="flex items-center gap-6">
+                        {isAdmin && (
+                                <a href="/admin/dashboard" class="text-orange-600 dark:text-orange-500 hover:text-orange-400 transition-colors flex items-center gap-1 font-black">
+                                    <span>⚙️</span> Admin
+                                </a>
+                        )}
+                        <a href="/cuenta/perfil" class="text-stone-600 dark:text-stone-400 hover:text-orange-500 transition-colors">Perfil</a>
+
+                        <SignOut class="text-stone-500 cursor-pointer opacity-70 hover:opacity-100 hover:text-orange-500 uppercase text-xs tracking-widest font-bold transition-all bg-transparent border-none p-0" />
                     </div>
             ) : (
-                    <a href="/cuenta/login" class="text-stone-300 hover:text-white border border-stone-600 hover:border-orange-400 text-sm px-4 py-2 rounded-lg transition-all">
-                        Login Admin
-                    </a>
+                    <a href="/cuenta/login" class="text-stone-500 hover:text-orange-500">Ingresar</a>
             )}
         </div>
     </div>
 </nav>
 
-<main class="max-w-5xl mx-auto px-6 py-10 flex-grow w-full">
+<main class="grow flex flex-col">
     <slot />
 </main>
 
-<footer class="text-center py-8 text-stone-500 text-sm mt-auto border-t border-stone-200 bg-orange-100/50">
-    &copy; {new Date().getFullYear()} Museo de Chocolate. Todos los derechos reservados.
+<footer class="bg-white dark:bg-black text-stone-500 py-20 border-t border-stone-200 dark:border-stone-900 mt-auto transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+        <div>
+            <h4 class="text-stone-900 dark:text-white uppercase tracking-widest text-sm font-bold mb-6">El Museo</h4>
+            <p class="text-base leading-relaxed">Dedicado a la preservación de la historia del cacao en México.</p>
+        </div>
+        <div>
+            <h4 class="text-stone-900 dark:text-white uppercase tracking-widest text-sm font-bold mb-6">Ubicación</h4>
+            <p class="text-base italic">Calle Milan 45, Juárez, CDMX</p>
+        </div>
+        <div class="md:text-right">
+            <p class="text-sm uppercase tracking-widest">© {new Date().getFullYear()} Museo de Chocolate</p>
+            <p class="text-xs mt-3 italic text-stone-400 font-serif">Diseñado para la posteridad</p>
+        </div>
+    </div>
 </footer>
 
 <script>
     import { carrito } from '../store/carrito';
 
-    // Buscamos la burbuja del contador en el HTML
-    const contador = document.getElementById('contador-carrito');
+    // 1. TEMA
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    const html = document.documentElement;
 
+    const updateIcon = () => {
+        if (icon) {
+            icon.innerText = html.classList.contains('dark') ? '☀️' : '🌙';
+        }
+    };
+    updateIcon();
+
+    btn?.addEventListener('click', () => {
+        html.classList.toggle('dark');
+        localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        updateIcon();
+    });
+
+    // 2. CARRITO
+    const contador = document.getElementById('contador-carrito');
     if (contador) {
-        // Nos suscribimos a los cambios. Si Nano Stores detecta un nuevo chocolate, ejecuta esto:
         carrito.subscribe((items) => {
-            // Sumamos cuántos chocolates hay en total
             const totalItems = Object.values(items).reduce((suma, item) => suma + item.cantidad, 0);
             contador.innerText = totalItems.toString();
-
-            // Cambiamos el color de la burbuja para llamar la atención si hay productos
             if (totalItems > 0) {
-                contador.classList.replace('bg-stone-600', 'bg-orange-600');
+                contador.classList.add('border-orange-500', 'text-orange-500');
             } else {
-                contador.classList.replace('bg-orange-600', 'bg-stone-600');
+                contador.classList.remove('border-orange-500', 'text-orange-500');
             }
+        });
+    }
+
+    // 3. LIMPIEZA AL SALIR REPARADA (Escucha directo al atributo del componente)
+    const btnSalir = document.querySelector('[data-auth-signout]');
+    if (btnSalir) {
+        btnSalir.addEventListener('click', () => {
+            carrito.set({});
         });
     }
 </script>

@@ -3,49 +3,49 @@ import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title="Carrito de Compras | Museo">
-    <div class="max-w-5xl mx-auto">
-        <h1 class="text-4xl font-extrabold text-stone-800 mb-8">Tu Carrito 🛒</h1>
+    <div class="max-w-5xl mx-auto py-12">
+        <h1 class="text-5xl font-black italic text-stone-900 dark:text-white mb-12 transition-colors duration-500">Tu Carrito 🛒</h1>
 
-        <div id="carrito-vacio" class="hidden text-center py-20 bg-white rounded-2xl border border-stone-200 border-dashed">
-            <span class="text-6xl mb-4 block">🛍️</span>
-            <h2 class="text-2xl font-bold text-stone-700 mb-2">Tu carrito está vacío</h2>
-            <p class="text-stone-500 mb-8">Parece que aún no has seleccionado ninguna delicia de nuestro museo.</p>
-            <a href="/tienda/chocolates" class="bg-orange-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-orange-700 transition-colors inline-block shadow-md">
-                Explorar el Catálogo
+        <div id="carrito-vacio" class="hidden text-center py-24 px-8 bg-white dark:bg-[#110e0d]/80 backdrop-blur-md rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-2xl transition-colors duration-500">
+            <span class="text-7xl mb-8 block opacity-40 grayscale">🛍️</span>
+            <h2 class="text-3xl font-bold italic text-stone-900 dark:text-white mb-4">Tu expedición está vacía</h2>
+            <p class="text-stone-500 dark:text-stone-400 mb-10 max-w-sm mx-auto">Parece que aún no has seleccionado ninguna delicia de nuestro catálogo.</p>
+            <a href="/tienda/chocolates" class="bg-orange-600 text-white font-bold py-4 px-10 rounded-full uppercase text-[10px] tracking-[0.3em] hover:bg-orange-500 transition-all inline-block shadow-lg hover:shadow-orange-500/30">
+                Explorar la Galería
             </a>
         </div>
 
-        <div id="carrito-lleno" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div id="carrito-lleno" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-            <div class="lg:col-span-2 space-y-4" id="lista-productos">
+            <div class="lg:col-span-2 space-y-6" id="lista-productos">
             </div>
 
             <div class="lg:col-span-1">
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200 sticky top-28">
-                    <h2 class="text-xl font-bold text-stone-800 mb-6 border-b border-stone-100 pb-4">Resumen de Compra</h2>
+                <div class="bg-white dark:bg-[#110e0d] p-10 rounded-3xl shadow-xl border border-stone-200 dark:border-stone-800 sticky top-28 transition-colors duration-500">
+                    <h2 class="text-2xl font-bold italic text-stone-900 dark:text-white mb-8 border-b border-stone-100 dark:border-stone-800/80 pb-6 transition-colors duration-500">Resumen</h2>
 
-                    <div class="flex justify-between mb-3 text-stone-600">
+                    <div class="flex justify-between mb-4 text-stone-600 dark:text-stone-400 text-sm uppercase tracking-widest font-bold">
                         <span>Subtotal</span>
-                        <span id="subtotal-texto">$0.00</span>
+                        <span id="subtotal-texto" class="dark:text-stone-300">$0.00</span>
                     </div>
 
-                    <div class="flex justify-between mb-6 text-stone-600">
+                    <div class="flex justify-between mb-8 text-stone-600 dark:text-stone-400 text-sm uppercase tracking-widest font-bold">
                         <span>Envío (CDMX)</span>
-                        <span class="text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded text-sm">Gratis</span>
+                        <span class="text-orange-500 dark:text-orange-400">Gratis</span>
                     </div>
 
-                    <div class="flex justify-between items-center mb-8 pt-6 border-t border-stone-100">
-                        <span class="text-lg font-bold text-stone-800">Total</span>
-                        <span id="total-texto" class="text-4xl font-black text-stone-900">$0.00</span>
+                    <div class="flex justify-between items-center mb-10 pt-8 border-t border-stone-100 dark:border-stone-800/80 transition-colors duration-500">
+                        <span class="text-sm font-bold text-stone-500 uppercase tracking-[0.2em]">Total</span>
+                        <span id="total-texto" class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$0.00</span>
                     </div>
 
-                    <a href="/tienda/checkout" class="block w-full text-center bg-stone-900 text-white font-bold py-4 px-6 rounded-xl hover:bg-stone-800 transition-colors shadow-lg cursor-pointer transform active:scale-95">
+                    <a href="/tienda/checkout" class="block w-full text-center bg-stone-900 dark:bg-white text-white dark:text-black font-black py-5 px-6 rounded-full hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-xl cursor-pointer uppercase text-[10px] tracking-[0.3em] active:scale-95">
                         Proceder al Pago
                     </a>
 
-                    <p class="text-xs text-stone-400 text-center mt-6 flex flex-col items-center gap-1">
-                        <span>🔒 Pago 100% Seguro</span>
-                        <span>Impuestos incluidos en el precio.</span>
+                    <p class="text-[10px] text-stone-400 dark:text-stone-500 uppercase tracking-widest text-center mt-8 flex flex-col items-center gap-2 font-bold">
+                        <span>🔒 Expedición Segura</span>
+                        <span class="opacity-70">Impuestos y empaque incluidos.</span>
                     </p>
                 </div>
             </div>
@@ -55,55 +55,51 @@ import Layout from '../../layouts/Layout.astro';
     <script>
         import { carrito } from '../../store/carrito';
 
-        // Elementos del DOM
         const containerVacio = document.getElementById('carrito-vacio');
         const containerLleno = document.getElementById('carrito-lleno');
         const listaProductos = document.getElementById('lista-productos');
         const subtotalTexto = document.getElementById('subtotal-texto');
         const totalTexto = document.getElementById('total-texto');
 
-        // Nos suscribimos a los datos en tiempo real
         carrito.subscribe((items) => {
             const arrayItems = Object.values(items);
 
-            // Si el carrito está vacío, mostramos el mensaje
             if (arrayItems.length === 0) {
                 containerVacio?.classList.remove('hidden');
                 containerLleno?.classList.add('hidden');
                 return;
             }
 
-            // Si hay productos, mostramos la interfaz
             containerVacio?.classList.add('hidden');
             containerLleno?.classList.remove('hidden');
 
             if (listaProductos) {
-                listaProductos.innerHTML = ''; // Limpiamos antes de dibujar
+                listaProductos.innerHTML = '';
                 let total = 0;
 
-                // Dibujamos cada producto en el HTML
                 arrayItems.forEach(item => {
                     const subtotalItem = item.precio * item.cantidad;
                     total += subtotalItem;
 
+                    // Plantilla inyectada adaptada a Tailwind v4 Dark Mode
                     const itemHTML = `
-                        <div class="flex flex-col sm:flex-row items-center gap-6 bg-white p-4 rounded-2xl border border-stone-100 shadow-sm transition-all hover:shadow-md">
-                            <div class="w-24 h-24 bg-stone-50 border border-stone-100 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
-                                ${item.imagenUrl ? `<img src="${item.imagenUrl}" alt="${item.nombre}" class="w-full h-full object-cover"/>` : `<span class="text-4xl">🍫</span>`}
+                        <div class="flex flex-col sm:flex-row items-center gap-6 bg-white dark:bg-[#110e0d] p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg transition-all duration-300">
+                            <div class="w-28 h-28 bg-stone-100 dark:bg-[#0c0a09] border border-stone-100 dark:border-stone-800/50 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0">
+                                ${item.imagenUrl && item.imagenUrl !== "null" ? `<img src="${item.imagenUrl}" alt="${item.nombre}" class="w-full h-full object-cover grayscale opacity-80"/>` : `<span class="text-4xl opacity-50 grayscale">🍫</span>`}
                             </div>
                             
                             <div class="flex-grow text-center sm:text-left">
-                                <h3 class="font-bold text-lg text-stone-800">${item.nombre}</h3>
-                                <p class="text-stone-500 font-medium">$${item.precio.toFixed(2)} c/u</p>
+                                <h3 class="font-bold font-serif text-2xl text-stone-900 dark:text-white mb-1 transition-colors duration-500">${item.nombre}</h3>
+                                <p class="text-stone-500 dark:text-stone-400 font-medium text-sm">$${item.precio.toFixed(2)} c/u</p>
                             </div>
                             
-                            <div class="flex flex-col items-center sm:items-end gap-3">
-                                <span class="font-black text-xl text-stone-900">$${subtotalItem.toFixed(2)}</span>
+                            <div class="flex flex-col items-center sm:items-end gap-4">
+                                <span class="font-black text-2xl text-stone-900 dark:text-white transition-colors duration-500">$${subtotalItem.toFixed(2)}</span>
                                 
-                                <div class="flex items-center bg-stone-100 rounded-lg border border-stone-200">
-                                    <button class="btn-restar px-3 py-1 hover:bg-stone-200 rounded-l-lg font-black text-stone-600 transition-colors text-lg" data-id="${item.id}">-</button>
-                                    <span class="px-4 py-1 font-bold text-sm min-w-[2.5rem] text-center">${item.cantidad}</span>
-                                    <button class="btn-sumar px-3 py-1 hover:bg-stone-200 rounded-r-lg font-black text-stone-600 transition-colors text-lg" data-id="${item.id}">+</button>
+                                <div class="flex items-center bg-stone-50 dark:bg-[#0c0a09] rounded-full border border-stone-200 dark:border-stone-800 overflow-hidden">
+                                    <button class="btn-restar w-10 h-10 flex items-center justify-center font-black text-stone-500 dark:text-stone-400 hover:text-orange-500 dark:hover:text-orange-400 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors cursor-pointer" data-id="${item.id}">-</button>
+                                    <span class="w-10 text-center font-bold text-sm text-stone-900 dark:text-white">${item.cantidad}</span>
+                                    <button class="btn-sumar w-10 h-10 flex items-center justify-center font-black text-stone-500 dark:text-stone-400 hover:text-orange-500 dark:hover:text-orange-400 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors cursor-pointer" data-id="${item.id}">+</button>
                                 </div>
                             </div>
                         </div>
@@ -111,20 +107,16 @@ import Layout from '../../layouts/Layout.astro';
                     listaProductos.insertAdjacentHTML('beforeend', itemHTML);
                 });
 
-                // Actualizamos los números finales
                 if (subtotalTexto && totalTexto) {
                     subtotalTexto.textContent = `$${total.toFixed(2)}`;
                     totalTexto.textContent = `$${total.toFixed(2)}`;
                 }
 
-                // Encendemos los botones de + y -
                 asignarEventosBotones();
             }
         });
 
-        // Lógica matemática para sumar o restar cantidades
         function asignarEventosBotones() {
-            // Botones de Sumar (+)
             document.querySelectorAll('.btn-sumar').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = (e.target as HTMLButtonElement).getAttribute('data-id');
@@ -138,20 +130,17 @@ import Layout from '../../layouts/Layout.astro';
                 });
             });
 
-            // Botones de Restar (-)
             document.querySelectorAll('.btn-restar').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = (e.target as HTMLButtonElement).getAttribute('data-id');
                     if (id) {
                         const items = carrito.get();
                         if (items[id].cantidad > 1) {
-                            // Si tiene más de 1, le restamos 1
                             carrito.set({
                                 ...items,
                                 [id]: { ...items[id], cantidad: items[id].cantidad - 1 }
                             });
                         } else {
-                            // Si tiene 1 y le resta, lo eliminamos del carrito (basura)
                             const nuevosItems = { ...items };
                             delete nuevosItems[id];
                             carrito.set(nuevosItems);

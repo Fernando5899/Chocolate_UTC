@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getSession } from 'auth-astro/server';
+
+const session = await getSession(Astro.request);
+if (session?.user?.email !== 'fernando.jose.reynosa@gmail.com') return Astro.redirect('/');
+---
+
+<Layout title="Centro de Mando | Admin">
+    <div class="max-w-7xl mx-auto px-8 py-20">
+        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 transition-colors duration-500">
+            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white mb-4">Centro de Mando</h1>
+            <p class="text-xl text-stone-500 dark:text-stone-400">Gestión integral del ecosistema del museo.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <a href="/admin/ventas" class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group block">
+                <span class="text-5xl mb-6 block grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 transition-all">📈</span>
+                <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-3">Tesorería y Ventas</h3>
+                <p class="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">Revisa quién ha comprado chocolates y boletos en tiempo real.</p>
+            </a>
+
+            <a href="/admin/chocolates" class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group block">
+                <span class="text-5xl mb-6 block grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 transition-all">🍫</span>
+                <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-3">Catálogo y Precios</h3>
+                <p class="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">Sube nuevos productos, cambia precios y actualiza fotografías.</p>
+            </a>
+
+            <a href="/admin/categorias" class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group block">
+                <span class="text-5xl mb-6 block grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 transition-all">🏛️</span>
+                <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-3">Salas y Categorías</h3>
+                <p class="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">Gestiona las clasificaciones del catálogo y del museo.</p>
+            </a>
+        </div>
+    </div>
+</Layout>

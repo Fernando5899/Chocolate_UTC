@@ -1,0 +1,83 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Taquilla Digital | Museo">
+    <div class="max-w-5xl mx-auto px-8 py-20 text-center transition-colors duration-500">
+        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 transition-colors duration-500">
+            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-4">Planea tu visita</span>
+            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white mb-6 transition-colors duration-500">Taquilla Digital</h1>
+            <p class="text-lg text-stone-500 dark:text-stone-400 max-w-2xl mx-auto transition-colors duration-500">Reserva tu entrada al mundo del cacao. Los boletos incluyen acceso a todas las salas permanentes y exposiciones temporales.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-left">
+
+            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 hover:-translate-y-1 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-3 transition-colors duration-500">Entrada General</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-8 transition-colors duration-500">Acceso completo para mayores de 12 años a todas las instalaciones del museo.</p>
+                </div>
+                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
+                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$120 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
+                    <button
+                            class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer"
+                            data-id="ticket-adulto"
+                            data-nombre="Boleto General"
+                            data-precio="120"
+                    >
+                        Reservar 🎟️
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 hover:-translate-y-1 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-3 transition-colors duration-500">Estudiantes / INAPAM</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-8 transition-colors duration-500">Válido únicamente presentando credencial vigente en taquilla física (UTC, UNAM, etc).</p>
+                </div>
+                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
+                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$60 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
+                    <button
+                            class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer"
+                            data-id="ticket-estudiante"
+                            data-nombre="Boleto Estudiante"
+                            data-precio="60"
+                    >
+                        Reservar 🎟️
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        import { agregarAlCarrito } from '../../store/carrito';
+
+        document.querySelectorAll('.btn-agregar').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                const nombre = btn.getAttribute('data-nombre');
+                const precio = parseFloat(btn.getAttribute('data-precio') || '0');
+
+                if(id && nombre) {
+                    agregarAlCarrito({ id, nombre, precio, imagenUrl: null });
+
+                    // Efecto visual pro en lugar del alert()
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '¡Reservado! ✅';
+                    btn.classList.replace('bg-stone-900', 'bg-green-600');
+                    btn.classList.replace('dark:bg-white', 'dark:bg-green-500');
+                    btn.classList.add('text-white');
+
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.classList.replace('bg-green-600', 'bg-stone-900');
+                        btn.classList.replace('dark:bg-green-500', 'dark:bg-white');
+                        btn.classList.remove('text-white');
+                    }, 1500);
+                }
+            });
+        });
+    </script>
+</Layout>

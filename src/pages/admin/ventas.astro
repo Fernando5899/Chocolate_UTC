@@ -1,0 +1,110 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
+import { getSession } from 'auth-astro/server';
+
+// 1. Seguridad: Verificar que alguien esté logueado
+const session = await getSession(Astro.request);
+if (!session) return Astro.redirect('/cuenta/login');
+
+// 2. Consulta Maestra a Prisma: Traer TODO el historial de ventas
+const ordenes = await prisma.orden.findMany({
+    orderBy: { fecha: 'desc' }, // Las más nuevas primero
+    include: {
+        detalles: {
+            include: { chocolate: true } // Traer los nombres de los chocolates comprados
+        },
+        user: true // Para saber si fue un visitante registrado
+    }
+});
+
+// 3. Inteligencia de Negocio (Cálculos para el Dashboard)
+const totalIngresos = ordenes.reduce((sum, orden) => sum + orden.total, 0);
+const totalOrdenes = ordenes.length;
+const ventasHoy = ordenes.filter(o => new Date(o.fecha).toDateString() === new Date().toDateString()).length;
+---
+
+<Layout title="Tesorería y Ventas | Administrador">
+    <div class="max-w-6xl mx-auto py-12">
+        <header class="mb-12 flex flex-col md:flex-row md:justify-between md:items-end gap-6 border-b border-stone-200 dark:border-stone-800 pb-8">
+            <div>
+                <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-[10px] font-bold block mb-4">Panel de Administración</span>
+                <h1 class="text-5xl font-black italic dark:text-white">Tesorería</h1>
+            </div>
+            <a href="/admin/dashboard" class="text-[10px] uppercase tracking-widest text-stone-500 hover:text-orange-500 transition-colors">
+                ← Volver al Centro de Mando
+            </a>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white dark:bg-stone-900/40 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg">
+                <span class="text-[10px] uppercase tracking-widest text-stone-500 block mb-2">Ingresos Totales</span>
+                <span class="text-4xl font-black text-orange-600 dark:text-orange-400">${totalIngresos.toFixed(2)}</span>
+            </div>
+            <div class="bg-white dark:bg-stone-900/40 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg">
+                <span class="text-[10px] uppercase tracking-widest text-stone-500 block mb-2">Órdenes Procesadas</span>
+                <span class="text-4xl font-black dark:text-white">{totalOrdenes}</span>
+            </div>
+            <div class="bg-white dark:bg-stone-900/40 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg">
+                <span class="text-[10px] uppercase tracking-widest text-stone-500 block mb-2">Ventas de Hoy</span>
+                <span class="text-4xl font-black dark:text-white">{ventasHoy}</span>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-stone-900/40 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr class="bg-stone-50 dark:bg-black/50 border-b border-stone-200 dark:border-stone-800 text-[10px] uppercase tracking-widest text-stone-500">
+                        <th class="p-6 font-bold">ID Orden</th>
+                        <th class="p-6 font-bold">Fecha</th>
+                        <th class="p-6 font-bold">Cliente</th>
+                        <th class="p-6 font-bold">Destino</th>
+                        <th class="p-6 font-bold">Resumen de Artículos</th>
+                        <th class="p-6 font-bold text-right">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-stone-100 dark:divide-stone-800/50">
+                    {ordenes.length === 0 ? (
+                            <tr>
+                                <td colspan="6" class="p-12 text-center text-stone-500 italic">
+                                    No hay expediciones registradas en los archivos del museo.
+                                </td>
+                            </tr>
+                    ) : (
+                        ordenes.map(orden => (
+                                <tr class="hover:bg-stone-50 dark:hover:bg-stone-800/20 transition-colors">
+                                    <td class="p-6">
+                                        <span class="bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-2 py-1 rounded text-[10px] font-mono">
+                                            #{orden.id.slice(-6).toUpperCase()}
+                                        </span>
+                                    </td>
+                                    <td class="p-6 text-xs dark:text-stone-300">
+                                        {new Date(orden.fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                    </td>
+                                    <td class="p-6">
+                                        <p class="text-sm font-bold dark:text-white">{orden.clienteNombre}</p>
+                                        {orden.user && <p class="text-[10px] text-orange-500 uppercase tracking-widest">Usuario Registrado</p>}
+                                    </td>
+                                    <td class="p-6 text-xs dark:text-stone-400">
+                                        {orden.estadoEnvio} <br/> <span class="opacity-50 font-mono">CP: {orden.codigoPostal}</span>
+                                    </td>
+                                    <td class="p-6">
+                                        <ul class="text-xs dark:text-stone-400 space-y-1 italic">
+                                            {orden.detalles.map(det => (
+                                                    <li>• {det.cantidad}x {det.chocolate.nombre}</li>
+                                            ))}
+                                        </ul>
+                                    </td>
+                                    <td class="p-6 text-right font-black dark:text-white">
+                                        ${orden.total.toFixed(2)}
+                                    </td>
+                                </tr>
+                        ))
+                    )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</Layout>
