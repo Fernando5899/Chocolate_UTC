@@ -1,8 +1,27 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
 
-// Obtenemos el número de orden si viene en la URL (ej: /tienda/gracias?orden=clxyz123)
-const ordenId = Astro.url.searchParams.get('orden') || 'No. de Folio en tu Perfil';
+// 1. Obtenemos el ID de la URL
+const ordenId = Astro.url.searchParams.get('orden') || '';
+
+// 2. Le preguntamos a la Bóveda qué fue lo que realmente compró
+let comproChocolates = false;
+
+if (ordenId) {
+    const orden = await prisma.orden.findUnique({
+        where: { id: ordenId },
+        include: { detalles: true }
+    });
+
+    // Si la orden tiene "detalles" guardados, significa que hay chocolates físicos
+    if (orden && orden.detalles.length > 0) {
+        comproChocolates = true;
+    }
+}
+
+// 3. Inteligencia de interfaz
+const textoBoton = comproChocolates ? 'Ver mis Chocolates' : 'Ver mis Boletos';
 ---
 
 <Layout title="Compra Exitosa | Museo">
@@ -14,20 +33,20 @@ const ordenId = Astro.url.searchParams.get('orden') || 'No. de Folio en tu Perfi
                 ✓
             </div>
 
-            <h1 class="text-5xl font-black italic text-stone-900 dark:text-white mb-6">¡Expedición Confirmada!</h1>
+            <h1 class="text-5xl font-black italic text-stone-900 dark:text-white mb-6 transition-colors duration-500">¡Expedición Confirmada!</h1>
 
-            <p class="text-lg text-stone-600 dark:text-stone-400 mb-8 max-w-xl mx-auto">
+            <p class="text-lg text-stone-600 dark:text-stone-400 mb-8 max-w-xl mx-auto transition-colors duration-500">
                 Tu solicitud ha sido registrada en los archivos del museo. Hemos enviado un comprobante a tu correo electrónico institucional.
             </p>
 
-            <div class="bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-6 rounded-2xl inline-block mb-12 shadow-inner">
+            <div class="bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-6 rounded-2xl inline-block mb-12 shadow-inner transition-colors duration-500">
                 <span class="text-xs uppercase tracking-widest text-stone-500 font-bold block mb-1">Folio de Registro</span>
-                <span class="text-2xl font-mono text-orange-600 dark:text-orange-500 font-black">#{ordenId.slice(-6).toUpperCase()}</span>
+                <span class="text-2xl font-mono text-orange-600 dark:text-orange-500 font-black">#{ordenId ? ordenId.slice(-6).toUpperCase() : 'NO-REF'}</span>
             </div>
 
             <div class="flex flex-col md:flex-row gap-6 justify-center">
                 <a href="/cuenta/perfil" class="bg-stone-900 dark:bg-white text-white dark:text-black px-10 py-5 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-xl active:scale-95">
-                    Ver mis boletos
+                    {textoBoton}
                 </a>
                 <a href="/" class="bg-white dark:bg-[#110e0d] text-stone-900 dark:text-white border border-stone-200 dark:border-stone-800 px-10 py-5 rounded-full font-bold uppercase text-[10px] tracking-widest hover:border-orange-500 transition-all">
                     Volver al Inicio

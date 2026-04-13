@@ -3,15 +3,18 @@ import Layout from '../../layouts/Layout.astro';
 import prisma from '../../lib/prisma';
 import { getSession } from 'auth-astro/server';
 
-// 1. Obtener sesión y datos del perfil para autocompletar
+// 1. EL CADENERO (Gatekeeper)
 const session = await getSession(Astro.request);
-let usuario = null;
 
-if (session) {
-    usuario = await prisma.user.findUnique({
-        where: { email: session.user?.email || '' }
-    });
+// Si no hay sesión activa, abortamos la carga de la página y lo mandamos al Login
+if (!session) {
+    return Astro.redirect('/cuenta/login');
 }
+
+// 2. Si pasó el cadenero, buscamos sus datos en la base de datos
+const usuario = await prisma.user.findUnique({
+    where: { email: session.user?.email || '' }
+});
 ---
 
 <Layout title="Finalizar Pedido | Museo">
@@ -25,24 +28,22 @@ if (session) {
 
             <div class="lg:col-span-2 space-y-8">
 
-                {!session && (
-                        <div class="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50 p-6 rounded-[24px] flex flex-col md:flex-row items-center justify-between gap-4 transition-colors duration-500">
-                            <p class="text-sm text-orange-800 dark:text-orange-200/80 italic font-bold">¿Tienes una cuenta? Inicia sesión para usar tus datos guardados.</p>
-                            <a href="/cuenta/login" class="text-[10px] font-black uppercase tracking-widest text-orange-600 dark:text-orange-400 bg-white dark:bg-black px-6 py-3 rounded-full hover:bg-orange-600 hover:text-white dark:hover:bg-orange-500 dark:hover:text-white transition-all shadow-md">Ingresar</a>
-                        </div>
-                )}
-
                 <section class="bg-white dark:bg-[#110e0d] p-10 md:p-12 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-colors duration-500">
                     <h2 class="text-2xl font-bold italic text-stone-900 dark:text-white mb-8 flex items-center gap-3 border-b border-stone-100 dark:border-stone-800/80 pb-6 transition-colors duration-500">
-                        <span class="text-orange-500">📍</span> Detalles de Entrega
+                        <span class="text-orange-500">📍</span> Datos de Entrega Autorizados
                     </h2>
 
                     <form id="form-checkout" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <input type="hidden" id="user-id" value={usuario?.id} />
 
-                        <div class="md:col-span-2">
-                            <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">Nombre Completo</label>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">Nombre del Titular</label>
                             <input type="text" id="input-nombre" value={usuario?.name} required class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">Correo de Recibo (Verificado)</label>
+                            <input type="email" id="input-email" value={session.user?.email} readonly class="w-full bg-stone-100 dark:bg-[#0a0807] border border-stone-200 dark:border-stone-800/50 p-4 rounded-2xl outline-none text-base text-stone-500 dark:text-stone-600 cursor-not-allowed transition-all" title="Tu correo está vinculado a Google y no puede ser modificado aquí." />
                         </div>
 
                         <div>
@@ -90,7 +91,7 @@ if (session) {
                     </div>
 
                     <button id="btn-pagar" class="w-full bg-stone-900 dark:bg-white text-white dark:text-black hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-xl font-black py-5 rounded-full transform active:scale-95 cursor-pointer uppercase text-[10px] tracking-[0.3em]">
-                        Confirmar Orden
+                        Confirmar Orden Segura
                     </button>
                 </div>
             </div>
@@ -144,6 +145,7 @@ if (session) {
             const btn = document.getElementById('btn-pagar') as HTMLButtonElement;
 
             const nombre = (document.getElementById('input-nombre') as HTMLInputElement)?.value;
+            const email = (document.getElementById('input-email') as HTMLInputElement)?.value;
             const cp = (document.getElementById('input-cp') as HTMLInputElement)?.value;
             const direccion = (document.getElementById('input-direccion') as HTMLInputElement)?.value;
             const estado = selectorEstado?.value;
@@ -159,12 +161,13 @@ if (session) {
 
             const ordenData = {
                 clienteNombre: nombre,
+                email: email,
                 estadoEnvio: estado,
                 direccion: direccion,
                 codigoPostal: cp,
                 total: parseFloat(totalTxt?.innerText.replace('$', '') || '0'),
                 items: Object.values(carrito.get()),
-                userId: userId || null
+                userId: userId
             };
 
             try {
@@ -183,12 +186,10 @@ if (session) {
                     throw new Error(result.error || "El servidor rechazó la orden.");
                 }
             } catch (error) {
-                // AQUÍ RESOLVEMOS EL ERROR TS2571 DE TYPESCRIPT
                 const mensajeError = error instanceof Error ? error.message : "Error desconocido de red.";
-
                 alert(`❌ Ocurrió un problema: ${mensajeError}`);
                 btn.disabled = false;
-                btn.innerText = "CONFIRMAR ORDEN";
+                btn.innerText = "CONFIRMAR ORDEN SEGURA";
             }
         });
     </script>

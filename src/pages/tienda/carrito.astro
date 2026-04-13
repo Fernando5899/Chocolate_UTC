@@ -1,16 +1,26 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
+
+// 1. LA BÓVEDA SE COMUNICA CON EL CARRITO
+// Consultamos el inventario real en este milisegundo
+const inventarioVivo = await prisma.chocolate.findMany({
+    select: { id: true, stock: true }
+});
 ---
 
 <Layout title="Carrito de Compras | Museo">
-    <div class="max-w-5xl mx-auto py-12">
+
+    <div id="datos-inventario" data-stock={JSON.stringify(inventarioVivo)} class="hidden"></div>
+
+    <div class="max-w-5xl mx-auto py-12 px-8 transition-colors duration-500">
         <h1 class="text-5xl font-black italic text-stone-900 dark:text-white mb-12 transition-colors duration-500">Tu Carrito 🛒</h1>
 
         <div id="carrito-vacio" class="hidden text-center py-24 px-8 bg-white dark:bg-[#110e0d]/80 backdrop-blur-md rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-2xl transition-colors duration-500">
             <span class="text-7xl mb-8 block opacity-40 grayscale">🛍️</span>
             <h2 class="text-3xl font-bold italic text-stone-900 dark:text-white mb-4">Tu expedición está vacía</h2>
             <p class="text-stone-500 dark:text-stone-400 mb-10 max-w-sm mx-auto">Parece que aún no has seleccionado ninguna delicia de nuestro catálogo.</p>
-            <a href="/tienda/chocolates" class="bg-orange-600 text-white font-bold py-4 px-10 rounded-full uppercase text-[10px] tracking-[0.3em] hover:bg-orange-500 transition-all inline-block shadow-lg hover:shadow-orange-500/30">
+            <a href="/tienda/chocolates" class="bg-stone-900 dark:bg-white text-white dark:text-black font-bold py-4 px-10 rounded-full uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all inline-block shadow-lg active:scale-95 cursor-pointer">
                 Explorar la Galería
             </a>
         </div>
@@ -31,11 +41,11 @@ import Layout from '../../layouts/Layout.astro';
 
                     <div class="flex justify-between mb-8 text-stone-600 dark:text-stone-400 text-sm uppercase tracking-widest font-bold">
                         <span>Envío (CDMX)</span>
-                        <span class="text-orange-500 dark:text-orange-400">Gratis</span>
+                        <span class="text-orange-500 dark:text-orange-400">Calculando en pago...</span>
                     </div>
 
                     <div class="flex justify-between items-center mb-10 pt-8 border-t border-stone-100 dark:border-stone-800/80 transition-colors duration-500">
-                        <span class="text-sm font-bold text-stone-500 uppercase tracking-[0.2em]">Total</span>
+                        <span class="text-sm font-bold text-stone-500 uppercase tracking-[0.2em]">Total Estimado</span>
                         <span id="total-texto" class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$0.00</span>
                     </div>
 
@@ -45,7 +55,7 @@ import Layout from '../../layouts/Layout.astro';
 
                     <p class="text-[10px] text-stone-400 dark:text-stone-500 uppercase tracking-widest text-center mt-8 flex flex-col items-center gap-2 font-bold">
                         <span>🔒 Expedición Segura</span>
-                        <span class="opacity-70">Impuestos y empaque incluidos.</span>
+                        <span class="opacity-70">Sincronizado con base de datos en tiempo real.</span>
                     </p>
                 </div>
             </div>
@@ -81,7 +91,6 @@ import Layout from '../../layouts/Layout.astro';
                     const subtotalItem = item.precio * item.cantidad;
                     total += subtotalItem;
 
-                    // Plantilla inyectada adaptada a Tailwind v4 Dark Mode
                     const itemHTML = `
                         <div class="flex flex-col sm:flex-row items-center gap-6 bg-white dark:bg-[#110e0d] p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg transition-all duration-300">
                             <div class="w-28 h-28 bg-stone-100 dark:bg-[#0c0a09] border border-stone-100 dark:border-stone-800/50 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -117,45 +126,57 @@ import Layout from '../../layouts/Layout.astro';
         });
 
         function asignarEventosBotones() {
-            // REEMPLAZA SOLO ESTA PARTE EN TU CARRITO.ASTRO
+            // 1. LEEMOS EL INVENTARIO REAL QUE NOS MANDÓ EL SERVIDOR
+            const stockData = document.getElementById('datos-inventario')?.getAttribute('data-stock') || '[]';
+            const inventarioDB = JSON.parse(stockData).reduce((acc: any, item: any) => {
+                acc[item.id] = item.stock;
+                return acc;
+            }, {});
+
+            // 2. LÓGICA DEL BOTÓN DE SUMAR
             document.querySelectorAll('.btn-sumar').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const id = (e.target as HTMLButtonElement).getAttribute('data-id');
+                    const id = (e.currentTarget as HTMLButtonElement).getAttribute('data-id');
                     if (id) {
                         const items = carrito.get();
                         const itemActual = items[id];
 
-                        // Asignamos un límite: Si es boleto 10, si es chocolate, asumimos un límite seguro por ahora.
-                        // Más adelante conectaremos esto directo al stock en la tienda.
-                        const limite = id.includes('ticket') ? 10 : 20;
+                        // Si es boleto, el límite son 10 por hora. Si es chocolate, leemos la Base de Datos.
+                        const limiteFisico = id.includes('ticket') ? 10 : (inventarioDB[id] || 0);
 
-                        if (itemActual.cantidad < limite) {
+                        // AQUÍ ESTÁ EL CANDADO: Solo suma si tiene menos del límite
+                        if (itemActual.cantidad < limiteFisico) {
                             carrito.set({
                                 ...items,
                                 [id]: { ...itemActual, cantidad: itemActual.cantidad + 1 }
                             });
                         } else {
-                            // AQUÍ FRENAMOS AL USUARIO
-                            alert(`⚠️ Has alcanzado el límite de unidades disponibles para ${itemActual.nombre}.`);
+                            alert(`⚠️ Inventario Máximo Alcanzado. Solo existen ${limiteFisico} unidades físicas disponibles en el museo en este momento.`);
                         }
                     }
                 });
             });
 
+            // 3. LÓGICA DEL BOTÓN DE RESTAR
             document.querySelectorAll('.btn-restar').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const id = (e.target as HTMLButtonElement).getAttribute('data-id');
+                    const id = (e.currentTarget as HTMLButtonElement).getAttribute('data-id');
                     if (id) {
                         const items = carrito.get();
-                        if (items[id].cantidad > 1) {
+                        const itemActual = items[id];
+
+                        if (itemActual.cantidad > 1) {
                             carrito.set({
                                 ...items,
-                                [id]: { ...items[id], cantidad: items[id].cantidad - 1 }
+                                [id]: { ...itemActual, cantidad: itemActual.cantidad - 1 }
                             });
                         } else {
-                            const nuevosItems = { ...items };
-                            delete nuevosItems[id];
-                            carrito.set(nuevosItems);
+                            // Si llega a cero, lo borramos con estilo
+                            if(confirm(`¿Deseas retirar ${itemActual.nombre} de tu expedición?`)){
+                                const nuevosItems = { ...items };
+                                delete nuevosItems[id];
+                                carrito.set(nuevosItems);
+                            }
                         }
                     }
                 });
