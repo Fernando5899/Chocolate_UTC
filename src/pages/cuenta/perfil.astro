@@ -23,7 +23,6 @@ if (Astro.request.method === 'POST') {
         const estado = data.get('estado')?.toString();
         const cp = data.get('cp')?.toString().trim();
 
-        // Upsert: Busca por email. Si lo encuentra, actualiza. Si no, lo inserta nuevo.
         await prisma.user.upsert({
             where: { email: emailUsuario },
             update: {
@@ -48,7 +47,7 @@ if (Astro.request.method === 'POST') {
     }
 }
 
-// Consultamos. Si es su primera vez y no ha guardado datos, usuario será null.
+// Consultamos usuario e incluimos sus órdenes
 const usuario = await prisma.user.findUnique({
     where: { email: emailUsuario },
     include: {
@@ -59,7 +58,6 @@ const usuario = await prisma.user.findUnique({
     }
 });
 
-// Protegemos el array de órdenes para que no crashee si usuario es null
 const ordenes = usuario?.ordenes || [];
 ---
 
@@ -136,25 +134,32 @@ const ordenes = usuario?.ordenes || [];
                     </div>
             ) : (
                     <div class="space-y-8">
-                        {ordenes.map(orden => (
-                                <div class="bg-white dark:bg-[#110e0d] border border-stone-200 dark:border-stone-800 p-8 rounded-3xl flex flex-col md:flex-row justify-between gap-8 hover:border-orange-500 transition-colors shadow-lg duration-500">
-                                    <div>
-                                        <div class="flex items-center gap-4 mb-4">
-                                            <span class="text-xs bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-3 py-1 rounded-md uppercase tracking-widest font-mono border border-stone-200 dark:border-stone-700">#{orden.id.slice(-6).toUpperCase()}</span>
-                                            <span class="text-sm text-stone-500">{new Date(orden.fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                        {ordenes.map(orden => {
+                            // Lógica para detectar si compró boletos
+                            const tieneBoletos = orden.detalles.length === 0 && orden.total > 0;
+
+                            return (
+                                    <div class="bg-white dark:bg-[#110e0d] border border-stone-200 dark:border-stone-800 p-8 rounded-3xl flex flex-col md:flex-row justify-between gap-8 hover:border-orange-500 transition-colors shadow-lg duration-500">
+                                        <div>
+                                            <div class="flex items-center gap-4 mb-4">
+                                                <span class="text-xs bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-3 py-1 rounded-md uppercase tracking-widest font-mono border border-stone-200 dark:border-stone-700">#{orden.id.slice(-6).toUpperCase()}</span>
+                                                <span class="text-sm text-stone-500">{new Date(orden.fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                                            </div>
+                                            <div class="space-y-2">
+                                                {orden.detalles.map(det => (
+                                                        <p class="text-base text-stone-700 dark:text-stone-300 italic font-serif">• {det.cantidad}x {det.chocolate?.nombre}</p>
+                                                ))}
+                                                {/* Si tiene boletos, mostramos esta etiqueta naranja */}
+                                                {tieneBoletos && <p class="text-orange-500 dark:text-orange-400 not-italic font-bold text-xs uppercase mt-2">🎫 Accesos Digitales Incluidos</p>}
+                                            </div>
                                         </div>
-                                        <div class="space-y-2">
-                                            {orden.detalles.map(det => (
-                                                    <p class="text-base text-stone-700 dark:text-stone-300 italic font-serif">• {det.cantidad}x {det.chocolate.nombre}</p>
-                                            ))}
+                                        <div class="md:text-right flex flex-col justify-center border-t md:border-t-0 md:border-l border-stone-100 dark:border-stone-800 pt-6 md:pt-0 md:pl-8 transition-colors duration-500">
+                                            <span class="text-xs text-stone-500 uppercase tracking-widest mb-2 font-bold">Total Pagado</span>
+                                            <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">${orden.total.toFixed(2)}</span>
                                         </div>
                                     </div>
-                                    <div class="md:text-right flex flex-col justify-center border-t md:border-t-0 md:border-l border-stone-100 dark:border-stone-800 pt-6 md:pt-0 md:pl-8 transition-colors duration-500">
-                                        <span class="text-xs text-stone-500 uppercase tracking-widest mb-2 font-bold">Total Pagado</span>
-                                        <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">${orden.total.toFixed(2)}</span>
-                                    </div>
-                                </div>
-                        ))}
+                            )
+                        })}
                     </div>
             )}
         </section>

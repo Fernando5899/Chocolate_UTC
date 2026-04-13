@@ -1,14 +1,12 @@
 import type { APIRoute } from 'astro';
 import prisma from '../../lib/prisma';
 import { Resend } from 'resend';
-import QRCode from 'qrcode'; // <--- Nueva herramienta
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const POST: APIRoute = async ({ request }) => {
     try {
         const body = await request.json();
-        // Agregamos 'email' a la extracción del cuerpo (asegúrate de mandarlo desde el frontend)
         const { clienteNombre, email, estadoEnvio, direccion, codigoPostal, total, items, userId } = body;
 
         const orden = await prisma.$transaction(async (tx) => {
@@ -43,8 +41,6 @@ export const POST: APIRoute = async ({ request }) => {
         });
 
         // --- LÓGICA DE CORREO Y QR ---
-
-        // 1. Determinar el correo de destino (Prioridad: Sesión > Formulario)
         let correoDestino = email;
         if (userId) {
             const usuarioDb = await prisma.user.findUnique({ where: { id: userId } });
@@ -52,13 +48,12 @@ export const POST: APIRoute = async ({ request }) => {
         }
 
         if (correoDestino) {
-            // 2. ¿Compró boletos? Generamos QR si es así
             const tieneBoletos = items.some((i: any) => i.id.includes('ticket'));
             let qrCodeDataURL = "";
 
             if (tieneBoletos) {
-                // Generamos un QR que contiene el ID de la orden para validación
-                qrCodeDataURL = await QRCode.toDataURL(orden.id);
+                // SOLUCIÓN GMAIL: Usamos una API externa que devuelve una imagen real, no un Base64
+                qrCodeDataURL = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${orden.id}`;
             }
 
             const listaArticulosHTML = items.map((item: any) =>
@@ -67,7 +62,6 @@ export const POST: APIRoute = async ({ request }) => {
                 </li>`
             ).join('');
 
-            // 3. Enviar Correo
             await resend.emails.send({
                 from: 'Museo de Chocolate <onboarding@resend.dev>',
                 to: [correoDestino],

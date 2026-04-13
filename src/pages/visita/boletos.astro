@@ -3,6 +3,11 @@ import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title="Taquilla Digital | Museo">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    <script is:inline src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script is:inline src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+
     <div class="max-w-5xl mx-auto px-8 py-20 transition-colors duration-500">
         <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 text-center transition-colors duration-500">
             <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-4">Planea tu visita</span>
@@ -16,7 +21,7 @@ import Layout from '../../layouts/Layout.astro';
 
             <div class="flex-1">
                 <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">1. Fecha de Visita</label>
-                <input type="date" id="input-fecha" required class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all cursor-pointer" />
+                <input type="text" id="input-fecha" placeholder="Selecciona un día..." required class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all cursor-pointer" />
             </div>
 
             <div class="flex-1">
@@ -76,7 +81,6 @@ import Layout from '../../layouts/Layout.astro';
         import { carrito } from '../../store/carrito';
         import { agregarAlCarrito } from '../../store/carrito';
 
-        // LÍMITE DE COMPRAS: Evita acaparamiento masivo
         const LIMITE_BOLETOS_POR_PERSONA = 10;
 
         const inputFecha = document.getElementById('input-fecha') as HTMLInputElement;
@@ -84,37 +88,30 @@ import Layout from '../../layouts/Layout.astro';
         const infoHorario = document.getElementById('info-horario');
         const alertaError = document.getElementById('alerta-error');
 
-        // 1. Deshabilitar fechas pasadas
-        const hoy = new Date();
-        const formatoHoy = hoy.toISOString().split('T')[0];
-        if (inputFecha) inputFecha.min = formatoHoy;
+        // INICIALIZACIÓN DE FLATPICKR
+        // @ts-ignore
+        flatpickr("#input-fecha", {
+            locale: "es",
+            minDate: "today",
+            disableMobile: "true",
+            onChange: function(selectedDates: Date[]) {
+                if (selectedDates.length === 0) return;
 
-        // 2. Lógica de Calendario Dinámico
-        inputFecha?.addEventListener('change', (e) => {
-            const fechaElegida = (e.target as HTMLInputElement).value;
-            if (!fechaElegida) return;
+                const diaSemana = selectedDates[0].getDay();
 
-            // Arreglo para evitar problemas de zona horaria
-            const fechaObj = new Date(fechaElegida + 'T00:00:00');
-            const diaSemana = fechaObj.getDay(); // 0 = Domingo, 1 = Lunes...
+                selectHora.innerHTML = '<option value="" disabled selected>Elige un horario disponible...</option>';
+                selectHora.disabled = false;
+                selectHora.classList.remove('cursor-not-allowed');
 
-            selectHora.innerHTML = '<option value="" disabled selected>Elige un horario disponible...</option>';
-            selectHora.disabled = false;
-            selectHora.classList.remove('cursor-not-allowed');
+                if (infoHorario) infoHorario.classList.remove('hidden');
 
-            if (infoHorario) infoHorario.classList.remove('hidden');
-
-            // LUNES A VIERNES (Operaciones: 09:00 AM - 05:00 PM)
-            if (diaSemana >= 1 && diaSemana <= 5) {
-                if (infoHorario) infoHorario.innerText = 'Operación Laboral: 09:00 AM a 05:00 PM';
-                const horasLaborales = ['09:00 AM', '11:00 AM', '01:00 PM', '03:00 PM'];
-                horasLaborales.forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
-            }
-            // FINES DE SEMANA (Operaciones: 10:00 AM - 06:00 PM)
-            else {
-                if (infoHorario) infoHorario.innerText = 'Operación Fin de Semana: 10:00 AM a 06:00 PM';
-                const horasFinSemana = ['10:00 AM', '12:00 PM', '02:00 PM', '04:00 PM'];
-                horasFinSemana.forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
+                if (diaSemana >= 1 && diaSemana <= 5) {
+                    if (infoHorario) infoHorario.innerText = 'Operación Laboral: 09:00 AM a 05:00 PM';
+                    ['09:00 AM', '11:00 AM', '01:00 PM', '03:00 PM'].forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
+                } else {
+                    if (infoHorario) infoHorario.innerText = 'Operación Fin de Semana: 10:00 AM a 06:00 PM';
+                    ['10:00 AM', '12:00 PM', '02:00 PM', '04:00 PM'].forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
+                }
             }
         });
 
@@ -124,7 +121,6 @@ import Layout from '../../layouts/Layout.astro';
                 const fecha = inputFecha?.value;
                 const hora = selectHora?.value;
 
-                // VALIDACIÓN 1: ¿Faltan datos?
                 if (!fecha || !hora) {
                     alertaError?.classList.remove('hidden');
                     inputFecha.classList.add('border-red-500');
@@ -143,11 +139,8 @@ import Layout from '../../layouts/Layout.astro';
                 const precio = parseFloat(btn.getAttribute('data-precio') || '0');
 
                 if (baseId && baseNombre) {
-                    // Generamos un ID único que combine Tipo + Fecha + Hora para que el carrito no los mezcle
-                    // Ej: ticket-adulto-2026-04-15-1000AM
                     const idUnico = `${baseId}-${fecha}-${hora.replace(/[:\s]/g, '')}`;
 
-                    // VALIDACIÓN 2: Límite de Boletos
                     const itemsActuales = carrito.get();
                     const boletosEnCarrito = itemsActuales[idUnico]?.cantidad || 0;
 
@@ -156,7 +149,7 @@ import Layout from '../../layouts/Layout.astro';
                         return;
                     }
 
-                    // Formateamos la fecha a algo legible (15 de Abril, 10:00 AM)
+                    // En Flatpickr, la fecha ya viene legible (Y-m-d), le damos un formato suave
                     const fechaFormateada = new Date(fecha + 'T00:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
                     const nombreCompleto = `${baseNombre} (${fechaFormateada} - ${hora})`;
 
@@ -167,7 +160,6 @@ import Layout from '../../layouts/Layout.astro';
                         imagenUrl: null
                     });
 
-                    // Efecto Visual de Éxito
                     const originalText = btn.innerHTML;
                     btn.innerHTML = '¡Agregado! ✅';
                     btn.classList.replace('bg-stone-900', 'bg-green-600');
