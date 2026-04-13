@@ -15,38 +15,39 @@ if (session) {
 ---
 
 <Layout title="Finalizar Pedido | Museo">
-    <div class="max-w-5xl mx-auto py-12">
-        <header class="mb-12">
-            <span class="text-orange-500 uppercase tracking-[0.4em] text-[10px] font-bold block mb-4">Proceso de Pago</span>
-            <h1 class="text-5xl font-black italic">Finalizar Pedido</h1>
+    <div class="max-w-6xl mx-auto px-8 py-20 transition-colors duration-500">
+        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 transition-colors duration-500">
+            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-4">Proceso de Pago</span>
+            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white transition-colors duration-500">Finalizar Pedido</h1>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
             <div class="lg:col-span-2 space-y-8">
 
                 {!session && (
-                        <div class="bg-orange-950/20 border border-orange-900/50 p-6 rounded-2xl flex items-center justify-between">
-                            <p class="text-sm text-orange-200/70 italic">¿Tienes una cuenta? Inicia sesión para usar tus datos guardados.</p>
-                            <a href="/cuenta/login" class="text-[10px] font-bold uppercase tracking-widest text-white border-b border-white hover:text-orange-400 hover:border-orange-400 transition-all">Ingresar</a>
+                        <div class="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50 p-6 rounded-[24px] flex flex-col md:flex-row items-center justify-between gap-4 transition-colors duration-500">
+                            <p class="text-sm text-orange-800 dark:text-orange-200/80 italic font-bold">¿Tienes una cuenta? Inicia sesión para usar tus datos guardados.</p>
+                            <a href="/cuenta/login" class="text-[10px] font-black uppercase tracking-widest text-orange-600 dark:text-orange-400 bg-white dark:bg-black px-6 py-3 rounded-full hover:bg-orange-600 hover:text-white dark:hover:bg-orange-500 dark:hover:text-white transition-all shadow-md">Ingresar</a>
                         </div>
                 )}
 
-                <section class="bg-stone-900/40 p-10 rounded-3xl border border-stone-800 shadow-2xl">
-                    <h2 class="text-xl font-bold italic mb-8 flex items-center gap-3">
+                <section class="bg-white dark:bg-[#110e0d] p-10 md:p-12 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-colors duration-500">
+                    <h2 class="text-2xl font-bold italic text-stone-900 dark:text-white mb-8 flex items-center gap-3 border-b border-stone-100 dark:border-stone-800/80 pb-6 transition-colors duration-500">
                         <span class="text-orange-500">📍</span> Detalles de Entrega
                     </h2>
 
-                    <form id="form-checkout" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <form id="form-checkout" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <input type="hidden" id="user-id" value={usuario?.id} />
 
                         <div class="md:col-span-2">
-                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-2 font-bold">Nombre Completo</label>
-                            <input type="text" id="input-nombre" value={usuario?.name} required class="w-full bg-black/40 border border-stone-800 p-3 rounded-xl focus:border-orange-500 outline-none transition-all text-stone-200" />
+                            <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">Nombre Completo</label>
+                            <input type="text" id="input-nombre" value={usuario?.name} required class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all" />
                         </div>
 
                         <div>
-                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-2 font-bold">Entidad</label>
-                            <select id="selector-estado" required class="w-full bg-black/40 border border-stone-800 p-3 rounded-xl focus:border-orange-500 outline-none transition-all text-stone-200 appearance-none">
+                            <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">Entidad</label>
+                            <select id="selector-estado" required class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white appearance-none transition-all">
                                 <option value="" disabled selected>Selecciona...</option>
                                 <option value="CDMX" selected={usuario?.estado === 'CDMX'}>Ciudad de México</option>
                                 <option value="Edomex" selected={usuario?.estado === 'Edomex'}>Estado de México</option>
@@ -54,45 +55,46 @@ if (session) {
                         </div>
 
                         <div>
-                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-2 font-bold">Código Postal</label>
-                            <input type="text" id="input-cp" value={usuario?.codigoPostal} maxlength="5" required class="w-full bg-black/40 border border-stone-800 p-3 rounded-xl focus:border-orange-500 outline-none transition-all text-stone-200" />
+                            <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">Código Postal</label>
+                            <input type="text" id="input-cp" value={usuario?.codigoPostal} maxlength="5" required class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all" />
                         </div>
 
                         <div class="md:col-span-2">
-                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-2 font-bold">Dirección Completa</label>
-                            <input type="text" id="input-direccion" value={usuario?.direccion} required class="w-full bg-black/40 border border-stone-800 p-3 rounded-xl focus:border-orange-500 outline-none transition-all text-stone-200" />
+                            <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">Dirección Completa</label>
+                            <input type="text" id="input-direccion" value={usuario?.direccion} required placeholder="Calle, Número, Colonia..." class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all" />
                         </div>
                     </form>
                 </section>
             </div>
 
             <div class="lg:col-span-1">
-                <div class="bg-black p-10 rounded-3xl border border-stone-800 shadow-2xl sticky top-28">
-                    <h2 class="text-xl font-bold italic mb-8 border-b border-stone-900 pb-6">Resumen</h2>
+                <div class="bg-stone-50 dark:bg-[#0c0a09] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-2xl sticky top-32 transition-colors duration-500">
+                    <h2 class="text-2xl font-bold italic text-stone-900 dark:text-white mb-8 border-b border-stone-200 dark:border-stone-800 pb-6 transition-colors duration-500">Resumen</h2>
 
-                    <div class="space-y-4 text-stone-400 text-sm mb-8 italic" id="lista-resumen">
+                    <div class="space-y-4 text-stone-600 dark:text-stone-400 text-sm mb-10 font-serif" id="lista-resumen">
                     </div>
 
-                    <div class="space-y-4 border-t border-stone-900 pt-8 mb-10">
-                        <div class="flex justify-between text-stone-500 uppercase tracking-tighter text-xs">
+                    <div class="space-y-4 border-t border-stone-200 dark:border-stone-800 pt-8 mb-10 transition-colors duration-500">
+                        <div class="flex justify-between text-stone-500 uppercase tracking-widest text-[10px] font-bold">
                             <span>Subtotal</span>
-                            <span id="subtotal-final">$0.00</span>
+                            <span id="subtotal-final" class="text-stone-900 dark:text-white text-sm font-black">$0.00</span>
                         </div>
-                        <div class="flex justify-between text-orange-500 font-bold uppercase tracking-tighter text-xs">
+                        <div class="flex justify-between text-orange-600 dark:text-orange-500 uppercase tracking-widest text-[10px] font-bold">
                             <span>Logística Metro</span>
-                            <span id="envio-costo">$0.00</span>
+                            <span id="envio-costo" class="text-sm font-black">$0.00</span>
                         </div>
-                        <div class="flex justify-between text-2xl font-black text-white pt-6 border-t border-stone-900 mt-4">
-                            <span class="italic">Total</span>
-                            <span id="total-final">$0.00</span>
+                        <div class="flex justify-between items-center pt-8 border-t border-stone-200 dark:border-stone-800 mt-6 transition-colors duration-500">
+                            <span class="text-sm uppercase tracking-widest text-stone-500 font-bold">Total</span>
+                            <span id="total-final" class="text-4xl font-black text-stone-900 dark:text-white">$0.00</span>
                         </div>
                     </div>
 
-                    <button id="btn-pagar" class="w-full bg-white text-black hover:bg-orange-600 hover:text-white font-black py-5 rounded-full transition-all shadow-xl transform active:scale-95 cursor-pointer uppercase text-[10px] tracking-[0.3em]">
+                    <button id="btn-pagar" class="w-full bg-stone-900 dark:bg-white text-white dark:text-black hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-xl font-black py-5 rounded-full transform active:scale-95 cursor-pointer uppercase text-[10px] tracking-[0.3em]">
                         Confirmar Orden
                     </button>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -119,19 +121,19 @@ if (session) {
             items.forEach(item => {
                 subtotal += item.precio * item.cantidad;
                 listaResumen?.insertAdjacentHTML('beforeend', `
-                    <div class="flex justify-between">
-                        <span>${item.cantidad}x ${item.nombre}</span>
-                        <span class="text-white">$${(item.precio * item.cantidad).toFixed(2)}</span>
+                    <div class="flex justify-between items-center group">
+                        <span class="italic">• ${item.cantidad}x ${item.nombre}</span>
+                        <span class="text-stone-900 dark:text-white font-bold not-italic group-hover:text-orange-500 transition-colors">$${(item.precio * item.cantidad).toFixed(2)}</span>
                     </div>
                 `);
             });
 
-            const zona = selectorEstado.value || 'CDMX';
+            const zona = selectorEstado?.value || 'CDMX';
             const costoEnvio = COSTOS_ENVIO[zona] || 0;
             const total = subtotal + costoEnvio;
 
             if (subtotalTxt) subtotalTxt.innerText = `$${subtotal.toFixed(2)}`;
-            if (envioCostoTxt) envioCostoTxt.innerText = `$${costoEnvio.toFixed(2)}`;
+            if (envioCostoTxt) envioCostoTxt.innerText = costoEnvio === 0 ? 'GRATIS' : `$${costoEnvio.toFixed(2)}`;
             if (totalTxt) totalTxt.innerText = `$${total.toFixed(2)}`;
         }
 
@@ -144,7 +146,7 @@ if (session) {
             const nombre = (document.getElementById('input-nombre') as HTMLInputElement)?.value;
             const cp = (document.getElementById('input-cp') as HTMLInputElement)?.value;
             const direccion = (document.getElementById('input-direccion') as HTMLInputElement)?.value;
-            const estado = selectorEstado.value;
+            const estado = selectorEstado?.value;
             const userId = (document.getElementById('user-id') as HTMLInputElement)?.value;
 
             if (!nombre || !direccion || !cp || !estado) {
@@ -153,7 +155,7 @@ if (session) {
             }
 
             btn.disabled = true;
-            btn.innerText = "Sincronizando con Tesorería...";
+            btn.innerText = "PROCESANDO...";
 
             const ordenData = {
                 clienteNombre: nombre,
@@ -162,7 +164,7 @@ if (session) {
                 codigoPostal: cp,
                 total: parseFloat(totalTxt?.innerText.replace('$', '') || '0'),
                 items: Object.values(carrito.get()),
-                userId: userId || null // Aquí vinculamos la orden al usuario real
+                userId: userId || null
             };
 
             try {
@@ -172,15 +174,19 @@ if (session) {
                     headers: { 'Content-Type': 'application/json' }
                 });
 
+                const result = await response.json();
+
                 if (response.ok) {
-                    alert("✅ ¡Pago Exitoso! Tu orden institucional ha sido registrada.");
                     carrito.set({});
-                    window.location.href = "/";
+                    window.location.href = `/tienda/gracias?orden=${result.orden.id}`;
                 } else {
-                    throw new Error("Rechazo de servidor");
+                    throw new Error(result.error || "El servidor rechazó la orden.");
                 }
             } catch (error) {
-                alert("❌ Fallo en la conexión. Reintenta.");
+                // AQUÍ RESOLVEMOS EL ERROR TS2571 DE TYPESCRIPT
+                const mensajeError = error instanceof Error ? error.message : "Error desconocido de red.";
+
+                alert(`❌ Ocurrió un problema: ${mensajeError}`);
                 btn.disabled = false;
                 btn.innerText = "CONFIRMAR ORDEN";
             }

@@ -1,0 +1,141 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
+import { getSession } from 'auth-astro/server';
+
+// Seguridad
+const session = await getSession(Astro.request);
+if (session?.user?.email !== 'fernando.jose.reynosa@gmail.com') return Astro.redirect('/');
+
+let mensaje = "";
+let tipoMensaje = "";
+
+if (Astro.request.method === 'POST') {
+    try {
+        const data = await Astro.request.formData();
+        const intent = data.get('intent')?.toString();
+
+        if (intent === 'crear') {
+            const nombre = data.get('nombre')?.toString() || '';
+            const descripcion = data.get('descripcion')?.toString() || '';
+            await prisma.categoria.create({ data: { nombre, descripcion } });
+            mensaje = "Categoría creada exitosamente.";
+            tipoMensaje = "success";
+        }
+        else if (intent === 'eliminar') {
+            const id = data.get('id')?.toString() || '';
+            // Nota: Prisma podría bloquear esto si hay chocolates que usan esta categoría.
+            await prisma.categoria.delete({ where: { id } });
+            mensaje = "Categoría eliminada del sistema.";
+            tipoMensaje = "success";
+        }
+        else if (intent === 'peligro_borrar_todo') {
+            // Elimina primero los chocolates (hijos) y luego las categorías (padres)
+            await prisma.chocolate.deleteMany();
+            await prisma.categoria.deleteMany();
+            mensaje = "¡ADVERTENCIA EJECUTADA! Toda la base de datos de productos ha sido reiniciada.";
+            tipoMensaje = "error"; // Usamos estilo rojo para impacto visual
+        }
+    } catch (error) {
+        mensaje = "Error. Si intentas borrar una categoría, asegúrate de que no tenga chocolates asignados primero.";
+        tipoMensaje = "error";
+    }
+}
+
+const categorias = await prisma.categoria.findMany({ orderBy: { nombre: 'asc' } });
+---
+
+<Layout title="Categorías | Admin">
+    <div class="max-w-7xl mx-auto px-8 py-20 w-full transition-colors duration-500">
+
+        <header class="mb-12 border-b border-stone-200 dark:border-stone-800 pb-8 flex justify-between items-end transition-colors duration-500">
+            <div>
+                <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-2">Panel de Administración</span>
+                <h1 class="text-5xl font-black italic text-stone-900 dark:text-white">Catálogo y Precios</h1>
+            </div>
+            <a href="/admin/dashboard" class="text-xs uppercase tracking-widest text-stone-500 hover:text-orange-500 font-bold transition-colors">← Volver al Mando</a>
+        </header>
+
+        <div class="flex items-center gap-8 border-b border-stone-200 dark:border-stone-800 mb-12 pb-4">
+            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-widest text-xs font-bold border-b-2 border-orange-500 pb-4 -mb-[18px]">Categorías</span>
+            <a href="/admin/chocolates" class="text-stone-500 hover:text-orange-500 uppercase tracking-widest text-xs font-bold transition-colors">Chocolates</a>
+        </div>
+
+        {mensaje && (
+                <div class={`mb-10 p-6 rounded-2xl border text-sm font-bold text-center ${tipoMensaje === 'success' ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'}`}>
+                    {mensaje}
+                </div>
+        )}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-16">
+
+            <div class="lg:col-span-1 bg-white dark:bg-[#110e0d] p-8 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-colors duration-500 self-start">
+                <h2 class="text-xl font-bold font-serif text-stone-900 dark:text-white mb-6">Nueva Categoría</h2>
+
+                <form method="POST" class="flex flex-col gap-6">
+                    <input type="hidden" name="intent" value="crear" />
+
+                    <div>
+                        <input type="text" name="nombre" required placeholder="Ej: Trufas Clásicas" class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-sm text-stone-900 dark:text-white transition-all" />
+                    </div>
+
+                    <div>
+                        <textarea name="descripcion" rows="3" placeholder="Descripción breve..." class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-sm text-stone-900 dark:text-white transition-all resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-stone-900 dark:bg-white text-white dark:text-black font-black py-4 rounded-full hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-md active:scale-95 cursor-pointer text-[10px] uppercase tracking-widest">
+                        Crear Categoría
+                    </button>
+                </form>
+            </div>
+
+            <div class="lg:col-span-2 bg-white dark:bg-[#110e0d] rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden transition-colors duration-500">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr class="bg-stone-50 dark:bg-[#0c0a09] border-b border-stone-200 dark:border-stone-800 text-[10px] uppercase tracking-widest text-stone-500">
+                        <th class="p-6 font-bold">Categoría</th>
+                        <th class="p-6 font-bold text-right">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-stone-100 dark:divide-stone-800/50">
+                    {categorias.length === 0 ? (
+                            <tr><td colspan="2" class="p-10 text-center text-stone-500 italic">No hay categorías.</td></tr>
+                    ) : (
+                        categorias.map(cat => (
+                                <tr class="hover:bg-stone-50 dark:hover:bg-stone-800/20 transition-colors">
+                                    <td class="p-6">
+                                        <p class="font-bold text-stone-900 dark:text-white">{cat.nombre}</p>
+                                        <p class="text-xs text-stone-500 mt-1">{cat.descripcion}</p>
+                                    </td>
+                                    <td class="p-6 text-right">
+                                        <form method="POST" onsubmit="return confirm('¿Borrar esta categoría?');">
+                                            <input type="hidden" name="intent" value="eliminar" />
+                                            <input type="hidden" name="id" value={cat.id} />
+                                            <button type="submit" class="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-full border border-red-200 dark:border-red-900/50 cursor-pointer transition-colors">
+                                                Borrar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                        ))
+                    )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 p-10 rounded-[40px] transition-colors duration-500">
+            <h3 class="text-xl font-bold text-red-700 dark:text-red-500 mb-2 flex items-center gap-2">Zona de Peligro ⚠️</h3>
+            <p class="text-sm text-red-600/80 dark:text-red-400/80 mb-6 max-w-3xl">
+                Usa esta opción solo si quieres reiniciar el museo desde cero. Borrará todos los chocolates registrados y todas las categorías de forma irreversible.
+            </p>
+            <form method="POST" onsubmit="return confirm('¡PELIGRO! ¿Estás 100% seguro de borrar absolutamente todo el catálogo?');">
+                <input type="hidden" name="intent" value="peligro_borrar_todo" />
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-black py-4 px-8 rounded-full transition-all uppercase text-[10px] tracking-widest shadow-md active:scale-95 cursor-pointer">
+                    Limpiar toda la base de datos
+                </button>
+            </form>
+        </div>
+
+    </div>
+</Layout>

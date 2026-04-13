@@ -117,15 +117,27 @@ import Layout from '../../layouts/Layout.astro';
         });
 
         function asignarEventosBotones() {
+            // REEMPLAZA SOLO ESTA PARTE EN TU CARRITO.ASTRO
             document.querySelectorAll('.btn-sumar').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = (e.target as HTMLButtonElement).getAttribute('data-id');
                     if (id) {
                         const items = carrito.get();
-                        carrito.set({
-                            ...items,
-                            [id]: { ...items[id], cantidad: items[id].cantidad + 1 }
-                        });
+                        const itemActual = items[id];
+
+                        // Asignamos un límite: Si es boleto 10, si es chocolate, asumimos un límite seguro por ahora.
+                        // Más adelante conectaremos esto directo al stock en la tienda.
+                        const limite = id.includes('ticket') ? 10 : 20;
+
+                        if (itemActual.cantidad < limite) {
+                            carrito.set({
+                                ...items,
+                                [id]: { ...itemActual, cantidad: itemActual.cantidad + 1 }
+                            });
+                        } else {
+                            // AQUÍ FRENAMOS AL USUARIO
+                            alert(`⚠️ Has alcanzado el límite de unidades disponibles para ${itemActual.nombre}.`);
+                        }
                     }
                 });
             });

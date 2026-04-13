@@ -3,46 +3,67 @@ import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title="Taquilla Digital | Museo">
-    <div class="max-w-5xl mx-auto px-8 py-20 text-center transition-colors duration-500">
-        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 transition-colors duration-500">
+    <div class="max-w-5xl mx-auto px-8 py-20 transition-colors duration-500">
+        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 text-center transition-colors duration-500">
             <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-4">Planea tu visita</span>
             <h1 class="text-6xl font-black italic text-stone-900 dark:text-white mb-6 transition-colors duration-500">Taquilla Digital</h1>
-            <p class="text-lg text-stone-500 dark:text-stone-400 max-w-2xl mx-auto transition-colors duration-500">Reserva tu entrada al mundo del cacao. Los boletos incluyen acceso a todas las salas permanentes y exposiciones temporales.</p>
+            <p class="text-lg text-stone-500 dark:text-stone-400 max-w-2xl mx-auto transition-colors duration-500">
+                Reserva tu entrada al mundo del cacao. Selecciona la fecha de tu expedición para ver los horarios disponibles.
+            </p>
         </header>
+
+        <div class="bg-white/60 dark:bg-[#110e0d]/60 backdrop-blur-xl p-8 rounded-[40px] border border-white/50 dark:border-stone-800 shadow-xl mb-12 flex flex-col md:flex-row gap-8 transition-colors duration-500">
+
+            <div class="flex-1">
+                <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">1. Fecha de Visita</label>
+                <input type="date" id="input-fecha" required class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all cursor-pointer" />
+            </div>
+
+            <div class="flex-1">
+                <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">2. Horario de Acceso</label>
+                <select id="selector-hora" disabled class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all cursor-not-allowed disabled:opacity-50 appearance-none">
+                    <option value="" disabled selected>Primero selecciona una fecha...</option>
+                </select>
+                <p id="info-horario" class="text-[10px] uppercase tracking-widest text-orange-600 dark:text-orange-500 mt-3 font-bold hidden">
+                </p>
+            </div>
+        </div>
+
+        <div id="alerta-error" class="hidden mb-10 p-6 rounded-2xl border bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-center font-bold text-sm shadow-lg">
+            ⚠️ Selecciona una fecha y un horario de acceso antes de reservar.
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-left">
 
-            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 hover:-translate-y-1 flex flex-col justify-between">
+            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 flex flex-col justify-between">
                 <div>
-                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-3 transition-colors duration-500">Entrada General</h3>
-                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-8 transition-colors duration-500">Acceso completo para mayores de 12 años a todas las instalaciones del museo.</p>
+                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Entrada General</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Acceso completo a salas permanentes y exposiciones temporales.</p>
+                    <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
+                        <li>⏱️ Duración estimada: 2 Horas</li>
+                        <li>👤 Mayores de 12 años</li>
+                    </ul>
                 </div>
                 <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
                     <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$120 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
-                    <button
-                            class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer"
-                            data-id="ticket-adulto"
-                            data-nombre="Boleto General"
-                            data-precio="120"
-                    >
+                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-adulto" data-nombre="Entrada General" data-precio="120">
                         Reservar 🎟️
                     </button>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 hover:-translate-y-1 flex flex-col justify-between">
+            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 flex flex-col justify-between">
                 <div>
-                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-3 transition-colors duration-500">Estudiantes / INAPAM</h3>
-                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-8 transition-colors duration-500">Válido únicamente presentando credencial vigente en taquilla física (UTC, UNAM, etc).</p>
+                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Estudiantes / INAPAM</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Válido únicamente presentando credencial física en puerta.</p>
+                    <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
+                        <li>⏱️ Duración estimada: 2 Horas</li>
+                        <li>🎓 Requiere Identificación Oficial</li>
+                    </ul>
                 </div>
                 <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
                     <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$60 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
-                    <button
-                            class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer"
-                            data-id="ticket-estudiante"
-                            data-nombre="Boleto Estudiante"
-                            data-precio="60"
-                    >
+                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-estudiante" data-nombre="Estudiante/INAPAM" data-precio="60">
                         Reservar 🎟️
                     </button>
                 </div>
@@ -52,20 +73,103 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <script>
+        import { carrito } from '../../store/carrito';
         import { agregarAlCarrito } from '../../store/carrito';
 
+        // LÍMITE DE COMPRAS: Evita acaparamiento masivo
+        const LIMITE_BOLETOS_POR_PERSONA = 10;
+
+        const inputFecha = document.getElementById('input-fecha') as HTMLInputElement;
+        const selectHora = document.getElementById('selector-hora') as HTMLSelectElement;
+        const infoHorario = document.getElementById('info-horario');
+        const alertaError = document.getElementById('alerta-error');
+
+        // 1. Deshabilitar fechas pasadas
+        const hoy = new Date();
+        const formatoHoy = hoy.toISOString().split('T')[0];
+        if (inputFecha) inputFecha.min = formatoHoy;
+
+        // 2. Lógica de Calendario Dinámico
+        inputFecha?.addEventListener('change', (e) => {
+            const fechaElegida = (e.target as HTMLInputElement).value;
+            if (!fechaElegida) return;
+
+            // Arreglo para evitar problemas de zona horaria
+            const fechaObj = new Date(fechaElegida + 'T00:00:00');
+            const diaSemana = fechaObj.getDay(); // 0 = Domingo, 1 = Lunes...
+
+            selectHora.innerHTML = '<option value="" disabled selected>Elige un horario disponible...</option>';
+            selectHora.disabled = false;
+            selectHora.classList.remove('cursor-not-allowed');
+
+            if (infoHorario) infoHorario.classList.remove('hidden');
+
+            // LUNES A VIERNES (Operaciones: 09:00 AM - 05:00 PM)
+            if (diaSemana >= 1 && diaSemana <= 5) {
+                if (infoHorario) infoHorario.innerText = 'Operación Laboral: 09:00 AM a 05:00 PM';
+                const horasLaborales = ['09:00 AM', '11:00 AM', '01:00 PM', '03:00 PM'];
+                horasLaborales.forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
+            }
+            // FINES DE SEMANA (Operaciones: 10:00 AM - 06:00 PM)
+            else {
+                if (infoHorario) infoHorario.innerText = 'Operación Fin de Semana: 10:00 AM a 06:00 PM';
+                const horasFinSemana = ['10:00 AM', '12:00 PM', '02:00 PM', '04:00 PM'];
+                horasFinSemana.forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
+            }
+        });
+
+        // 3. Procesamiento de la Reserva
         document.querySelectorAll('.btn-agregar').forEach(btn => {
             btn.addEventListener('click', () => {
-                const id = btn.getAttribute('data-id');
-                const nombre = btn.getAttribute('data-nombre');
+                const fecha = inputFecha?.value;
+                const hora = selectHora?.value;
+
+                // VALIDACIÓN 1: ¿Faltan datos?
+                if (!fecha || !hora) {
+                    alertaError?.classList.remove('hidden');
+                    inputFecha.classList.add('border-red-500');
+                    selectHora.classList.add('border-red-500');
+
+                    setTimeout(() => {
+                        alertaError?.classList.add('hidden');
+                        inputFecha.classList.remove('border-red-500');
+                        selectHora.classList.remove('border-red-500');
+                    }, 3000);
+                    return;
+                }
+
+                const baseId = btn.getAttribute('data-id');
+                const baseNombre = btn.getAttribute('data-nombre');
                 const precio = parseFloat(btn.getAttribute('data-precio') || '0');
 
-                if(id && nombre) {
-                    agregarAlCarrito({ id, nombre, precio, imagenUrl: null });
+                if (baseId && baseNombre) {
+                    // Generamos un ID único que combine Tipo + Fecha + Hora para que el carrito no los mezcle
+                    // Ej: ticket-adulto-2026-04-15-1000AM
+                    const idUnico = `${baseId}-${fecha}-${hora.replace(/[:\s]/g, '')}`;
 
-                    // Efecto visual pro en lugar del alert()
+                    // VALIDACIÓN 2: Límite de Boletos
+                    const itemsActuales = carrito.get();
+                    const boletosEnCarrito = itemsActuales[idUnico]?.cantidad || 0;
+
+                    if (boletosEnCarrito >= LIMITE_BOLETOS_POR_PERSONA) {
+                        alert(`🚫 Por políticas de seguridad, no puedes adquirir más de ${LIMITE_BOLETOS_POR_PERSONA} entradas del mismo tipo por horario.`);
+                        return;
+                    }
+
+                    // Formateamos la fecha a algo legible (15 de Abril, 10:00 AM)
+                    const fechaFormateada = new Date(fecha + 'T00:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+                    const nombreCompleto = `${baseNombre} (${fechaFormateada} - ${hora})`;
+
+                    agregarAlCarrito({
+                        id: idUnico,
+                        nombre: nombreCompleto,
+                        precio: precio,
+                        imagenUrl: null
+                    });
+
+                    // Efecto Visual de Éxito
                     const originalText = btn.innerHTML;
-                    btn.innerHTML = '¡Reservado! ✅';
+                    btn.innerHTML = '¡Agregado! ✅';
                     btn.classList.replace('bg-stone-900', 'bg-green-600');
                     btn.classList.replace('dark:bg-white', 'dark:bg-green-500');
                     btn.classList.add('text-white');
