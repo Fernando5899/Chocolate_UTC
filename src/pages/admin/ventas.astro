@@ -3,101 +3,134 @@ import Layout from '../../layouts/Layout.astro';
 import prisma from '../../lib/prisma';
 import { getSession } from 'auth-astro/server';
 
-// 1. Seguridad: Verificar que alguien esté logueado
+// 1. SEGURIDAD: Solo tú tienes la llave de la bóveda
 const session = await getSession(Astro.request);
-if (!session) return Astro.redirect('/cuenta/login');
+if (session?.user?.email !== 'fernando.jose.reynosa@gmail.com') return Astro.redirect('/');
 
-// 2. Consulta Maestra a Prisma: Traer TODO el historial de ventas
+// 2. CONSULTA MAESTRA A POSTGRESQL
+// Traemos todas las órdenes, incluyendo qué chocolates compraron y si están vinculadas a una cuenta de Google
 const ordenes = await prisma.orden.findMany({
-    orderBy: { fecha: 'desc' }, // Las más nuevas primero
+    orderBy: { fecha: 'desc' },
     include: {
         detalles: {
-            include: { chocolate: true } // Traer los nombres de los chocolates comprados
+            include: { chocolate: true }
         },
-        user: true // Para saber si fue un visitante registrado
+        user: true
     }
 });
 
-// 3. Inteligencia de Negocio (Cálculos para el Dashboard)
+// 3. MOTOR DE INTELIGENCIA DE NEGOCIO (KPIs)
 const totalIngresos = ordenes.reduce((sum, orden) => sum + orden.total, 0);
-const totalOrdenes = ordenes.length;
-const ventasHoy = ordenes.filter(o => new Date(o.fecha).toDateString() === new Date().toDateString()).length;
+const totalExpediciones = ordenes.length;
+
+const hoy = new Date().toDateString();
+const ventasHoy = ordenes.filter(o => new Date(o.fecha).toDateString() === hoy).length;
+const ingresosHoy = ordenes.filter(o => new Date(o.fecha).toDateString() === hoy).reduce((sum, o) => sum + o.total, 0);
 ---
 
-<Layout title="Tesorería y Ventas | Administrador">
-    <div class="max-w-6xl mx-auto py-12">
-        <header class="mb-12 flex flex-col md:flex-row md:justify-between md:items-end gap-6 border-b border-stone-200 dark:border-stone-800 pb-8">
+<Layout title="Tesorería y Ventas | Admin">
+    <div class="max-w-7xl mx-auto px-8 py-20 w-full transition-colors duration-500">
+
+        <header class="mb-12 border-b border-stone-200 dark:border-stone-800 pb-8 flex justify-between items-end transition-colors duration-500">
             <div>
-                <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-[10px] font-bold block mb-4">Panel de Administración</span>
-                <h1 class="text-5xl font-black italic dark:text-white">Tesorería</h1>
+                <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-2">Panel de Administración</span>
+                <h1 class="text-5xl font-black italic text-stone-900 dark:text-white">Tesorería y Envíos</h1>
             </div>
-            <a href="/admin/dashboard" class="text-[10px] uppercase tracking-widest text-stone-500 hover:text-orange-500 transition-colors">
-                ← Volver al Centro de Mando
-            </a>
+            <a href="/admin/dashboard" class="text-xs uppercase tracking-widest text-stone-500 hover:text-orange-500 font-bold transition-colors">← Volver al Mando</a>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div class="bg-white dark:bg-stone-900/40 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg">
-                <span class="text-[10px] uppercase tracking-widest text-stone-500 block mb-2">Ingresos Totales</span>
-                <span class="text-4xl font-black text-orange-600 dark:text-orange-400">${totalIngresos.toFixed(2)}</span>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            <div class="bg-white dark:bg-[#110e0d] p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg transition-colors duration-500">
+                <span class="text-[10px] uppercase tracking-widest text-stone-500 block mb-2 font-bold">Ingresos Totales</span>
+                <span class="text-4xl font-black text-stone-900 dark:text-white">${totalIngresos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
             </div>
-            <div class="bg-white dark:bg-stone-900/40 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg">
-                <span class="text-[10px] uppercase tracking-widest text-stone-500 block mb-2">Órdenes Procesadas</span>
-                <span class="text-4xl font-black dark:text-white">{totalOrdenes}</span>
+
+            <div class="bg-white dark:bg-[#110e0d] p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg transition-colors duration-500">
+                <span class="text-[10px] uppercase tracking-widest text-orange-600 dark:text-orange-500 block mb-2 font-bold">Ingresos Hoy</span>
+                <span class="text-4xl font-black text-orange-600 dark:text-orange-500">${ingresosHoy.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
             </div>
-            <div class="bg-white dark:bg-stone-900/40 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg">
-                <span class="text-[10px] uppercase tracking-widest text-stone-500 block mb-2">Ventas de Hoy</span>
-                <span class="text-4xl font-black dark:text-white">{ventasHoy}</span>
+
+            <div class="bg-white dark:bg-[#110e0d] p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg transition-colors duration-500">
+                <span class="text-[10px] uppercase tracking-widest text-stone-500 block mb-2 font-bold">Órdenes Globales</span>
+                <span class="text-4xl font-black text-stone-900 dark:text-white">{totalExpediciones}</span>
+            </div>
+
+            <div class="bg-white dark:bg-[#110e0d] p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg transition-colors duration-500">
+                <span class="text-[10px] uppercase tracking-widest text-stone-500 block mb-2 font-bold">Órdenes Hoy</span>
+                <span class="text-4xl font-black text-stone-900 dark:text-white">{ventasHoy}</span>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-stone-900/40 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden">
+        <h2 class="text-3xl font-black italic text-stone-900 dark:text-white mb-8 border-b border-stone-200 dark:border-stone-800 pb-4">Bitácora de Operaciones</h2>
+
+        <div class="bg-white dark:bg-[#110e0d] rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden transition-colors duration-500">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                    <tr class="bg-stone-50 dark:bg-black/50 border-b border-stone-200 dark:border-stone-800 text-[10px] uppercase tracking-widest text-stone-500">
-                        <th class="p-6 font-bold">ID Orden</th>
-                        <th class="p-6 font-bold">Fecha</th>
-                        <th class="p-6 font-bold">Cliente</th>
-                        <th class="p-6 font-bold">Destino</th>
-                        <th class="p-6 font-bold">Resumen de Artículos</th>
-                        <th class="p-6 font-bold text-right">Total</th>
+                    <tr class="bg-stone-50 dark:bg-[#0c0a09] border-b border-stone-200 dark:border-stone-800 text-[10px] uppercase tracking-widest text-stone-500">
+                        <th class="p-8 font-bold">Folio / Fecha</th>
+                        <th class="p-8 font-bold">Cliente</th>
+                        <th class="p-8 font-bold">Logística de Envío</th>
+                        <th class="p-8 font-bold">Manifiesto (Artículos)</th>
+                        <th class="p-8 font-bold text-right">Total</th>
                     </tr>
                     </thead>
                     <tbody class="divide-y divide-stone-100 dark:divide-stone-800/50">
                     {ordenes.length === 0 ? (
                             <tr>
-                                <td colspan="6" class="p-12 text-center text-stone-500 italic">
-                                    No hay expediciones registradas en los archivos del museo.
+                                <td colspan="5" class="p-16 text-center text-stone-500 italic text-lg">
+                                    Aún no hay transacciones registradas en la bóveda.
                                 </td>
                             </tr>
                     ) : (
                         ordenes.map(orden => (
-                                <tr class="hover:bg-stone-50 dark:hover:bg-stone-800/20 transition-colors">
-                                    <td class="p-6">
-                                        <span class="bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-2 py-1 rounded text-[10px] font-mono">
+                                <tr class="hover:bg-stone-50 dark:hover:bg-stone-800/20 transition-colors duration-300">
+
+                                    <td class="p-8 align-top">
+                                        <span class="bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest font-mono border border-stone-200 dark:border-stone-700 block w-max mb-2">
                                             #{orden.id.slice(-6).toUpperCase()}
                                         </span>
+                                        <span class="text-xs text-stone-500 block">
+                                            {new Date(orden.fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' })}
+                                        </span>
                                     </td>
-                                    <td class="p-6 text-xs dark:text-stone-300">
-                                        {new Date(orden.fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
+
+                                    <td class="p-8 align-top">
+                                        <p class="text-sm font-bold text-stone-900 dark:text-white mb-1 font-serif">{orden.clienteNombre}</p>
+                                        {orden.user ? (
+                                                <span class="text-[9px] uppercase tracking-widest text-green-600 dark:text-green-500 font-bold">✓ Cuenta Verificada</span>
+                                        ) : (
+                                                <span class="text-[9px] uppercase tracking-widest text-stone-400 font-bold">Visitante Invitado</span>
+                                        )}
                                     </td>
-                                    <td class="p-6">
-                                        <p class="text-sm font-bold dark:text-white">{orden.clienteNombre}</p>
-                                        {orden.user && <p class="text-[10px] text-orange-500 uppercase tracking-widest">Usuario Registrado</p>}
+
+                                    <td class="p-8 align-top">
+                                        <span class="text-xs font-bold text-stone-900 dark:text-white block mb-1">
+                                            {orden.estadoEnvio === 'CDMX' ? '📍 CDMX (Metro)' : '🚚 Edomex (+Envío)'}
+                                        </span>
+                                        <p class="text-xs text-stone-500 max-w-[200px] leading-relaxed">
+                                            {orden.direccion} <br/> <span class="font-mono opacity-70">CP: {orden.codigoPostal}</span>
+                                        </p>
                                     </td>
-                                    <td class="p-6 text-xs dark:text-stone-400">
-                                        {orden.estadoEnvio} <br/> <span class="opacity-50 font-mono">CP: {orden.codigoPostal}</span>
-                                    </td>
-                                    <td class="p-6">
-                                        <ul class="text-xs dark:text-stone-400 space-y-1 italic">
+
+                                    <td class="p-8 align-top">
+                                        <ul class="text-sm text-stone-600 dark:text-stone-400 space-y-1 font-serif italic">
                                             {orden.detalles.map(det => (
-                                                    <li>• {det.cantidad}x {det.chocolate.nombre}</li>
+                                                    <li>• {det.cantidad}x {det.chocolate?.nombre || 'Producto Descontinuado'}</li>
                                             ))}
+
+                                            {/* Mensaje inteligente si la orden tiene total pero no detalles (Ej: Compraron puros Boletos) */}
+                                            {orden.detalles.length === 0 && orden.total > 0 && (
+                                                    <li class="text-orange-600 dark:text-orange-500 font-bold not-italic text-xs uppercase tracking-widest mt-2">🎫 Accesos Digitales</li>
+                                            )}
                                         </ul>
                                     </td>
-                                    <td class="p-6 text-right font-black dark:text-white">
-                                        ${orden.total.toFixed(2)}
+
+                                    <td class="p-8 align-top text-right">
+                                        <span class="text-2xl font-black text-stone-900 dark:text-white block">
+                                            ${orden.total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                                        </span>
+                                        <span class="text-[9px] uppercase tracking-widest text-green-600 dark:text-green-500 font-bold block mt-2">Pagado</span>
                                     </td>
                                 </tr>
                         ))
@@ -106,5 +139,6 @@ const ventasHoy = ordenes.filter(o => new Date(o.fecha).toDateString() === new D
                 </table>
             </div>
         </div>
+
     </div>
 </Layout>
