@@ -14,7 +14,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 <head>
     <meta charset="UTF-8" />
     <meta name="description" content="Portal Institucional del Museo de Chocolate" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <title>{title}</title>
@@ -29,28 +29,29 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
     </script>
 </head>
 
-<body class="bg-stone-50 text-stone-900 dark:bg-[#0c0a09] dark:text-stone-100 transition-colors duration-500 min-h-screen flex flex-col">
+<body class="bg-stone-50 text-stone-900 dark:bg-[#0c0a09] dark:text-stone-100 transition-colors duration-500 min-h-screen flex flex-col font-sans">
 
-<nav class="bg-white/80 dark:bg-black/80 backdrop-blur-md py-8 border-b border-stone-200 dark:border-stone-800 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-8 flex justify-between items-center">
-        <a href="/" class="flex flex-col">
-            <span class="text-2xl font-bold tracking-[0.1em] uppercase leading-none text-stone-900 dark:text-white">Museo de Chocolate</span>
-            <span class="text-xs text-stone-500 uppercase tracking-[0.3em] mt-1">Cultura y Tradición</span>
+<nav class="bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 sticky top-0 z-[100]">
+    <div class="max-w-7xl mx-auto px-5 md:px-8 py-4 md:py-6 flex justify-between items-center">
+
+        <a href="/" class="flex flex-col z-50">
+            <span class="text-xl md:text-2xl font-bold tracking-widest uppercase leading-none text-stone-900 dark:text-white">Museo de Chocolate</span>
+            <span class="text-[9px] md:text-xs text-stone-500 uppercase tracking-[0.3em] mt-1">Cultura y Tradición</span>
         </a>
 
-        <div class="hidden md:flex items-center gap-8 uppercase text-xs md:text-sm tracking-widest font-bold">
-            <a href="/" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">Inicio</a>
-            <a href="/exposiciones" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">Exposiciones</a>
-            <a href="/tienda/chocolates" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">Chocolates</a>
-            <a href="/visita/boletos" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">Boletos</a>
+        <div class="hidden md:flex items-center gap-8 uppercase text-xs tracking-widest font-bold">
+            <a href="/" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 transition-colors">Inicio</a>
+            <a href="/exposiciones" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 transition-colors">Exposiciones</a>
+            <a href="/tienda/chocolates" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 transition-colors">Chocolates</a>
+            <a href="/visita/boletos" class="text-stone-600 dark:text-stone-300 hover:text-orange-500 transition-colors">Boletos</a>
 
             <a href="/tienda/carrito" class="flex items-center gap-2 text-stone-600 dark:text-stone-300 hover:text-orange-500 transition-colors">
                 Carrito
-                <span id="contador-carrito" class="border border-stone-300 dark:border-stone-700 px-3 py-1 rounded-full text-xs">0</span>
+                <span class="contador-carrito border border-stone-300 dark:border-stone-700 px-3 py-1 rounded-full text-xs">0</span>
             </a>
 
-            <button id="theme-toggle" class="p-2 rounded-lg border border-stone-300 dark:border-stone-800 hover:border-orange-500 transition-all cursor-pointer bg-transparent">
-                <span id="theme-icon" class="text-stone-600 dark:text-orange-400 text-xl leading-none"></span>
+            <button class="theme-toggle p-2 rounded-lg border border-stone-300 dark:border-stone-800 hover:border-orange-500 transition-all cursor-pointer bg-transparent">
+                <span class="theme-icon text-stone-600 dark:text-orange-400 text-xl leading-none"></span>
             </button>
 
             <div class="w-px h-6 bg-stone-300 dark:bg-stone-800"></div>
@@ -69,8 +70,52 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
                         </SignOut>
                     </div>
             ) : (
-                    <a href="/cuenta/login" class="text-stone-500 hover:text-orange-500">Ingresar</a>
+                    <a href="/cuenta/login" class="text-stone-500 hover:text-orange-500 uppercase text-xs tracking-widest font-bold">Ingresar</a>
             )}
+        </div>
+
+        <div class="md:hidden flex items-center gap-2 z-50">
+            <button class="theme-toggle p-2 rounded-lg border border-transparent transition-all cursor-pointer bg-transparent">
+                <span class="theme-icon text-stone-600 dark:text-orange-400 text-xl leading-none"></span>
+            </button>
+            <button id="btn-menu-movil" class="p-2 text-stone-900 dark:text-white focus:outline-none bg-transparent border-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path id="icon-abrir" class="block" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    <path id="icon-cerrar" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="menu-movil" class="hidden md:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0c0a09] border-b border-stone-200 dark:border-stone-800 shadow-2xl transition-all duration-300 z-[90]">
+        <div class="px-8 py-8 flex flex-col gap-6 uppercase text-sm font-bold tracking-widest">
+            <a href="/" class="text-stone-600 dark:text-stone-300 hover:text-orange-500">Inicio</a>
+            <a href="/exposiciones" class="text-stone-600 dark:text-stone-300 hover:text-orange-500">Exposiciones</a>
+            <a href="/tienda/chocolates" class="text-stone-600 dark:text-stone-300 hover:text-orange-500">Chocolates</a>
+            <a href="/visita/boletos" class="text-stone-600 dark:text-stone-300 hover:text-orange-500">Boletos</a>
+
+            <a href="/tienda/carrito" class="flex justify-between items-center text-stone-600 dark:text-stone-300 hover:text-orange-500 border-t border-stone-200 dark:border-stone-800 pt-6">
+                Carrito
+                <span class="contador-carrito bg-stone-900 dark:bg-white text-white dark:text-black px-3 py-1 rounded-full text-xs">0</span>
+            </a>
+
+            <div class="border-t border-stone-200 dark:border-stone-800 pt-6 flex flex-col gap-6">
+                {session ? (
+                        <>
+                            {isAdmin && (
+                                    <a href="/admin/dashboard" class="text-orange-600 dark:text-orange-500 flex items-center gap-2">
+                                        <span>⚙️</span> Panel Admin
+                                    </a>
+                            )}
+                            <a href="/cuenta/perfil" class="text-stone-600 dark:text-stone-300 hover:text-orange-500">Mi Perfil</a>
+                            <SignOut class="text-left text-stone-500 hover:text-orange-500 uppercase tracking-widest font-bold bg-transparent border-none p-0">
+                                CERRAR SESIÓN
+                            </SignOut>
+                        </>
+                ) : (
+                        <a href="/cuenta/login" class="text-center text-orange-600 dark:text-orange-500 border border-orange-600 dark:border-orange-500 py-3 rounded-lg w-full">Iniciar Sesión</a>
+                )}
+            </div>
         </div>
     </div>
 </nav>
@@ -82,15 +127,15 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 <footer class="bg-white dark:bg-black text-stone-500 py-20 border-t border-stone-200 dark:border-stone-900 mt-auto transition-colors duration-500">
     <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
         <div>
-            <h4 class="text-stone-900 dark:text-white uppercase tracking-widest text-sm font-bold mb-6">El Museo</h4>
-            <p class="text-base leading-relaxed">Dedicado a la preservación de la historia del cacao en México.</p>
+            <h4 class="text-stone-900 dark:text-white uppercase tracking-widest text-sm font-bold mb-6 font-sans">El Museo</h4>
+            <p class="text-base leading-relaxed font-serif">Dedicado a la preservación de la historia del cacao en México.</p>
         </div>
         <div>
-            <h4 class="text-stone-900 dark:text-white uppercase tracking-widest text-sm font-bold mb-6">Ubicación</h4>
-            <p class="text-base italic">Calle Milan 45, Juárez, CDMX</p>
+            <h4 class="text-stone-900 dark:text-white uppercase tracking-widest text-sm font-bold mb-6 font-sans">Ubicación</h4>
+            <p class="text-base italic font-serif">Calle Milan 45, Juárez, CDMX</p>
         </div>
         <div class="md:text-right">
-            <p class="text-sm uppercase tracking-widest">© {new Date().getFullYear()} Museo de Chocolate</p>
+            <p class="text-sm uppercase tracking-widest font-sans">© {new Date().getFullYear()} Museo de Chocolate</p>
             <p class="text-xs mt-3 italic text-stone-400 font-serif">Diseñado para la posteridad</p>
         </div>
     </div>
@@ -99,45 +144,60 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 <script>
     import { carrito } from '../store/carrito';
 
-    // 1. TEMA
-    const btn = document.getElementById('theme-toggle');
-    const icon = document.getElementById('theme-icon');
-    const html = document.documentElement;
+    // 1. MENÚ MÓVIL (Hamburguesa)
+    const btnMenu = document.getElementById('btn-menu-movil');
+    const menuMovil = document.getElementById('menu-movil');
+    const iconAbrir = document.getElementById('icon-abrir');
+    const iconCerrar = document.getElementById('icon-cerrar');
 
-    const updateIcon = () => {
-        if (icon) {
-            icon.innerText = html.classList.contains('dark') ? '☀️' : '🌙';
-        }
-    };
-    updateIcon();
-
-    btn?.addEventListener('click', () => {
-        html.classList.toggle('dark');
-        localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-        updateIcon();
+    btnMenu?.addEventListener('click', () => {
+        menuMovil?.classList.toggle('hidden');
+        iconAbrir?.classList.toggle('hidden');
+        iconCerrar?.classList.toggle('hidden');
     });
 
-    // 2. CARRITO
-    const contador = document.getElementById('contador-carrito');
-    if (contador) {
-        carrito.subscribe((items) => {
-            const totalItems = Object.values(items).reduce((suma, item) => suma + item.cantidad, 0);
-            contador.innerText = totalItems.toString();
+    // 2. TEMA (Soporta múltiples botones)
+    const botonesTema = document.querySelectorAll('.theme-toggle');
+    const iconosTema = document.querySelectorAll('.theme-icon');
+    const html = document.documentElement;
+
+    const updateIcons = () => {
+        iconosTema.forEach(icon => {
+            icon.textContent = html.classList.contains('dark') ? '☀️' : '🌙';
+        });
+    };
+    updateIcons();
+
+    botonesTema.forEach(btn => {
+        btn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+            updateIcons();
+        });
+    });
+
+    // 3. CARRITO (Actualiza ambos contadores)
+    const contadores = document.querySelectorAll('.contador-carrito');
+    carrito.subscribe((items) => {
+        const totalItems = Object.values(items).reduce((suma, item) => suma + item.cantidad, 0);
+
+        contadores.forEach(contador => {
+            contador.textContent = totalItems.toString();
             if (totalItems > 0) {
                 contador.classList.add('border-orange-500', 'text-orange-500');
             } else {
                 contador.classList.remove('border-orange-500', 'text-orange-500');
             }
         });
-    }
+    });
 
-    // 3. LIMPIEZA AL SALIR REPARADA (Escucha directo al atributo del componente)
-    const btnSalir = document.querySelector('[data-auth-signout]');
-    if (btnSalir) {
-        btnSalir.addEventListener('click', () => {
+    // 4. LIMPIEZA AL SALIR (Soporta ambos botones)
+    const botonesSalir = document.querySelectorAll('[data-auth-signout]');
+    botonesSalir.forEach(btn => {
+        btn.addEventListener('click', () => {
             carrito.set({});
         });
-    }
+    });
 </script>
 </body>
 </html>

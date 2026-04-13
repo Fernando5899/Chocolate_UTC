@@ -11,39 +11,44 @@ const salas = [
 ---
 
 <Layout title="Exposiciones | Recorrido Virtual">
-    <div class="max-w-7xl mx-auto px-8 py-20 transition-colors duration-500">
-        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 transition-colors duration-500">
-            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-4">Galería Principal</span>
-            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white mb-6 transition-colors duration-500">Exposiciones Permanentes</h1>
-            <p class="text-xl text-stone-500 dark:text-stone-400 max-w-3xl transition-colors duration-500">Un recorrido cronológico por la historia del cacao. Desliza para explorar la colección curada del museo.</p>
+    <div class="max-w-7xl mx-auto px-5 md:px-8 py-12 md:py-20 transition-colors duration-500 overflow-hidden w-full">
+
+        <header class="mb-12 md:mb-16 border-b border-stone-200 dark:border-stone-800 pb-8 md:pb-10 transition-colors duration-500 w-full">
+            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-widest md:tracking-[0.4em] text-xs md:text-sm font-bold block mb-3 md:mb-4">Galería Principal</span>
+
+            <h1 class="text-4xl md:text-6xl font-black italic text-stone-900 dark:text-white mb-4 md:mb-6 transition-colors duration-500 break-words w-full">Exposiciones Permanentes</h1>
+
+            <p class="text-base md:text-xl text-stone-500 dark:text-stone-400 max-w-3xl transition-colors duration-500 break-words pr-4 w-full">Un recorrido cronológico por la historia del cacao. Desliza para explorar la colección curada del museo.</p>
         </header>
 
-        <div class="relative group">
-            <div class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-8 pb-12">
+        <div class="relative group w-full">
+            <div class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-6 md:gap-8 pb-4 w-full">
                 {salas.map((sala) => (
-                        <div class="flex-none w-[85vw] md:w-[60vw] lg:w-[45vw] snap-center">
-                            <div class="relative aspect-[16/10] overflow-hidden rounded-[40px] group/card shadow-2xl">
+                        <div class="flex-none w-[80vw] md:w-[60vw] lg:w-[45vw] snap-center">
+                            <div class="relative aspect-[4/5] md:aspect-[16/10] overflow-hidden rounded-[30px] md:rounded-[40px] group/card shadow-2xl">
                                 <img
                                         src={sala.img}
                                         class="w-full h-full object-cover grayscale opacity-90 group-hover/card:grayscale-0 group-hover/card:opacity-100 group-hover/card:scale-105 transition-all duration-1000"
                                         alt={sala.nombre}
                                 />
 
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
-                                <div class="absolute bottom-10 left-10 right-10 z-10">
-                                    <span class="text-orange-500 font-mono text-[10px] uppercase tracking-widest font-bold mb-3 block">SALA {sala.id}</span>
-                                    <h3 class="text-4xl font-bold italic text-white mb-3 drop-shadow-lg">{sala.nombre}</h3>
-                                    <p class="text-stone-300 text-sm md:text-base font-light max-w-sm drop-shadow-md">{sala.desc}</p>
+                                <div class="absolute bottom-6 md:bottom-10 left-6 right-6 md:left-10 md:right-10 z-10">
+                                    <span class="text-orange-500 font-mono text-[10px] uppercase tracking-widest font-bold mb-2 md:mb-3 block">SALA {sala.id}</span>
+
+                                    <h3 class="text-2xl md:text-4xl font-bold italic text-white mb-2 md:mb-3 drop-shadow-lg">{sala.nombre}</h3>
+
+                                    <p class="text-stone-300 text-xs md:text-base font-light drop-shadow-md leading-relaxed break-words text-wrap pr-2">{sala.desc}</p>
                                 </div>
                             </div>
                         </div>
                 ))}
             </div>
 
-            <div class="flex items-center gap-6 mt-4">
+            <div class="flex items-center gap-4 md:gap-6 mt-4 md:mt-6 w-full pr-4">
                 <div class="h-px bg-stone-300 dark:bg-stone-800 flex-grow transition-colors duration-500"></div>
-                <span class="text-[10px] uppercase tracking-widest text-stone-500 font-bold italic">Desliza para explorar →</span>
+                <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-stone-500 font-bold italic whitespace-nowrap">Desliza para explorar →</span>
             </div>
         </div>
     </div>

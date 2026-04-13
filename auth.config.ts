@@ -1,28 +1,43 @@
-import { defineConfig } from 'auth-astro';
-import Google from '@auth/core/providers/google';
+import Google from "@auth/core/providers/google";
+import { defineConfig } from "auth-astro";
 
 export default defineConfig({
     providers: [
         Google({
             clientId: import.meta.env.GOOGLE_CLIENT_ID,
             clientSecret: import.meta.env.GOOGLE_CLIENT_SECRET,
+            issuer: "https://accounts.google.com",
         }),
     ],
-    callbacks: {
-        // Esta función se ejecuta justo cuando Google dice "Sí, el usuario existe"
-        signIn: async ({ profile }) => {
-            // 1. Traemos la lista de correos permitidos desde el .env
-            const adminEmails = import.meta.env.ADMIN_EMAILS?.split(',') || [];
 
-            // 2. Verificamos si el correo de quien intenta entrar está en la lista
+    // Importante para que Azure no bloquee la sesión
+    trustHost: true,
+
+    callbacks: {
+        signIn: async ({ profile }) => {
+            // Convertimos el string de correos en un arreglo y quitamos espacios
+            const adminEmails = import.meta.env.ADMIN_EMAILS?.split(",").map((e: string) => e.trim()) || [];
+
             if (profile?.email && adminEmails.includes(profile.email)) {
-                console.log(`✅ Acceso concedido a: ${profile.email}`);
-                return true; // ¡Adelante, pase!
+                console.log(`✅ Bienvenid@ al Museo: ${profile.email}`);
+                return true;
             }
 
-            // 3. Si no está en la lista, le cerramos la puerta en la cara
-            console.warn(`🚨 Intento de acceso DENEGADO para: ${profile?.email}`);
-            return false; // Auth.js bloqueará el inicio de sesión
-        }
+            console.warn(`🚨 Acceso denegado: ${profile?.email}`);
+            return false;
+        },
+
+        session: async ({ session, token }) => {
+            if (session.user) {
+                // Aquí podrías guardar el ID de usuario si lo necesitas para Prisma después
+                // session.user.id = token.sub;
+            }
+            return session;
+        },
+    },
+
+    pages: {
+        signIn: '/cuenta/login',
+        error: '/cuenta/login',
     }
 });
