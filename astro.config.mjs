@@ -5,7 +5,7 @@ import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   output: 'server',
-  site: process.env.SITE_URL || 'https://tu-futuro-dominio.vercel.app',
+  site: process.env.SITE_URL || 'https://chocolate-utc.vercel.app',
 
   vite: {
     plugins: [tailwindcss()],
