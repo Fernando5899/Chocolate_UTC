@@ -1,0 +1,66 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// 1. Definimos los datos de las salas (esto luego podría venir de Prisma si quisieras)
+const salas = [
+    { id: '01', nombre: 'El Origen Botánico', desc: 'El hábitat sagrado del Theobroma Cacao.', detalle: 'Explora las selvas tropicales donde el cacao comenzó su viaje hace milenios.', img: 'https://images.unsplash.com/photo-1511381939415-e44015466834?q=80&w=2144' },
+    { id: '02', nombre: 'Ritual Prehispánico', desc: 'Moneda y ofrenda de los dioses antiguos.', detalle: 'Descubre cómo las culturas mesoamericanas transformaron el grano en una bebida sagrada.', img: 'https://images.unsplash.com/photo-1620188467120-5042ed1eb5da?q=80&w=1974' },
+    { id: '03', nombre: 'La Molienda Antigua', desc: 'Técnicas ancestrales de transformación.', detalle: 'El arte del metate y la alquimia del fuego para liberar el alma del chocolate.', img: 'https://images.unsplash.com/photo-1541093370339-78d9f109b0b4?q=80&w=2070' },
+    { id: '04', nombre: 'El Viaje Transatlántico', desc: 'El impacto del cacao en la vieja Europa.', detalle: 'El encuentro fortuito que cambió el paladar del mundo para siempre.', img: 'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?q=80&w=1974' },
+    { id: '05', nombre: 'La Revolución Industrial', desc: 'La invención de la primera barra sólida.', detalle: 'De la artesanía a la precisión mecánica que democratizó el placer del chocolate.', img: 'https://images.unsplash.com/photo-1589131668474-124b8969b83b?q=80&w=2070' },
+];
+
+// 2. Capturamos el ID de la URL
+const { id } = Astro.params;
+const sala = salas.find(s => s.id === id);
+
+// 3. Si no existe la sala, mandamos al 404
+if (!sala) return Astro.redirect('/404');
+---
+
+<Layout title={`${sala.nombre} | Galería`}>
+    <div class="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden">
+
+        <div class="absolute inset-0 z-0">
+            <img src={sala.img} class="w-full h-full object-cover grayscale opacity-40 dark:opacity-30" alt={sala.nombre} />
+            <div class="absolute inset-0 bg-gradient-to-b from-stone-50/80 via-transparent to-stone-50 dark:from-[#0c0a09]/80 dark:via-transparent dark:to-[#0c0a09]"></div>
+        </div>
+
+        <div class="relative z-10 max-w-4xl mx-auto px-8 py-24 text-center">
+            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.6em] text-xs font-black mb-6 block animate-fade-in">
+                Sala de Exhibición {sala.id}
+            </span>
+
+            <h1 class="text-5xl md:text-8xl font-black italic text-stone-900 dark:text-white mb-8 tracking-tighter transition-colors">
+                {sala.nombre}
+            </h1>
+
+            <p class="text-xl md:text-2xl text-stone-600 dark:text-stone-300 font-serif italic mb-12 leading-relaxed max-w-2xl mx-auto">
+                "{sala.detalle}"
+            </p>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+                <a href="/exposiciones" class="px-10 py-4 border border-stone-300 dark:border-stone-800 rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-stone-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                    Volver a la Galería
+                </a>
+                <a href="/visita/boletos" class="px-10 py-4 bg-orange-600 text-white rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-orange-700 shadow-xl transition-all active:scale-95">
+                    Reservar Entrada Presencial
+                </a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-20 hidden md:block">
+            <div class="w-px h-24 bg-stone-900 dark:bg-white"></div>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fade-in 1.5s ease-out forwards;
+    }
+</style>

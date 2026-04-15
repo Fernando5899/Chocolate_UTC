@@ -45,10 +45,11 @@ if (session) return Astro.redirect('/cuenta/perfil');
     if (btn) {
         btn.addEventListener('click', async (e) => {
             e.preventDefault();
-            // Forzamos la URL absoluta para que Azure no tenga dudas
-            await signIn("google", {
-                callbackUrl: "https://museo-chocolate-a5erhrf3fbb3fch7.mexicocentral-01.azurewebsites.net/cuenta/perfil"
-            });
-        }); // <-- Esta llave y paréntesis te faltaban
+
+            // Solo llamamos a Google, sin URLs raras.
+            // Al terminar, la línea 6 de este archivo detectará
+            // la sesión y te mandará solito a /cuenta/perfil
+            await signIn("google");
+        });
     }
 </script>

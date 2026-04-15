@@ -2,8 +2,6 @@
 import Layout from '../../layouts/Layout.astro';
 import prisma from '../../lib/prisma';
 import { getSession } from 'auth-astro/server';
-import fs from 'node:fs/promises';
-import path from 'node:path';
 
 // Seguridad
 const session = await getSession(Astro.request);
@@ -24,22 +22,21 @@ if (Astro.request.method === 'POST') {
             const descripcion = data.get('descripcion')?.toString() || '';
             const categoriaId = data.get('categoriaId')?.toString() || '';
 
-            // LÓGICA DE SUBIDA DE IMAGEN
+            // 🚀 LÓGICA DE SUBIDA DE IMAGEN (Adaptada para Vercel / Base64)
             const imagen = data.get('imagen') as File;
             let imagenUrl = null;
 
             if (imagen && imagen.size > 0) {
-                // Generar nombre único para evitar sobreescribir (ej: 1713000-Taza.png)
-                const nombreArchivo = `${Date.now()}-${imagen.name.replace(/\s+/g, '_')}`;
-                // Ruta absoluta hacia tu carpeta public/uploads
-                const rutaDestino = path.join(process.cwd(), 'public', 'uploads', nombreArchivo);
+                // Leemos el archivo y lo convertimos a un Buffer
+                const arrayBuffer = await imagen.arrayBuffer();
+                const buffer = Buffer.from(arrayBuffer);
 
-                // Convertimos el archivo a Buffer y lo guardamos en el disco duro
-                const buffer = Buffer.from(await imagen.arrayBuffer());
-                await fs.writeFile(rutaDestino, buffer);
+                // Lo codificamos a Base64
+                const base64String = buffer.toString('base64');
+                const mimeType = imagen.type; // ej: image/png o image/jpeg
 
-                // La URL que guardamos en la base de datos
-                imagenUrl = `/uploads/${nombreArchivo}`;
+                // Creamos una Data URL que el navegador puede leer como imagen
+                imagenUrl = `data:${mimeType};base64,${base64String}`;
             }
 
             await prisma.chocolate.create({
