@@ -15,15 +15,17 @@ export default defineConfig({
 
     callbacks: {
         signIn: async ({ profile }) => {
-            // Convertimos el string de correos en un arreglo y quitamos espacios
-            const adminEmails = import.meta.env.ADMIN_EMAILS?.split(",").map((e: string) => e.trim()) || [];
+            // Obtenemos la lista de los dos lugares posibles para no fallar en Azure
+            const envEmails = import.meta.env.ADMIN_EMAILS || process.env.ADMIN_EMAILS;
+            const adminEmails = envEmails?.split(",").map((e: string) => e.trim()) || [];
 
             if (profile?.email && adminEmails.includes(profile.email)) {
-                console.log(`✅ Bienvenid@ al Museo: ${profile.email}`);
+                console.log(`✅ Acceso concedido: ${profile.email}`);
                 return true;
             }
 
-            console.warn(`🚨 Acceso denegado: ${profile?.email}`);
+            // Esto saldrá en tus logs de Azure (az webapp log tail)
+            console.warn(`🚨 Bloqueado por lista blanca: ${profile?.email}`);
             return false;
         },
 

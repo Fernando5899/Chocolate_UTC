@@ -45,9 +45,10 @@ if (session) return Astro.redirect('/cuenta/perfil');
     if (btn) {
         btn.addEventListener('click', async (e) => {
             e.preventDefault();
-            // Usamos callbackUrl que es el estándar de oro para compatibilidad
-            // Y nos aseguramos de no pasar opciones extra que puedan ensuciar el POST
-            await signIn("google", { callbackUrl: "/cuenta/perfil" });
-        });
+            // Forzamos la URL absoluta para que Azure no tenga dudas
+            await signIn("google", {
+                callbackUrl: "https://museo-chocolate-a5erhrf3fbb3fch7.mexicocentral-01.azurewebsites.net/cuenta/perfil"
+            });
+        }); // <-- Esta llave y paréntesis te faltaban
     }
 </script>
