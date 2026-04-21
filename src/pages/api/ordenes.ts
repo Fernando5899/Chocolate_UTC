@@ -1,8 +1,15 @@
 import type { APIRoute } from 'astro';
 import prisma from '../../lib/prisma';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer'; // 1. Cambiamos Resend por Nodemailer
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// 2. Configuramos el "transporter" (nuestro cartero de Gmail)
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS
+    }
+});
 
 export const POST: APIRoute = async ({ request }) => {
     try {
@@ -52,7 +59,6 @@ export const POST: APIRoute = async ({ request }) => {
             let qrCodeDataURL = "";
 
             if (tieneBoletos) {
-                // SOLUCIÓN GMAIL: Usamos una API externa que devuelve una imagen real, no un Base64
                 qrCodeDataURL = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${orden.id}`;
             }
 
@@ -62,9 +68,10 @@ export const POST: APIRoute = async ({ request }) => {
                 </li>`
             ).join('');
 
-            await resend.emails.send({
-                from: 'Museo de Chocolate <onboarding@resend.dev>',
-                to: [correoDestino],
+            // 3. Disparamos el correo usando Gmail
+            await transporter.sendMail({
+                from: `"Museo de Chocolate" <${process.env.GMAIL_USER}>`,
+                to: correoDestino, // Aquí es donde la magia ocurre: enviará a cualquier correo
                 subject: `Comprobante de Expedición #${orden.id.slice(-6).toUpperCase()}`,
                 html: `
                     <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; background-color: #fcfaf8; padding: 40px; border: 1px solid #e7e5e4; border-radius: 16px;">
@@ -98,6 +105,7 @@ export const POST: APIRoute = async ({ request }) => {
 
         return new Response(JSON.stringify({ success: true, orden }), { status: 200 });
     } catch (error: any) {
+        console.error("Error en ordenes API:", error);
         return new Response(JSON.stringify({ error: error.message }), { status: 400 });
     }
 }
