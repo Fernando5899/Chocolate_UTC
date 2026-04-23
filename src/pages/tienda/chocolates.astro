@@ -28,7 +28,7 @@ const chocolates = await prisma.chocolate.findMany({
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {chocolates.map((choco) => (
-                    <div class={`bg-white dark:bg-[#110e0d] p-8 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-300 flex flex-col group ${choco.stock > 0 ? 'hover:border-orange-500 dark:hover:border-orange-500 hover:-translate-y-2' : 'opacity-70 grayscale'}`}>
+                    <div class={`bg-white dark:bg-[#110e0d] p-8 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-300 flex flex-col group overflow-hidden ${choco.stock > 0 ? 'hover:border-orange-500 dark:hover:border-orange-500 hover:-translate-y-2' : 'opacity-70 grayscale'}`}>
 
                         <div class="relative aspect-square mb-6 overflow-hidden rounded-3xl bg-stone-100 dark:bg-[#0c0a09]">
                             {choco.imagenUrl ? (
@@ -49,22 +49,28 @@ const chocolates = await prisma.chocolate.findMany({
                         </div>
 
                         <div class="flex flex-col flex-grow">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white leading-tight transition-colors duration-500">{choco.nombre}</h3>
+                            <div class="flex justify-between items-start mb-2 gap-4">
+                                <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white leading-tight transition-colors duration-500 line-clamp-1 break-all" title={choco.nombre}>
+                                    {choco.nombre}
+                                </h3>
 
-                                <span class={`text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-md border whitespace-nowrap ml-4 ${choco.stock > 0 ? 'border-green-200 text-green-700 dark:border-green-900 dark:text-green-400 bg-green-50 dark:bg-green-900/20' : 'border-red-200 text-red-700 dark:border-red-900 dark:text-red-400 bg-red-50 dark:bg-red-900/20'}`}>
+                                <span class={`text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-md border shrink-0 ${choco.stock > 0 ? 'border-green-200 text-green-700 dark:border-green-900 dark:text-green-400 bg-green-50 dark:bg-green-900/20' : 'border-red-200 text-red-700 dark:border-red-900 dark:text-red-400 bg-red-50 dark:bg-red-900/20'}`}>
                                 {choco.stock > 0 ? `${choco.stock} en stock` : 'Agotado'}
                             </span>
                             </div>
 
-                            <p class="text-stone-600 dark:text-stone-400 text-sm mb-8 flex-grow transition-colors duration-500">{choco.descripcion}</p>
+                            <p class="text-stone-600 dark:text-stone-400 text-sm mb-8 flex-grow transition-colors duration-500 line-clamp-2 break-words min-h-[40px]">
+                                {choco.descripcion}
+                            </p>
 
                             <div class="flex justify-between items-center mt-auto pt-6 border-t border-stone-100 dark:border-stone-800/80 transition-colors duration-500">
-                                <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">${choco.precio.toString()}</span>
+                                <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500 shrink-0">
+                                    ${choco.precio.toString()}
+                                </span>
 
                                 {choco.stock > 0 ? (
                                         <button
-                                                class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer"
+                                                class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer shrink-0"
                                                 data-id={choco.id}
                                                 data-nombre={choco.nombre}
                                                 data-precio={choco.precio.toString()}
@@ -104,22 +110,19 @@ const chocolates = await prisma.chocolate.findMany({
                 const precio = parseFloat(boton.getAttribute('data-precio') || '0');
                 const imagenUrl = boton.getAttribute('data-imagen');
 
-                // Leemos el stock actual desde el HTML
                 const stockDisponible = parseInt(boton.getAttribute('data-stock') || '0');
 
                 if (id && nombre) {
-                    // VALIDACIÓN EN TIEMPO REAL: No dejar agregar más del stock
                     const itemsActuales = carrito.get();
                     const cantidadEnCarrito = itemsActuales[id]?.cantidad || 0;
 
                     if (cantidadEnCarrito >= stockDisponible) {
                         alert(`⚠️ Has alcanzado el límite. Solo contamos con ${stockDisponible} unidades de ${nombre} en el museo.`);
-                        return; // Detiene la compra
+                        return;
                     }
 
                     agregarAlCarrito({ id, nombre, precio, imagenUrl });
 
-                    // Efecto visual pro compatible con Dark Mode
                     const originalText = boton.innerHTML;
                     boton.innerHTML = '¡Agregado! ✅';
                     boton.classList.replace('bg-stone-900', 'bg-green-600');

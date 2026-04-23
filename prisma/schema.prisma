@@ -113,3 +113,16 @@ model DetalleOrden {
   cantidad    Int
   precioUnit  Float
 }
+
+// --- MÓDULO: EXPOSICIONES Y MUSEO ---
+
+model Sala {
+  id          String  @id @default(uuid())
+  nombre      String
+  descripcion String  @db.Text
+  imagenUrl   String
+  historia    String? @db.Text // Para el texto largo de la exposición
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

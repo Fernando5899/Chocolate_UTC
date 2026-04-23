@@ -1,0 +1,164 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getSession } from 'auth-astro/server';
+import prisma from '../../lib/prisma';
+
+// 1. Seguridad: Solo el administrador puede entrar
+const session = await getSession(Astro.request);
+if (session?.user?.email !== 'fernando.jose.reynosa@gmail.com') return Astro.redirect('/');
+
+// 2. Traemos las salas existentes para mostrarlas
+const salas = await prisma.sala.findMany({
+    orderBy: { createdAt: 'desc' }
+});
+---
+
+<Layout title="Gestión de Salas | Admin">
+    <div class="max-w-7xl mx-auto px-8 py-20">
+
+        <a href="/admin/dashboard" class="text-stone-500 hover:text-orange-500 transition-colors flex items-center gap-2 mb-8 uppercase tracking-widest text-xs font-bold">
+            ← Volver al Centro de Mando
+        </a>
+
+        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 transition-colors duration-500">
+            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white mb-4">Salas de Exposición</h1>
+            <p class="text-xl text-stone-500 dark:text-stone-400">Diseña, edita y gestiona los espacios culturales del museo.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+            <form id="form-crear-sala" class="lg:col-span-1 space-y-6 bg-white dark:bg-[#110e0d] p-8 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl">
+                <h2 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-6">Inaugurar Nueva Sala 🏛️</h2>
+
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Nombre de la Sala</label>
+                    <input type="text" name="nombre" placeholder="Ej: El Origen Botánico" class="w-full bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl text-stone-900 dark:text-white p-4 focus:ring-2 focus:ring-orange-500 outline-none transition-all" required />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">URL de Fotografía Principal</label>
+                    <input type="url" name="imagenUrl" placeholder="https://ejemplo.com/foto.jpg" class="w-full bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl text-stone-900 dark:text-white p-4 focus:ring-2 focus:ring-orange-500 outline-none transition-all" required />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Descripción (Resumen)</label>
+                    <textarea name="descripcion" placeholder="Breve introducción para la tarjeta..." class="w-full bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl text-stone-900 dark:text-white p-4 h-24 focus:ring-2 focus:ring-orange-500 outline-none transition-all resize-none" required></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Historia Completa (Opcional)</label>
+                    <textarea name="historia" placeholder="Toda la información histórica, detalles de la exhibición, etc..." class="w-full bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl text-stone-900 dark:text-white p-4 h-48 focus:ring-2 focus:ring-orange-500 outline-none transition-all resize-none"></textarea>
+                </div>
+
+                <button type="submit" id="btn-submit" class="w-full bg-stone-900 dark:bg-white text-white dark:text-stone-900 font-bold py-5 rounded-2xl hover:bg-orange-600 dark:hover:bg-orange-500 hover:text-white transition-all uppercase tracking-widest text-sm shadow-lg active:scale-95">
+                    Guardar Sala
+                </button>
+            </form>
+
+            <div class="lg:col-span-2 space-y-6">
+                <h2 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-6">Salas Activas</h2>
+
+                {salas.length === 0 ? (
+                        <div class="text-center p-16 bg-white/50 dark:bg-[#110e0d]/50 backdrop-blur-md rounded-[40px] border border-stone-200 dark:border-stone-800 border-dashed">
+                            <span class="text-5xl mb-4 block opacity-50 grayscale">🖼️</span>
+                            <h3 class="text-xl font-bold italic text-stone-900 dark:text-white">Aún no hay exposiciones</h3>
+                            <p class="text-stone-500">Crea tu primera sala en el formulario de la izquierda.</p>
+                        </div>
+                ) : (
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {salas.map((sala) => (
+                                    <div class="group relative h-64 overflow-hidden rounded-[30px] border border-stone-200 dark:border-stone-800 shadow-lg">
+                                        <img src={sala.imagenUrl} class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80" alt={sala.nombre} />
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 flex flex-col justify-end">
+                                            <h3 class="text-2xl font-serif text-white italic mb-1">{sala.nombre}</h3>
+                                            <p class="text-stone-300 text-xs line-clamp-2">{sala.descripcion}</p>
+                                        </div>
+                                        <button data-id={sala.id} class="btn-eliminar-sala absolute top-4 right-4 bg-red-600/90 hover:bg-red-500 text-white p-2 rounded-full backdrop-blur-sm transition-colors cursor-pointer" title="Eliminar Sala">
+                                            🗑️
+                                        </button>
+                                    </div>
+                            ))}
+                        </div>
+                )}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LÓGICA DE CREACIÓN ---
+        const form = document.getElementById('form-crear-sala') as HTMLFormElement;
+        const btnSubmit = document.getElementById('btn-submit') as HTMLButtonElement;
+
+        form?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = 'Guardando... ⏳';
+            btnSubmit.disabled = true;
+            btnSubmit.classList.add('opacity-70', 'cursor-not-allowed');
+
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const response = await fetch('/api/salas', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert('Error al crear la sala: ' + errorData.error);
+                }
+            } catch (error) {
+                alert('Hubo un problema de conexión.');
+            } finally {
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+        });
+
+        // --- LÓGICA DE ELIMINACIÓN ---
+        const botonesEliminar = document.querySelectorAll('.btn-eliminar-sala');
+
+        botonesEliminar.forEach(boton => {
+            boton.addEventListener('click', async (e) => {
+                const confirmar = confirm("¿Estás seguro de que deseas demoler esta sala? Esta acción no se puede deshacer.");
+
+                if (confirmar) {
+                    const button = e.currentTarget as HTMLButtonElement;
+                    const salaId = button.getAttribute('data-id');
+                    const originalText = button.innerHTML;
+
+                    // Indicador visual de que se está borrando
+                    button.innerHTML = '⏳';
+                    button.disabled = true;
+
+                    try {
+                        const response = await fetch('/api/salas', {
+                            method: 'DELETE',
+                            body: JSON.stringify({ id: salaId }),
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert("Error al intentar eliminar la sala.");
+                            button.innerHTML = originalText;
+                            button.disabled = false;
+                        }
+                    } catch (error) {
+                        alert("Hubo un problema de conexión.");
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }
+                }
+            });
+        });
+    </script>
+</Layout>

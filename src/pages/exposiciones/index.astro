@@ -1,61 +1,47 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
 
-const salas = [
-    { id: '01', nombre: 'El Origen Botánico', desc: 'El hábitat sagrado del Theobroma Cacao.', img: 'https://images.unsplash.com/photo-1511381939415-e44015466834?q=80&w=2144' },
-    { id: '02', nombre: 'Ritual Prehispánico', desc: 'Moneda y ofrenda de los dioses antiguos.', img: 'https://images.unsplash.com/photo-1620188467120-5042ed1eb5da?q=80&w=1974' },
-    { id: '03', nombre: 'La Molienda Antigua', desc: 'Técnicas ancestrales de transformación.', img: 'https://images.unsplash.com/photo-1541093370339-78d9f109b0b4?q=80&w=2070' },
-    { id: '04', nombre: 'El Viaje Transatlántico', desc: 'El impacto del cacao en la vieja Europa.', img: 'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?q=80&w=1974' },
-    { id: '05', nombre: 'La Revolución Industrial', desc: 'La invención de la primera barra sólida.', img: 'https://images.unsplash.com/photo-1589131668474-124b8969b83b?q=80&w=2070' },
-];
+// Consultamos las salas reales de la base de datos
+const salas = await prisma.sala.findMany({
+    orderBy: { createdAt: 'desc' }
+});
 ---
 
-<Layout title="Exposiciones | Recorrido Virtual">
-    <div class="max-w-7xl mx-auto px-5 md:px-8 py-12 md:py-20 transition-colors duration-500 overflow-hidden w-full">
+<Layout title="Exposiciones | Museo del Chocolate">
+    <div class="max-w-7xl mx-auto px-8 py-20">
 
-        <header class="mb-12 md:mb-16 border-b border-stone-200 dark:border-stone-800 pb-8 md:pb-10 transition-colors duration-500 w-full">
-            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-widest md:tracking-[0.4em] text-xs md:text-sm font-bold block mb-3 md:mb-4">Galería Principal</span>
-
-            <h1 class="text-4xl md:text-6xl font-black italic text-stone-900 dark:text-white mb-4 md:mb-6 transition-colors duration-500 break-words w-full">Exposiciones Permanentes</h1>
-
-            <p class="text-base md:text-xl text-stone-500 dark:text-stone-400 max-w-3xl transition-colors duration-500 break-words pr-4 w-full">Un recorrido cronológico por la historia del cacao. Desliza para explorar la colección curada del museo.</p>
+        <header class="mb-16">
+            <h1 class="text-5xl md:text-6xl font-black italic text-stone-900 dark:text-white mb-4">Exposiciones Permanentes</h1>
+            <p class="text-xl text-stone-600 dark:text-stone-400">Un recorrido cronológico por la historia del cacao. Desliza para explorar la colección curada del museo.</p>
         </header>
 
-        <div class="relative group w-full">
-            <div class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-6 md:gap-8 pb-4 w-full">
-                {salas.map((sala) => (
-                        <div class="flex-none w-[80vw] md:w-[60vw] lg:w-[45vw] snap-center">
-                            <div class="relative aspect-[4/5] md:aspect-[16/10] overflow-hidden rounded-[30px] md:rounded-[40px] group/card shadow-2xl">
-                                <img
-                                        src={sala.img}
-                                        class="w-full h-full object-cover grayscale opacity-90 group-hover/card:grayscale-0 group-hover/card:opacity-100 group-hover/card:scale-105 transition-all duration-1000"
-                                        alt={sala.nombre}
-                                />
+        {salas.length === 0 ? (
+                <div class="text-center p-16 md:p-24 bg-stone-100 dark:bg-[#110e0d] rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-inner transition-colors duration-500">
+                    <span class="text-6xl mb-6 block grayscale opacity-60">🚧</span>
+                    <h2 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-4 italic">Salas en Resguardo y Remodelación</h2>
+                    <p class="text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed">
+                        Nuestros curadores y especialistas están preparando las nuevas exhibiciones de la temporada.
+                        Las piezas históricas se encuentran actualmente en la bóveda de preservación para su mantenimiento.
+                        <br><br>
+                        <span class="font-bold text-orange-600 dark:text-orange-500">¡Vuelve pronto para descubrir la nueva cara del museo!</span>
+                    </p>
+                </div>
+        ) : (
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    {salas.map((sala) => (
+                            <a href={`/salas/${sala.id}`} class="group relative h-[400px] overflow-hidden rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:-translate-y-2">
+                                <img src={sala.imagenUrl} class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 dark:opacity-70" alt={sala.nombre} />
 
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-
-                                <div class="absolute bottom-6 md:bottom-10 left-6 right-6 md:left-10 md:right-10 z-10">
-                                    <span class="text-orange-500 font-mono text-[10px] uppercase tracking-widest font-bold mb-2 md:mb-3 block">SALA {sala.id}</span>
-
-                                    <h3 class="text-2xl md:text-4xl font-bold italic text-white mb-2 md:mb-3 drop-shadow-lg">{sala.nombre}</h3>
-
-                                    <p class="text-stone-300 text-xs md:text-base font-light drop-shadow-md leading-relaxed break-words text-wrap pr-2">{sala.desc}</p>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
+                                    <span class="text-orange-500 font-bold tracking-widest uppercase text-[10px] mb-3">Sala de Exhibición</span>
+                                    <h2 class="text-4xl font-serif text-white italic drop-shadow-lg line-clamp-1">{sala.nombre}</h2>
+                                    <p class="text-stone-200 mt-3 line-clamp-2 text-sm">{sala.descripcion}</p>
                                 </div>
-                            </div>
-                        </div>
-                ))}
-            </div>
+                            </a>
+                    ))}
+                </div>
+        )}
 
-            <div class="flex items-center gap-4 md:gap-6 mt-4 md:mt-6 w-full pr-4">
-                <div class="h-px bg-stone-300 dark:bg-stone-800 flex-grow transition-colors duration-500"></div>
-                <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-stone-500 font-bold italic whitespace-nowrap">Desliza para explorar →</span>
-            </div>
-        </div>
     </div>
 </Layout>
-
-<style>
-    /* Ocultar barra de desplazamiento pero mantener funcionalidad */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-</style>

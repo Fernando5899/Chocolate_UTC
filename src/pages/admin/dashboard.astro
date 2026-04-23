@@ -14,6 +14,7 @@ if (session?.user?.email !== 'fernando.jose.reynosa@gmail.com') return Astro.red
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
             <a href="/admin/ventas" class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group block">
                 <span class="text-5xl mb-6 block grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 transition-all">📈</span>
                 <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-3">Tesorería y Ventas</h3>
@@ -21,16 +22,20 @@ if (session?.user?.email !== 'fernando.jose.reynosa@gmail.com') return Astro.red
             </a>
 
             <a href="/admin/chocolates" class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group block">
-                <span class="text-5xl mb-6 block grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 transition-all">🍫</span>
-                <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-3">Catálogo y Precios</h3>
-                <p class="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">Sube nuevos productos, cambia precios y actualiza fotografías.</p>
+                <div class="flex gap-2 mb-6">
+                    <span class="text-5xl block grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 transition-all">🍫</span>
+                    <span class="text-5xl block grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 transition-all">🏷️</span>
+                </div>
+                <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-3">Catálogo y Categorías</h3>
+                <p class="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">Gestiona productos, precios, fotografías y sus clasificaciones en un solo lugar.</p>
             </a>
 
-            <a href="/admin/categorias" class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group block">
+            <a href="/admin/salas" class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group block">
                 <span class="text-5xl mb-6 block grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 transition-all">🏛️</span>
-                <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-3">Salas y Categorías</h3>
-                <p class="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">Gestiona las clasificaciones del catálogo y del museo.</p>
+                <h3 class="text-2xl font-bold font-serif text-stone-900 dark:text-white mb-3">Salas del Museo</h3>
+                <p class="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">Diseña e inaugura nuevas salas de exposición para el museo.</p>
             </a>
+
         </div>
     </div>
 </Layout>
