@@ -47,7 +47,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
             <a href="/tienda/carrito" class="flex items-center gap-2 text-stone-600 dark:text-stone-300 hover:text-orange-500 transition-colors">
                 Carrito
-                <span class="contador-carrito border border-stone-300 dark:border-stone-700 px-3 py-1 rounded-full text-xs">0</span>
+                <span class="contador-carrito border border-stone-300 dark:border-stone-700 px-3 py-1 rounded-full text-xs font-mono">0</span>
             </a>
 
             <button class="theme-toggle p-2 rounded-lg border border-stone-300 dark:border-stone-800 hover:border-orange-500 transition-all cursor-pointer bg-transparent">
@@ -59,7 +59,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
             {session ? (
                     <div class="flex items-center gap-6">
                         {isAdmin && (
-                                <a href="/admin/dashboard" class="text-orange-600 dark:text-orange-500 hover:text-orange-400 transition-colors flex items-center gap-1 font-black">
+                                <a href="/admin/dashboard" class="text-orange-600 dark:text-orange-500 hover:text-orange-400 transition-colors flex items-center gap-1 font-black uppercase tracking-widest text-[10px]">
                                     <span>⚙️</span> Admin
                                 </a>
                         )}
@@ -96,7 +96,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
             <a href="/tienda/carrito" class="flex justify-between items-center text-stone-600 dark:text-stone-300 hover:text-orange-500 border-t border-stone-200 dark:border-stone-800 pt-6">
                 Carrito
-                <span class="contador-carrito bg-stone-900 dark:bg-white text-white dark:text-black px-3 py-1 rounded-full text-xs">0</span>
+                <span class="contador-carrito bg-stone-900 dark:bg-white text-white dark:text-black px-3 py-1 rounded-full text-xs font-mono">0</span>
             </a>
 
             <div class="border-t border-stone-200 dark:border-stone-800 pt-6 flex flex-col gap-6">
@@ -132,7 +132,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
         </div>
         <div>
             <h4 class="text-stone-900 dark:text-white uppercase tracking-widest text-sm font-bold mb-6 font-sans">Ubicación</h4>
-            <p class="text-base italic font-serif">Calle Milan 45, Juárez, CDMX</p>
+            <p class="text-base italic font-serif text-stone-600 dark:text-stone-400">Calle Milan 45, Juárez, CDMX</p>
         </div>
         <div class="md:text-right">
             <p class="text-sm uppercase tracking-widest font-sans">© {new Date().getFullYear()} Museo de Chocolate</p>
@@ -144,7 +144,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 <script>
     import { carrito } from '../store/carrito';
 
-    // 1. MENÚ MÓVIL (Hamburguesa)
+    // 1. MENÚ MÓVIL
     const btnMenu = document.getElementById('btn-menu-movil');
     const menuMovil = document.getElementById('menu-movil');
     const iconAbrir = document.getElementById('icon-abrir');
@@ -156,7 +156,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
         iconCerrar?.classList.toggle('hidden');
     });
 
-    // 2. TEMA (Soporta múltiples botones)
+    // 2. TEMA
     const botonesTema = document.querySelectorAll('.theme-toggle');
     const iconosTema = document.querySelectorAll('.theme-icon');
     const html = document.documentElement;
@@ -176,7 +176,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
         });
     });
 
-    // 3. CARRITO (Actualiza ambos contadores)
+    // 3. CARRITO
     const contadores = document.querySelectorAll('.contador-carrito');
     carrito.subscribe((items) => {
         const totalItems = Object.values(items).reduce((suma, item) => suma + item.cantidad, 0);
@@ -191,7 +191,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
         });
     });
 
-    // 4. LIMPIEZA AL SALIR (Soporta ambos botones)
+    // 4. LIMPIEZA AL SALIR
     const botonesSalir = document.querySelectorAll('[data-auth-signout]');
     botonesSalir.forEach(btn => {
         btn.addEventListener('click', () => {

@@ -1,0 +1,69 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
+import { getSession } from 'auth-astro/server';
+
+const session = await getSession(Astro.request);
+if (!session) return Astro.redirect('/cuenta/login');
+
+// 1. Buscamos al usuario y sus órdenes vinculadas
+const usuario = await prisma.user.findUnique({
+    where: { email: session.user?.email || '' },
+    include: {
+        ordenes: {
+            include: {
+                detalles: {
+                    include: { chocolate: true }
+                }
+            },
+            orderBy: { fecha: 'desc' }
+        }
+    }
+}) as any;
+
+const ordenes = usuario?.ordenes || [];
+---
+
+<Layout title="Mis Pedidos | Museo de Chocolate">
+    <div class="max-w-5xl mx-auto px-8 py-20">
+        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10">
+            <span class="text-orange-500 uppercase tracking-[0.4em] text-[10px] font-bold block mb-2">Mi Perfil</span>
+            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white">Historial de Expediciones</h1>
+        </header>
+
+        {ordenes.length === 0 ? (
+                <div class="text-center py-20 bg-white dark:bg-[#110e0d] rounded-[40px] border border-dashed border-stone-200 dark:border-stone-800">
+                    <p class="text-stone-500 italic">Aún no has realizado ninguna compra en el museo.</p>
+                    <a href="/tienda/chocolates" class="inline-block mt-6 text-xs font-bold uppercase tracking-widest text-orange-600 border-b border-orange-600 pb-1">Ir a la tienda</a>
+                </div>
+        ) : (
+                <div class="space-y-8">
+                    {ordenes.map((orden: any) => (
+                            <div class="bg-white dark:bg-[#110e0d] p-8 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl flex flex-col md:flex-row justify-between items-center gap-8 group hover:border-orange-500 transition-all">
+                                <div class="flex-grow">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <span class="bg-stone-100 dark:bg-stone-900 px-3 py-1 rounded-full text-[10px] font-mono font-bold text-stone-500 uppercase">#{orden.id.slice(-8).toUpperCase()}</span>
+                                        <span class="text-xs text-stone-400 font-bold">{new Date(orden.fecha).toLocaleDateString('es-MX', { dateStyle: 'long' })}</span>
+                                    </div>
+
+                                    <h3 class="text-xl font-serif italic font-bold text-stone-900 dark:text-white mb-2">
+                                        {orden.detalles.length} Artículo(s) adquiridos
+                                    </h3>
+
+                                    <p class="text-sm text-stone-500 line-clamp-1">
+                                        En enviado a: {orden.direccion}, {orden.estadoEnvio}
+                                    </p>
+                                </div>
+
+                                <div class="text-right flex flex-col items-center md:items-end gap-4">
+                                    <span class="text-3xl font-black text-stone-900 dark:text-white">${orden.total.toFixed(2)}</span>
+                                    <a href={`/ticket/${orden.id}`} class="bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-orange-600 transition-all">
+                                        Ver Recibo
+                                    </a>
+                                </div>
+                            </div>
+                    ))}
+                </div>
+        )}
+    </div>
+</Layout>

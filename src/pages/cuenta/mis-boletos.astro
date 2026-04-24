@@ -1,0 +1,72 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
+import { getSession } from 'auth-astro/server';
+
+const session = await getSession(Astro.request);
+if (!session) return Astro.redirect('/cuenta/login');
+
+const usuario = await prisma.user.findUnique({
+    where: { email: session.user?.email || '' },
+    include: {
+        ordenes: {
+            include: { detalles: { include: { chocolate: true } } },
+            orderBy: { fecha: 'desc' }
+        }
+    }
+}) as any;
+
+// Filtramos solo los items que sean boletos (IDs que contienen 'ticket')
+const todasLasOrdenes = usuario?.ordenes || [];
+---
+
+<Layout title="Mis Boletos | Museo de Chocolate">
+    <div class="max-w-5xl mx-auto px-8 py-20">
+        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10">
+            <span class="text-orange-500 uppercase tracking-[0.4em] text-[10px] font-bold block mb-2">Taquilla Personal</span>
+            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white">Mis Accesos</h1>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {todasLasOrdenes.map((orden: any) => (
+                    <a href={`/ticket/${orden.id}`} class="block relative group">
+                        <div class="bg-white dark:bg-[#110e0d] p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg hover:shadow-2xl transition-all overflow-hidden">
+                            <div class="absolute top-1/2 -left-4 w-8 h-8 bg-stone-100 dark:bg-[#0c0a09] rounded-full border border-stone-200 dark:border-stone-800 -translate-y-1/2"></div>
+                            <div class="absolute top-1/2 -right-4 w-8 h-8 bg-stone-100 dark:bg-[#0c0a09] rounded-full border border-stone-200 dark:border-stone-800 -translate-y-1/2"></div>
+
+                            <div class="flex justify-between items-start mb-6 border-b border-dashed border-stone-200 dark:border-stone-800 pb-4">
+                                <div>
+                                    <h3 class="text-lg font-serif font-black italic text-stone-900 dark:text-white">Entrada Oficial</h3>
+                                    <p class="text-[9px] uppercase font-bold text-orange-500 tracking-widest">Pase de Visitante</p>
+                                </div>
+                                <span class="text-[10px] font-mono text-stone-400">#{orden.id.slice(-6).toUpperCase()}</span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <span class="text-[9px] uppercase font-bold text-stone-400 block mb-1">Fecha de Emisión</span>
+                                        <p class="text-sm font-bold dark:text-white">{new Date(orden.fecha).toLocaleDateString('es-MX')}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[9px] uppercase font-bold text-stone-400 block mb-1">Estatus</span>
+                                        <span class="text-[9px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-black uppercase">Válido</span>
+                                    </div>
+                                </div>
+
+                                <div class="bg-stone-50 dark:bg-[#0c0a09] p-4 rounded-xl flex justify-center">
+                                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${orden.id}&color=1c1917`} class="w-20 h-20 opacity-80 group-hover:opacity-100 transition-opacity" alt="Mini QR" />
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+            ))}
+
+            {todasLasOrdenes.length === 0 && (
+                    <div class="col-span-full text-center py-20 text-stone-500 italic border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-[40px]">
+                        No tienes boletos reservados aún.
+                    </div>
+            )}
+        </div>
+    </div>
+</Layout>

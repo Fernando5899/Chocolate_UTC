@@ -72,49 +72,51 @@ import 'flatpickr/dist/flatpickr.min.css';
 
         </div>
     </div>
-
     <script>
         import { carrito } from '../../store/carrito';
         import { agregarAlCarrito } from '../../store/carrito';
-
-        // Importamos la librería y el idioma desde el disco duro local
         import flatpickr from 'flatpickr';
-        import { Spanish } from 'flatpickr/dist/l10n/es.js';
+        // Importamos el idioma así para evitar el error de resolución de Vite
+        import 'flatpickr/dist/l10n/es';
 
         const LIMITE_BOLETOS_POR_PERSONA = 10;
-
         const inputFecha = document.getElementById('input-fecha') as HTMLInputElement;
         const selectHora = document.getElementById('selector-hora') as HTMLSelectElement;
         const infoHorario = document.getElementById('info-horario');
         const alertaError = document.getElementById('alerta-error');
 
-        // INICIALIZACIÓN DE FLATPICKR
+        // INICIALIZACIÓN DE FLATPICKR CORREGIDA
         flatpickr("#input-fecha", {
-            locale: Spanish, // Usamos el idioma importado
+            locale: "es", // Ahora solo pasamos el string "es" porque ya importamos el archivo arriba
             minDate: "today",
-            disableMobile: "true",
-            onChange: function(selectedDates: Date[]) {
+            disableMobile: true,
+            onChange: function(selectedDates) {
                 if (selectedDates.length === 0) return;
 
                 const diaSemana = selectedDates[0].getDay();
-
                 selectHora.innerHTML = '<option value="" disabled selected>Elige un horario disponible...</option>';
                 selectHora.disabled = false;
                 selectHora.classList.remove('cursor-not-allowed');
 
                 if (infoHorario) infoHorario.classList.remove('hidden');
 
+                // Lunes (1) a Viernes (5)
                 if (diaSemana >= 1 && diaSemana <= 5) {
                     if (infoHorario) infoHorario.innerText = 'Operación Laboral: 09:00 AM a 05:00 PM';
-                    ['09:00 AM', '11:00 AM', '01:00 PM', '03:00 PM'].forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
+                    ['09:00 AM', '11:00 AM', '01:00 PM', '03:00 PM'].forEach(hora => {
+                        selectHora.innerHTML += `<option value="${hora}">${hora}</option>`;
+                    });
                 } else {
+                    // Sábado (6) y Domingo (0)
                     if (infoHorario) infoHorario.innerText = 'Operación Fin de Semana: 10:00 AM a 06:00 PM';
-                    ['10:00 AM', '12:00 PM', '02:00 PM', '04:00 PM'].forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
+                    ['10:00 AM', '12:00 PM', '02:00 PM', '04:00 PM'].forEach(hora => {
+                        selectHora.innerHTML += `<option value="${hora}">${hora}</option>`;
+                    });
                 }
             }
         });
 
-        // Procesamiento de la Reserva
+        // Lógica de Reserva (Botones)
         document.querySelectorAll('.btn-agregar').forEach(btn => {
             btn.addEventListener('click', () => {
                 const fecha = inputFecha?.value;
@@ -124,7 +126,6 @@ import 'flatpickr/dist/flatpickr.min.css';
                     alertaError?.classList.remove('hidden');
                     inputFecha.classList.add('border-red-500');
                     selectHora.classList.add('border-red-500');
-
                     setTimeout(() => {
                         alertaError?.classList.add('hidden');
                         inputFecha.classList.remove('border-red-500');
@@ -138,37 +139,33 @@ import 'flatpickr/dist/flatpickr.min.css';
                 const precio = parseFloat(btn.getAttribute('data-precio') || '0');
 
                 if (baseId && baseNombre) {
+                    // Creamos un ID que incluya la fecha y hora para evitar duplicados en el carrito
                     const idUnico = `${baseId}-${fecha}-${hora.replace(/[:\s]/g, '')}`;
-
                     const itemsActuales = carrito.get();
                     const boletosEnCarrito = itemsActuales[idUnico]?.cantidad || 0;
 
                     if (boletosEnCarrito >= LIMITE_BOLETOS_POR_PERSONA) {
-                        alert(`🚫 Por políticas de seguridad, no puedes adquirir más de ${LIMITE_BOLETOS_POR_PERSONA} entradas del mismo tipo por horario.`);
+                        alert(`🚫 Límite alcanzado: Máximo ${LIMITE_BOLETOS_POR_PERSONA} entradas por horario.`);
                         return;
                     }
 
-                    const fechaFormateada = new Date(fecha + 'T00:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
-                    const nombreCompleto = `${baseNombre} (${fechaFormateada} - ${hora})`;
+                    // Formateamos el nombre para que el usuario sepa qué compró
+                    const nombreCompleto = `${baseNombre} (${fecha} - ${hora})`;
 
                     agregarAlCarrito({
                         id: idUnico,
                         nombre: nombreCompleto,
                         precio: precio,
-                        imagenUrl: null
+                        imagenUrl: null // Los boletos no llevan imagen de Cloudinary
                     });
 
+                    // Efecto visual de éxito
                     const originalText = btn.innerHTML;
                     btn.innerHTML = '¡Agregado! ✅';
-                    btn.classList.replace('bg-stone-900', 'bg-green-600');
-                    btn.classList.replace('dark:bg-white', 'dark:bg-green-500');
-                    btn.classList.add('text-white');
-
+                    btn.classList.add('bg-green-600', 'text-white');
                     setTimeout(() => {
                         btn.innerHTML = originalText;
-                        btn.classList.replace('bg-green-600', 'bg-stone-900');
-                        btn.classList.replace('dark:bg-green-500', 'dark:bg-white');
-                        btn.classList.remove('text-white');
+                        btn.classList.remove('bg-green-600', 'text-white');
                     }, 1500);
                 }
             });

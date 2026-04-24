@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import { getSession } from 'auth-astro/server';
 
 const session = await getSession(Astro.request);
+// Mantenemos tu seguridad de acceso
 if (session?.user?.email !== 'fernando.jose.reynosa@gmail.com') return Astro.redirect('/');
 ---
 
@@ -13,7 +14,7 @@ if (session?.user?.email !== 'fernando.jose.reynosa@gmail.com') return Astro.red
             <p class="text-xl text-stone-500 dark:text-stone-400">Gestión integral del ecosistema del museo.</p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
 
             <a href="/admin/ventas" class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group block">
                 <span class="text-5xl mb-6 block grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 transition-all">📈</span>
