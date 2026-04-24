@@ -1,0 +1,95 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
+
+const { id } = Astro.params;
+
+// 1. Buscamos la orden usando los nombres EXACTOS de tu schema.prisma
+const orden = await prisma.orden.findUnique({
+    where: { id: id },
+    include: {
+        detalles: {
+            include: {
+                chocolate: true // Para traer el nombre, imagenUrl, etc.
+            }
+        }
+    }
+}) as any; // Usamos 'as any' para silenciar el error de TypeScript que me mostraste
+
+if (!orden) return Astro.redirect('/404');
+
+// En tu schema, la lista de productos está en 'detalles'
+const productos = orden.detalles || [];
+---
+
+<Layout title={`Ticket #${orden.id.slice(-6).toUpperCase()} | Museo`}>
+    <div class="min-h-screen bg-stone-100 dark:bg-[#0c0a09] py-12 px-6 flex justify-center items-start transition-colors duration-500">
+
+        <div class="w-full max-w-sm bg-white dark:bg-[#110e0d] shadow-2xl rounded-t-3xl relative overflow-hidden transition-colors duration-500">
+
+            <div class="h-1.5 bg-orange-600 w-full"></div>
+
+            <div class="p-10 text-center border-b border-dashed border-stone-200 dark:border-stone-800">
+                <h1 class="text-xl font-black italic text-stone-900 dark:text-white uppercase tracking-tighter">Museo de Chocolate</h1>
+                <p class="text-[9px] text-stone-400 uppercase tracking-widest mt-1">Cultura y Tradición</p>
+            </div>
+
+            <div class="p-8 space-y-8">
+                <div class="text-center">
+                    <span class="text-[9px] text-stone-400 uppercase tracking-widest block mb-1">Entregado a:</span>
+                    <p class="text-lg font-serif italic text-stone-900 dark:text-white font-bold">{orden.clienteNombre}</p>
+                </div>
+
+                <div class="space-y-4">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-orange-600 block border-b border-stone-100 dark:border-stone-800 pb-2">Manifiesto de Artículos</span>
+                    {productos.map((item: any) => (
+                            <div class="flex justify-between items-center text-xs">
+                            <span class="text-stone-600 dark:text-stone-300 italic">
+                                {item.cantidad}x {item.chocolate?.nombre || 'Producto'}
+                            </span>
+                                <span class="font-bold text-stone-900 dark:text-white">
+                                ${(item.precioUnit * item.cantidad).toFixed(2)}
+                            </span>
+                            </div>
+                    ))}
+                </div>
+
+                <div class="pt-6 border-t-2 border-stone-900 dark:border-white flex justify-between items-end">
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Pago Total</span>
+                    <span class="text-4xl font-black text-stone-900 dark:text-white">
+                        ${orden.total.toFixed(2)}
+                    </span>
+                </div>
+
+                <div class="text-[9px] text-stone-400 text-center space-y-1">
+                    <p>Destino: {orden.estadoEnvio}, {orden.codigoPostal}</p>
+                    <p>Fecha: {new Date(orden.fecha).toLocaleDateString('es-MX')}</p>
+                </div>
+            </div>
+
+            <div class="p-10 bg-stone-50 dark:bg-[#0c0a09] text-center relative border-t border-stone-100 dark:border-stone-800">
+                <div class="absolute -top-3 left-0 right-0 flex justify-around px-1 overflow-hidden">
+                    {[...Array(10)].map(() => (
+                            <div class="w-6 h-6 bg-white dark:bg-[#110e0d] rounded-full -mt-3 shadow-inner"></div>
+                    ))}
+                </div>
+
+                <p class="text-[9px] text-stone-400 font-bold uppercase tracking-[0.2em] mb-6">Autenticidad Garantizada</p>
+                <code class="text-[10px] text-stone-300 dark:text-stone-600 block mb-6 uppercase tracking-tighter">ID: {orden.id}</code>
+
+                <button onclick="window.print()" class="no-print bg-stone-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all cursor-pointer shadow-lg active:scale-95">
+                    Descargar Comprobante 📄
+                </button>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    /* Estilos para que la impresión se vea limpia */
+    @media print {
+        .no-print { display: none; }
+        body { background: white !important; padding: 0 !important; }
+        .shadow-2xl { box-shadow: none !important; border: 1px solid #eee; }
+    }
+</style>
