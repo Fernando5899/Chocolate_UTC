@@ -59,7 +59,8 @@ const detalles = orden.detalles || [];
             {detalles.map((item: any) => (
                     <div class="flex justify-between text-sm italic">
                         <span class="dark:text-stone-300 text-stone-600">
-                            {item.cantidad}x {item.chocolate ? item.chocolate.nombre : "🎟️ Boleto de Acceso"}
+                            {/* AQUÍ ESTÁ LA MAGIA: Si hay chocolate pone el nombre, si no, pone el nombreItem del boleto */}
+                            {item.cantidad}x {item.chocolate ? item.chocolate.nombre : (item.nombreItem || "🎟️ Pase de Admisión")}
                         </span>
                         <span class="font-bold text-stone-900 dark:text-white">${(item.precioUnit * item.cantidad).toFixed(2)}</span>
                     </div>

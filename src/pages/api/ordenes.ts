@@ -37,13 +37,17 @@ export const POST: APIRoute = async ({ request }) => {
                     clienteNombre, estadoEnvio, direccion, codigoPostal, total,
                     userId: userId || null,
                     detalles: {
-                        create: items
-                            .filter((i: any) => !i.id.includes('ticket'))
-                            .map((item: any) => ({
-                                chocolateId: item.id,
+                        create: items.map((item: any) => {
+                            // Detectamos si lo que compró es un boleto
+                            const esBoleto = item.id.includes('ticket') || item.id.includes('boleto');
+
+                            return {
+                                chocolateId: esBoleto ? null : item.id,
+                                nombreItem: esBoleto ? item.nombre : null, // Guardamos "Boleto General", etc.
                                 cantidad: item.cantidad,
                                 precioUnit: item.precio
-                            }))
+                            };
+                        })
                     }
                 }
             });

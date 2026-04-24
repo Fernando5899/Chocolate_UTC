@@ -105,11 +105,17 @@ model Orden {
 }
 
 model DetalleOrden {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   ordenId     String
   orden       Orden     @relation(fields: [ordenId], references: [id])
-  chocolateId String
-  chocolate   Chocolate @relation(fields: [chocolateId], references: [id])
+
+  // 1. Hacemos que el chocolate sea OPCIONAL (nota los signos ?)
+  chocolateId String?
+  chocolate   Chocolate? @relation(fields: [chocolateId], references: [id])
+
+  // 2. Campo nuevo para guardar el nombre si es un boleto
+  nombreItem  String?
+
   cantidad    Int
   precioUnit  Float
 }
