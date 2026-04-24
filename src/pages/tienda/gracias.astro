@@ -7,7 +7,7 @@ const idOrden = Astro.url.searchParams.get('orden');
 if (!idOrden) return Astro.redirect('/tienda/chocolates');
 
 // URL que abrirá el QR (Cámbiala por tu dominio de Vercel cuando despliegues)
-const urlTicket = `https://tu-museo.vercel.app/ticket/${idOrden}`;
+const urlTicket = `https://chocolate-utc.vercel.app/ticket/${idOrden}`;
 ---
 
 <Layout title="¡Gracias por tu compra! | Museo">
