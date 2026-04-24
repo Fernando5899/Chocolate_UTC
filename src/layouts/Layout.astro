@@ -3,6 +3,7 @@ interface Props { title: string; }
 import '../styles/global.css';
 import { getSession } from 'auth-astro/server';
 import { SignOut } from 'auth-astro/components';
+import Chatbot from '../components/Chatbot.astro';
 
 const { title } = Astro.props;
 const session = await getSession(Astro.request);
@@ -140,6 +141,8 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
         </div>
     </div>
 </footer>
+
+<Chatbot />
 
 <script>
     import { carrito } from '../store/carrito';
