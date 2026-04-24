@@ -5,6 +5,9 @@
   "engines": {
     "node": ">=22.12.0"
   },
+  "overrides": {
+    "vite": "^7"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

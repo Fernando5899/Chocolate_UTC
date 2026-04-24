@@ -2,10 +2,18 @@
 import Layout from '../../layouts/Layout.astro';
 import prisma from '../../lib/prisma';
 import { getSession } from 'auth-astro/server';
+import { v2 as cloudinary } from 'cloudinary';
 
-// Seguridad
+// 1. Seguridad (Se queda igual)
 const session = await getSession(Astro.request);
 if (session?.user?.email !== 'fernando.jose.reynosa@gmail.com') return Astro.redirect('/');
+
+// 2. Configuración de Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 let mensaje = "";
 let tipoMensaje = "";
@@ -22,21 +30,19 @@ if (Astro.request.method === 'POST') {
             const descripcion = data.get('descripcion')?.toString() || '';
             const categoriaId = data.get('categoriaId')?.toString() || '';
 
-            // 🚀 LÓGICA DE SUBIDA DE IMAGEN (Adaptada para Vercel / Base64)
+            // 🚀 NUEVA LÓGICA CLOUDINARY
             const imagen = data.get('imagen') as File;
             let imagenUrl = null;
 
             if (imagen && imagen.size > 0) {
-                // Leemos el archivo y lo convertimos a un Buffer
                 const arrayBuffer = await imagen.arrayBuffer();
                 const buffer = Buffer.from(arrayBuffer);
+                const base64Image = `data:${imagen.type};base64,${buffer.toString('base64')}`;
 
-                // Lo codificamos a Base64
-                const base64String = buffer.toString('base64');
-                const mimeType = imagen.type; // ej: image/png o image/jpeg
-
-                // Creamos una Data URL que el navegador puede leer como imagen
-                imagenUrl = `data:${mimeType};base64,${base64String}`;
+                const uploadRes = await cloudinary.uploader.upload(base64Image, {
+                    folder: 'museo_chocolate/chocolates'
+                });
+                imagenUrl = uploadRes.secure_url;
             }
 
             await prisma.chocolate.create({
@@ -54,6 +60,15 @@ if (Astro.request.method === 'POST') {
         }
         else if (intent === 'eliminar') {
             const id = data.get('id')?.toString() || '';
+
+            // 🧹 LIMPIEZA DE IMAGEN EN LA NUBE
+            const chocolate = await prisma.chocolate.findUnique({ where: { id } });
+            if (chocolate?.imagenUrl) {
+                // Extraemos el ID de la imagen para borrarla de Cloudinary
+                const publicId = chocolate.imagenUrl.split('/').pop()?.split('.')[0];
+                if (publicId) await cloudinary.uploader.destroy(`museo_chocolate/chocolates/${publicId}`);
+            }
+
             await prisma.chocolate.delete({ where: { id } });
             mensaje = "Producto retirado de la base de datos.";
             tipoMensaje = "success";

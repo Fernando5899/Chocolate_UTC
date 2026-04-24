@@ -26,12 +26,13 @@ const chocolates = await prisma.chocolate.findMany({
             </p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div class="flex flex-wrap justify-center gap-10">
             {chocolates.map((choco) => (
-                    <div class={`bg-white dark:bg-[#110e0d] p-8 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-300 flex flex-col group overflow-hidden ${choco.stock > 0 ? 'hover:border-orange-500 dark:hover:border-orange-500 hover:-translate-y-2' : 'opacity-70 grayscale'}`}>
+                    <div class={`bg-white dark:bg-[#110e0d] p-8 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-300 flex flex-col group overflow-hidden w-full md:w-[calc(50%-2.5rem)] lg:w-[calc(33.33%-2.5rem)] max-w-[400px] ${choco.stock > 0 ? 'hover:border-orange-500 dark:hover:border-orange-500 hover:-translate-y-2' : 'opacity-70 grayscale'}`}>
 
                         <div class="relative aspect-square mb-6 overflow-hidden rounded-3xl bg-stone-100 dark:bg-[#0c0a09]">
                             {choco.imagenUrl ? (
+                                /* Aquí es donde jala la imagen de Cloudinary automáticamente */
                                     <img
                                             src={choco.imagenUrl}
                                             alt={choco.nombre}
@@ -109,7 +110,6 @@ const chocolates = await prisma.chocolate.findMany({
                 const nombre = boton.getAttribute('data-nombre');
                 const precio = parseFloat(boton.getAttribute('data-precio') || '0');
                 const imagenUrl = boton.getAttribute('data-imagen');
-
                 const stockDisponible = parseInt(boton.getAttribute('data-stock') || '0');
 
                 if (id && nombre) {
