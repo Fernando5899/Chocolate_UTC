@@ -48,7 +48,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
             <a href="/tienda/carrito" class="flex items-center gap-2 text-stone-600 dark:text-stone-300 hover:text-orange-500 transition-colors">
                 Carrito
-                <span class="contador-carrito border border-stone-300 dark:border-stone-700 px-3 py-1 rounded-full text-xs font-mono">0</span>
+                <span class="contador-carrito inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 border border-stone-300 dark:border-stone-700 rounded-full text-[11px] font-mono leading-none transition-colors">0</span>
             </a>
 
             <button class="theme-toggle p-2 rounded-lg border border-stone-300 dark:border-stone-800 hover:border-orange-500 transition-all cursor-pointer bg-transparent">
@@ -97,7 +97,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
             <a href="/tienda/carrito" class="flex justify-between items-center text-stone-600 dark:text-stone-300 hover:text-orange-500 border-t border-stone-200 dark:border-stone-800 pt-6">
                 Carrito
-                <span class="contador-carrito bg-stone-900 dark:bg-white text-white dark:text-black px-3 py-1 rounded-full text-xs font-mono">0</span>
+                <span class="contador-carrito inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 bg-stone-900 dark:bg-white text-white dark:text-black rounded-full text-[11px] font-mono leading-none transition-colors">0</span>
             </a>
 
             <div class="border-t border-stone-200 dark:border-stone-800 pt-6 flex flex-col gap-6">
@@ -185,11 +185,18 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
         const totalItems = Object.values(items).reduce((suma, item) => suma + item.cantidad, 0);
 
         contadores.forEach(contador => {
-            contador.textContent = totalItems.toString();
+            contador.textContent = totalItems > 99 ? '99+' : totalItems.toString();
+            
             if (totalItems > 0) {
-                contador.classList.add('border-orange-500', 'text-orange-500');
+                // Modificamos colores y bordes cuando hay items
+                contador.classList.replace('border-stone-300', 'border-orange-500');
+                contador.classList.replace('dark:border-stone-700', 'border-orange-500');
+                contador.classList.add('text-orange-600', 'dark:text-orange-500');
             } else {
-                contador.classList.remove('border-orange-500', 'text-orange-500');
+                // Regresamos a gris cuando está vacío
+                contador.classList.replace('border-orange-500', 'border-stone-300');
+                contador.classList.replace('border-orange-500', 'dark:border-stone-700');
+                contador.classList.remove('text-orange-600', 'dark:text-orange-500');
             }
         });
     });

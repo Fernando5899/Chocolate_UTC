@@ -14,7 +14,7 @@ const inventarioVivo = await prisma.chocolate.findMany({
     <div id="datos-inventario" data-stock={JSON.stringify(inventarioVivo)} class="hidden"></div>
 
     <div class="max-w-5xl mx-auto py-12 px-8 transition-colors duration-500">
-        <h1 class="text-5xl font-black italic text-stone-900 dark:text-white mb-12 transition-colors duration-500">Tu Carrito 🛒</h1>
+        <h1 class="text-5xl font-black italic text-stone-900 dark:text-white mb-12 transition-colors duration-500 tracking-tighter">Tu Carrito 🛒</h1>
 
         <div id="carrito-vacio" class="hidden text-center py-24 px-8 bg-white dark:bg-[#110e0d]/80 backdrop-blur-md rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-2xl transition-colors duration-500">
             <span class="text-7xl mb-8 block opacity-40 grayscale">🛍️</span>
@@ -28,25 +28,30 @@ const inventarioVivo = await prisma.chocolate.findMany({
         <div id="carrito-lleno" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-10">
 
             <div class="lg:col-span-2 space-y-6" id="lista-productos">
-            </div>
+                </div>
 
             <div class="lg:col-span-1">
-                <div class="bg-white dark:bg-[#110e0d] p-10 rounded-3xl shadow-xl border border-stone-200 dark:border-stone-800 sticky top-28 transition-colors duration-500">
+                <div class="bg-white dark:bg-[#110e0d] p-10 rounded-3xl shadow-xl border border-stone-200 dark:border-stone-800 sticky top-28 transition-colors duration-500 overflow-hidden w-full">
                     <h2 class="text-2xl font-bold italic text-stone-900 dark:text-white mb-8 border-b border-stone-100 dark:border-stone-800/80 pb-6 transition-colors duration-500">Resumen</h2>
 
                     <div class="flex justify-between mb-4 text-stone-600 dark:text-stone-400 text-sm uppercase tracking-widest font-bold">
                         <span>Subtotal</span>
-                        <span id="subtotal-texto" class="dark:text-stone-300">$0.00</span>
+                        <span id="subtotal-texto" class="dark:text-stone-300 font-mono">$0.00</span>
                     </div>
 
                     <div class="flex justify-between mb-8 text-stone-600 dark:text-stone-400 text-sm uppercase tracking-widest font-bold">
                         <span>Envío (CDMX)</span>
-                        <span class="text-orange-500 dark:text-orange-400">Calculando en pago...</span>
+                        <span class="text-orange-500 dark:text-orange-400 text-right">Calculando<br/>en pago...</span>
                     </div>
 
-                    <div class="flex justify-between items-center mb-10 pt-8 border-t border-stone-100 dark:border-stone-800/80 transition-colors duration-500">
-                        <span class="text-sm font-bold text-stone-500 uppercase tracking-[0.2em]">Total Estimado</span>
-                        <span id="total-texto" class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$0.00</span>
+                    <div class="flex flex-col mb-10 pt-8 border-t border-stone-100 dark:border-stone-800/80 transition-colors duration-500 gap-2 overflow-hidden w-full">
+                        <span class="text-xs font-bold text-stone-500 uppercase tracking-[0.2em] text-left block w-full">
+                            Total Estimado
+                        </span>
+                        
+                        <span id="total-texto" class="text-4xl lg:text-5xl font-black text-stone-900 dark:text-white transition-colors duration-500 text-right w-full tracking-tighter truncate block" title="Monto a pagar">
+                            $0.00
+                        </span>
                     </div>
 
                     <a href="/tienda/checkout" class="block w-full text-center bg-stone-900 dark:bg-white text-white dark:text-black font-black py-5 px-6 rounded-full hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-xl cursor-pointer uppercase text-[10px] tracking-[0.3em] active:scale-95">
@@ -55,7 +60,7 @@ const inventarioVivo = await prisma.chocolate.findMany({
 
                     <p class="text-[10px] text-stone-400 dark:text-stone-500 uppercase tracking-widest text-center mt-8 flex flex-col items-center gap-2 font-bold">
                         <span>🔒 Expedición Segura</span>
-                        <span class="opacity-70">Sincronizado con base de datos en tiempo real.</span>
+                        <span class="opacity-70 text-center leading-tight">Sincronizado con base de datos en tiempo real.</span>
                     </p>
                 </div>
             </div>
@@ -74,6 +79,7 @@ const inventarioVivo = await prisma.chocolate.findMany({
         carrito.subscribe((items) => {
             const arrayItems = Object.values(items);
 
+            // Si no hay items, mostramos la pantalla vacía
             if (arrayItems.length === 0) {
                 containerVacio?.classList.remove('hidden');
                 containerLleno?.classList.add('hidden');
@@ -94,18 +100,18 @@ const inventarioVivo = await prisma.chocolate.findMany({
                     const itemHTML = `
                         <div class="flex flex-col sm:flex-row items-center gap-6 bg-white dark:bg-[#110e0d] p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg transition-all duration-300">
                             <div class="w-28 h-28 bg-stone-100 dark:bg-[#0c0a09] border border-stone-100 dark:border-stone-800/50 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0">
-                                ${item.imagenUrl && item.imagenUrl !== "null" ? `<img src="${item.imagenUrl}" alt="${item.nombre}" class="w-full h-full object-cover grayscale opacity-80"/>` : `<span class="text-4xl opacity-50 grayscale">🍫</span>`}
+                                ${item.imagenUrl && item.imagenUrl !== "null" ? `<img src="${item.imagenUrl}" alt="${item.nombre}" class="w-full h-full object-cover grayscale opacity-80 hover:grayscale-0 transition-all duration-500"/>` : `<span class="text-4xl opacity-50 grayscale">🍫</span>`}
                             </div>
                             
                             <div class="flex-grow text-center sm:text-left">
-                                <h3 class="font-bold font-serif text-2xl text-stone-900 dark:text-white mb-1 transition-colors duration-500">${item.nombre}</h3>
-                                <p class="text-stone-500 dark:text-stone-400 font-medium text-sm">$${item.precio.toFixed(2)} c/u</p>
+                                <h3 class="font-bold font-serif text-2xl text-stone-900 dark:text-white mb-1 transition-colors duration-500 line-clamp-2">${item.nombre}</h3>
+                                <p class="text-stone-500 dark:text-stone-400 font-medium text-sm font-mono">$${item.precio.toFixed(2)} c/u</p>
                             </div>
                             
-                            <div class="flex flex-col items-center sm:items-end gap-4">
-                                <span class="font-black text-2xl text-stone-900 dark:text-white transition-colors duration-500">$${subtotalItem.toFixed(2)}</span>
+                            <div class="flex flex-col items-center sm:items-end gap-4 shrink-0">
+                                <span class="font-black text-2xl text-stone-900 dark:text-white transition-colors duration-500 font-mono">$${subtotalItem.toFixed(2)}</span>
                                 
-                                <div class="flex items-center bg-stone-50 dark:bg-[#0c0a09] rounded-full border border-stone-200 dark:border-stone-800 overflow-hidden">
+                                <div class="flex items-center bg-stone-50 dark:bg-[#0c0a09] rounded-full border border-stone-200 dark:border-stone-800 overflow-hidden shadow-sm">
                                     <button class="btn-restar w-10 h-10 flex items-center justify-center font-black text-stone-500 dark:text-stone-400 hover:text-orange-500 dark:hover:text-orange-400 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors cursor-pointer" data-id="${item.id}">-</button>
                                     <span class="w-10 text-center font-bold text-sm text-stone-900 dark:text-white">${item.cantidad}</span>
                                     <button class="btn-sumar w-10 h-10 flex items-center justify-center font-black text-stone-500 dark:text-stone-400 hover:text-orange-500 dark:hover:text-orange-400 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors cursor-pointer" data-id="${item.id}">+</button>
