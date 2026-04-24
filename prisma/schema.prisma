@@ -116,13 +116,16 @@ model DetalleOrden {
 
 // --- MÓDULO: EXPOSICIONES Y MUSEO ---
 
-model Sala {
-  id          String  @id @default(uuid())
-  nombre      String
-  descripcion String  @db.Text
-  imagenUrl   String
-  historia    String? @db.Text // Para el texto largo de la exposición
+// --- MÓDULO: EXPOSICIONES Y MUSEO ---
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Sala {
+  id          String   @id @default(uuid())
+  nombre      String
+  descripcion String   @db.Text
+  imagenUrl   String   // Esta es la portada
+  galeria     String[] @default([]) // AQUI ESTÁN LAS 8 IMÁGENES
+  historia    String?  @db.Text
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

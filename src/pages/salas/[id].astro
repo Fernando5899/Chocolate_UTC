@@ -1,66 +1,109 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import prisma from '../../lib/prisma';
 
-// 1. Definimos los datos de las salas (esto luego podría venir de Prisma si quisieras)
-const salas = [
-    { id: '01', nombre: 'El Origen Botánico', desc: 'El hábitat sagrado del Theobroma Cacao.', detalle: 'Explora las selvas tropicales donde el cacao comenzó su viaje hace milenios.', img: 'https://images.unsplash.com/photo-1511381939415-e44015466834?q=80&w=2144' },
-    { id: '02', nombre: 'Ritual Prehispánico', desc: 'Moneda y ofrenda de los dioses antiguos.', detalle: 'Descubre cómo las culturas mesoamericanas transformaron el grano en una bebida sagrada.', img: 'https://images.unsplash.com/photo-1620188467120-5042ed1eb5da?q=80&w=1974' },
-    { id: '03', nombre: 'La Molienda Antigua', desc: 'Técnicas ancestrales de transformación.', detalle: 'El arte del metate y la alquimia del fuego para liberar el alma del chocolate.', img: 'https://images.unsplash.com/photo-1541093370339-78d9f109b0b4?q=80&w=2070' },
-    { id: '04', nombre: 'El Viaje Transatlántico', desc: 'El impacto del cacao en la vieja Europa.', detalle: 'El encuentro fortuito que cambió el paladar del mundo para siempre.', img: 'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?q=80&w=1974' },
-    { id: '05', nombre: 'La Revolución Industrial', desc: 'La invención de la primera barra sólida.', detalle: 'De la artesanía a la precisión mecánica que democratizó el placer del chocolate.', img: 'https://images.unsplash.com/photo-1589131668474-124b8969b83b?q=80&w=2070' },
-];
-
-// 2. Capturamos el ID de la URL
 const { id } = Astro.params;
-const sala = salas.find(s => s.id === id);
-
-// 3. Si no existe la sala, mandamos al 404
+const sala = await prisma.sala.findUnique({ where: { id } });
 if (!sala) return Astro.redirect('/404');
 ---
 
-<Layout title={`${sala.nombre} | Galería`}>
-    <div class="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden">
+<Layout title={`${sala.nombre} | Museo de Chocolate`}>
+    <div class="relative w-full h-[60vh] md:h-[70vh] bg-stone-200 dark:bg-stone-900 flex items-end overflow-hidden">
+        <img src={sala.imagenUrl} alt={`Portada de la sala ${sala.nombre}`} class="absolute inset-0 w-full h-full object-cover opacity-80 dark:opacity-40" />
+        <div class="absolute inset-0 bg-linear-to-b from-transparent to-white dark:to-[#0c0a09]"></div>
 
-        <div class="absolute inset-0 z-0">
-            <img src={sala.img} class="w-full h-full object-cover grayscale opacity-40 dark:opacity-30" alt={sala.nombre} />
-            <div class="absolute inset-0 bg-gradient-to-b from-stone-50/80 via-transparent to-stone-50 dark:from-[#0c0a09]/80 dark:via-transparent dark:to-[#0c0a09]"></div>
-        </div>
-
-        <div class="relative z-10 max-w-4xl mx-auto px-8 py-24 text-center">
-            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.6em] text-xs font-black mb-6 block animate-fade-in">
-                Sala de Exhibición {sala.id}
-            </span>
-
-            <h1 class="text-5xl md:text-8xl font-black italic text-stone-900 dark:text-white mb-8 tracking-tighter transition-colors">
-                {sala.nombre}
-            </h1>
-
-            <p class="text-xl md:text-2xl text-stone-600 dark:text-stone-300 font-serif italic mb-12 leading-relaxed max-w-2xl mx-auto">
-                "{sala.detalle}"
-            </p>
-
-            <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                <a href="/exposiciones" class="px-10 py-4 border border-stone-300 dark:border-stone-800 rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-stone-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
-                    Volver a la Galería
-                </a>
-                <a href="/visita/boletos" class="px-10 py-4 bg-orange-600 text-white rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-orange-700 shadow-xl transition-all active:scale-95">
-                    Reservar Entrada Presencial
-                </a>
-            </div>
-        </div>
-
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-20 hidden md:block">
-            <div class="w-px h-24 bg-stone-900 dark:bg-white"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-8 pb-20">
+            <nav class="text-[10px] font-bold uppercase tracking-widest text-orange-600 dark:text-orange-500 mb-4">
+                <a href="/exposiciones">Exposiciones</a> / <span class="text-stone-900 dark:text-white">{sala.nombre}</span>
+            </nav>
+            <h1 class="text-7xl md:text-9xl font-serif italic text-stone-900 dark:text-white drop-shadow-sm">{sala.nombre}</h1>
         </div>
     </div>
-</Layout>
 
-<style>
-    @keyframes fade-in {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in {
-        animation: fade-in 1.5s ease-out forwards;
-    }
-</style>
+    {sala.historia && (
+            <section class="max-w-4xl mx-auto py-24 px-8">
+                <div class="flex items-center gap-4 mb-12 opacity-50">
+                    <div class="h-px bg-stone-300 dark:bg-stone-800 grow"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Contexto Histórico</span>
+                    <div class="h-px bg-stone-300 dark:bg-stone-800 grow"></div>
+                </div>
+                <div class="prose prose-stone dark:prose-invert md:prose-2xl font-serif mx-auto first-letter:text-8xl first-letter:font-bold first-letter:text-orange-500 first-letter:mr-3 first-letter:float-left">
+                    <p class="leading-relaxed text-justify wrap-break-word">{sala.historia}</p>
+                </div>
+            </section>
+    )}
+
+    <section class="bg-stone-50 dark:bg-stone-900/20 py-24 border-t border-stone-200 dark:border-stone-800">
+        <div class="max-w-7xl mx-auto px-8">
+            <h2 class="text-4xl font-serif italic mb-12 text-center text-stone-900 dark:text-white">Imágenes de la Sala</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                {sala.galeria.map((img, i) => (
+                        <div class="group relative aspect-4/5 rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-2xl transition-all btn-visor" data-index={i}>
+                            <img src={img} alt={`Imagen ${i + 1} de la colección`} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="bg-white/90 dark:bg-black/70 p-4 rounded-full text-xl shadow-xl">⛶</span>
+                            </div>
+                        </div>
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <div id="visor" class="fixed inset-0 bg-white/95 dark:bg-black/95 z-50 hidden opacity-0 transition-opacity duration-500 flex-col backdrop-blur-xl">
+        <div class="p-8 flex justify-between items-center text-stone-500 uppercase text-[10px] font-bold tracking-widest">
+            <div><span id="num" class="text-stone-900 dark:text-white text-lg">1</span> / 8</div>
+            <button id="cerrar" class="text-4xl hover:text-orange-500">&times;</button>
+        </div>
+        <div class="grow relative flex items-center justify-center p-8">
+            {sala.galeria.map((img, i) => (
+                    <img src={img} alt={`Vista ampliada ${i + 1}`} class="slide absolute max-w-full max-h-full object-contain opacity-0 transition-opacity duration-300" data-index={i} />
+            ))}
+        </div>
+        <button id="prev" class="absolute left-8 top-1/2 -translate-y-1/2 text-6xl opacity-30 hover:opacity-100">‹</button>
+        <button id="next" class="absolute right-8 top-1/2 -translate-y-1/2 text-6xl opacity-30 hover:opacity-100">›</button>
+    </div>
+
+    <script>
+        const visor = document.getElementById('visor');
+        const slides = document.querySelectorAll('.slide');
+        let current = 0;
+
+        // Le decimos a TypeScript que 'n' es un número (Soluciona el error rojo)
+        const show = (n: number) => {
+            if (n < 0) n = 7; if (n > 7) n = 0;
+            slides.forEach((s, i) => (s as HTMLElement).style.opacity = i === n ? '1' : '0');
+            const numElement = document.getElementById('num');
+            if (numElement) numElement.innerText = (n + 1).toString();
+            current = n;
+        };
+
+        document.querySelectorAll('.btn-visor').forEach(b => {
+            b.addEventListener('click', () => {
+                const indexAttr = (b as HTMLElement).dataset.index;
+                if (indexAttr) {
+                    current = parseInt(indexAttr);
+                    if (visor) {
+                        visor.classList.remove('hidden');
+                        visor.classList.add('flex');
+                        setTimeout(() => visor.classList.add('opacity-100'), 10);
+                    }
+                    show(current);
+                }
+            });
+        });
+
+        document.getElementById('cerrar')?.addEventListener('click', () => {
+            if (visor) {
+                visor.classList.remove('opacity-100');
+                setTimeout(() => {
+                    visor.classList.add('hidden');
+                    visor.classList.remove('flex');
+                }, 500);
+            }
+        });
+
+        document.getElementById('next')?.addEventListener('click', () => show(current + 1));
+        document.getElementById('prev')?.addEventListener('click', () => show(current - 1));
+    </script>
+</Layout>

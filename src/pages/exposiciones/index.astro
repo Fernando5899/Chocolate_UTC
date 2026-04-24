@@ -19,7 +19,7 @@ const salas = await prisma.sala.findMany({
         {salas.length === 0 ? (
                 <div class="text-center p-16 md:p-24 bg-stone-100 dark:bg-[#110e0d] rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-inner transition-colors duration-500">
                     <span class="text-6xl mb-6 block grayscale opacity-60">🚧</span>
-                    <h2 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-4 italic">Salas en Resguardo y Remodelación</h2>
+                    <h2 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-4 italic">Salas en Remodelación</h2>
                     <p class="text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed">
                         Nuestros curadores y especialistas están preparando las nuevas exhibiciones de la temporada.
                         Las piezas históricas se encuentran actualmente en la bóveda de preservación para su mantenimiento.
