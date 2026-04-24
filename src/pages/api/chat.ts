@@ -3,11 +3,12 @@ import OpenAI from 'openai';
 
 export const POST: APIRoute = async ({ request }) => {
     try {
-        // Usamos import.meta.env que es la forma correcta en Astro
-        const apiKey = import.meta.env.OPENAI_API_KEY;
+        // 🛡️ BLINDAJE DOBLE: Intenta leer de Astro (local) o de Node/Vercel (producción)
+        const apiKey = import.meta.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
 
         if (!apiKey) {
-            throw new Error("No se encontró la llave de OpenAI en el .env");
+            console.error("❌ ERROR CRÍTICO: No se encontró la llave de OpenAI");
+            throw new Error("No se encontró la llave de OpenAI");
         }
 
         const openai = new OpenAI({ apiKey });
