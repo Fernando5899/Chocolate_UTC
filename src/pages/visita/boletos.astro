@@ -34,20 +34,20 @@ import 'flatpickr/dist/flatpickr.min.css';
             ⚠️ Selecciona una fecha y un horario de acceso antes de reservar.
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-left">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-left mb-10">
 
             <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 flex flex-col justify-between">
                 <div>
                     <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Entrada General</h3>
                     <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Acceso completo a salas permanentes y exposiciones temporales.</p>
                     <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
-                        <li>⏱️ Duración estimada: 2 Horas</li>
-                        <li>👤 Mayores de 12 años</li>
+                        <li>- Duración estimada: 2 Horas</li>
+                        <li>- Mayores de 5 años</li>
                     </ul>
                 </div>
                 <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
-                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$120 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
-                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-adulto" data-nombre="Entrada General" data-precio="120">
+                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$85 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
+                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-general" data-nombre="Entrada General" data-precio="85">
                         Reservar 🎟️
                     </button>
                 </div>
@@ -58,8 +58,8 @@ import 'flatpickr/dist/flatpickr.min.css';
                     <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Estudiantes / INAPAM</h3>
                     <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Válido únicamente presentando credencial física en puerta.</p>
                     <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
-                        <li>⏱️ Duración estimada: 2 Horas</li>
-                        <li>🎓 Requiere Identificación Oficial</li>
+                        <li>- Duración estimada: 2 Horas</li>
+                        <li>- Requiere Identificación Oficial</li>
                     </ul>
                 </div>
                 <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
@@ -70,53 +70,100 @@ import 'flatpickr/dist/flatpickr.min.css';
                 </div>
             </div>
 
+            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Uno + Tres</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Acceso completo a salas permanentes y exposiciones temporales.</p>
+                    <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
+                       <li>- 1 Adulto + 3 Niños (+5 años)</li>
+                       <li>- Duración estimada: 2 Horas</li>
+                    </ul>
+                </div>
+                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
+                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$240 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
+                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-unotres" data-nombre="Paquete: Uno + Tres" data-precio="240">
+                        Reservar 🎟️
+                    </button>
+                </div>
+            </div>
+
+            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Paquete Familiar</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Acceso completo a salas permanentes y exposiciones temporales.</p>
+                    <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
+                        <li>- 2 Adultos + 2 Niños (+5 años)</li>
+                        <li>- Duración estimada: 2 Horas</li>
+                    </ul>
+                </div>
+                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
+                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$240 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
+                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-familiar" data-nombre="Paquete Familiar" data-precio="240">
+                        Reservar 🎟️
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-green-500 dark:hover:border-green-500 flex flex-col justify-between">
+            <div>
+                <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2">Acceso Gratuito</h3>
+                <p class="text-stone-500 dark:text-stone-400 text-sm mb-6">Beneficios especiales para ciertos visitantes.</p>
+                <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
+                    <li>- Personas con discapacidad</li>
+                    <li>- Niños menores de 4 años</li>
+                    <li>- Miembros del ICOM</li>
+                </ul>
+            </div>
+            <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6">
+                <span class="text-4xl font-black text-green-600 dark:text-green-400">GRATIS</span>
+            </div>
         </div>
     </div>
+    
     <script>
         import { carrito } from '../../store/carrito';
         import { agregarAlCarrito } from '../../store/carrito';
+
+        // Importamos la librería y el idioma desde el disco duro local
         import flatpickr from 'flatpickr';
-        // Importamos el idioma así para evitar el error de resolución de Vite
-        import 'flatpickr/dist/l10n/es';
+        import { Spanish } from 'flatpickr/dist/l10n/es.js';
 
         const LIMITE_BOLETOS_POR_PERSONA = 10;
+
         const inputFecha = document.getElementById('input-fecha') as HTMLInputElement;
         const selectHora = document.getElementById('selector-hora') as HTMLSelectElement;
         const infoHorario = document.getElementById('info-horario');
         const alertaError = document.getElementById('alerta-error');
 
-        // INICIALIZACIÓN DE FLATPICKR CORREGIDA
+        // INICIALIZACIÓN DE FLATPICKR
         flatpickr("#input-fecha", {
-            locale: "es", // Ahora solo pasamos el string "es" porque ya importamos el archivo arriba
+            locale: Spanish, // Usamos el idioma importado
             minDate: "today",
-            disableMobile: true,
-            onChange: function(selectedDates) {
+            disableMobile: "true",
+            onChange: function(selectedDates: Date[]) {
                 if (selectedDates.length === 0) return;
 
                 const diaSemana = selectedDates[0].getDay();
+
                 selectHora.innerHTML = '<option value="" disabled selected>Elige un horario disponible...</option>';
                 selectHora.disabled = false;
                 selectHora.classList.remove('cursor-not-allowed');
 
                 if (infoHorario) infoHorario.classList.remove('hidden');
 
-                // Lunes (1) a Viernes (5)
                 if (diaSemana >= 1 && diaSemana <= 5) {
                     if (infoHorario) infoHorario.innerText = 'Operación Laboral: 09:00 AM a 05:00 PM';
-                    ['09:00 AM', '11:00 AM', '01:00 PM', '03:00 PM'].forEach(hora => {
-                        selectHora.innerHTML += `<option value="${hora}">${hora}</option>`;
-                    });
+                    ['09:00 AM', '11:00 AM', '01:00 PM', '03:00 PM'].forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
                 } else {
-                    // Sábado (6) y Domingo (0)
                     if (infoHorario) infoHorario.innerText = 'Operación Fin de Semana: 10:00 AM a 06:00 PM';
-                    ['10:00 AM', '12:00 PM', '02:00 PM', '04:00 PM'].forEach(hora => {
-                        selectHora.innerHTML += `<option value="${hora}">${hora}</option>`;
-                    });
+                    ['10:00 AM', '12:00 PM', '02:00 PM', '04:00 PM'].forEach(hora => selectHora.innerHTML += `<option value="${hora}">${hora}</option>`);
                 }
             }
         });
 
-        // Lógica de Reserva (Botones)
+        // Procesamiento de la Reserva
         document.querySelectorAll('.btn-agregar').forEach(btn => {
             btn.addEventListener('click', () => {
                 const fecha = inputFecha?.value;
@@ -126,6 +173,7 @@ import 'flatpickr/dist/flatpickr.min.css';
                     alertaError?.classList.remove('hidden');
                     inputFecha.classList.add('border-red-500');
                     selectHora.classList.add('border-red-500');
+
                     setTimeout(() => {
                         alertaError?.classList.add('hidden');
                         inputFecha.classList.remove('border-red-500');
@@ -139,33 +187,37 @@ import 'flatpickr/dist/flatpickr.min.css';
                 const precio = parseFloat(btn.getAttribute('data-precio') || '0');
 
                 if (baseId && baseNombre) {
-                    // Creamos un ID que incluya la fecha y hora para evitar duplicados en el carrito
                     const idUnico = `${baseId}-${fecha}-${hora.replace(/[:\s]/g, '')}`;
+
                     const itemsActuales = carrito.get();
                     const boletosEnCarrito = itemsActuales[idUnico]?.cantidad || 0;
 
                     if (boletosEnCarrito >= LIMITE_BOLETOS_POR_PERSONA) {
-                        alert(`🚫 Límite alcanzado: Máximo ${LIMITE_BOLETOS_POR_PERSONA} entradas por horario.`);
+                        alert(`🚫 Por políticas de seguridad, no puedes adquirir más de ${LIMITE_BOLETOS_POR_PERSONA} entradas del mismo tipo por horario.`);
                         return;
                     }
 
-                    // Formateamos el nombre para que el usuario sepa qué compró
-                    const nombreCompleto = `${baseNombre} (${fecha} - ${hora})`;
+                    const fechaFormateada = new Date(fecha + 'T00:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+                    const nombreCompleto = `${baseNombre} (${fechaFormateada} - ${hora})`;
 
                     agregarAlCarrito({
                         id: idUnico,
                         nombre: nombreCompleto,
                         precio: precio,
-                        imagenUrl: null // Los boletos no llevan imagen de Cloudinary
+                        imagenUrl: null
                     });
 
-                    // Efecto visual de éxito
                     const originalText = btn.innerHTML;
                     btn.innerHTML = '¡Agregado! ✅';
-                    btn.classList.add('bg-green-600', 'text-white');
+                    btn.classList.replace('bg-stone-900', 'bg-green-600');
+                    btn.classList.replace('dark:bg-white', 'dark:bg-green-500');
+                    btn.classList.add('text-white');
+
                     setTimeout(() => {
                         btn.innerHTML = originalText;
-                        btn.classList.remove('bg-green-600', 'text-white');
+                        btn.classList.replace('bg-green-600', 'bg-stone-900');
+                        btn.classList.replace('dark:bg-green-500', 'dark:bg-white');
+                        btn.classList.remove('text-white');
                     }, 1500);
                 }
             });

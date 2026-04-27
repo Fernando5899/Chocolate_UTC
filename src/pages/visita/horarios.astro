@@ -1,0 +1,97 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Horarios | Museo de Chocolate">
+    <div class="max-w-5xl mx-auto px-8 py-20 transition-colors duration-500">
+
+        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 text-center transition-colors duration-500">
+            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-4">
+                Planea tu visita
+            </span>
+
+            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white mb-6 transition-colors duration-500">
+                Horarios
+            </h1>
+
+            <p class="text-lg text-stone-500 dark:text-stone-400 max-w-2xl mx-auto transition-colors duration-500">
+                Consulta los horarios del museo, tienda y cafetería para organizar tu experiencia.
+            </p>
+        </header>
+
+        <div class="grid md:grid-cols-2 gap-10">
+
+            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all hover:border-orange-500">
+                <h2 class="text-3xl font-bold mb-4 text-stone-900 dark:text-white">
+                    Museo
+                </h2>
+                <p class="text-stone-500 dark:text-stone-400 mb-2 font-medium">Lunes a domingo</p>
+                <p class="text-3xl font-black text-orange-600 dark:text-orange-500">
+                    11:00 am – 5:00 pm
+                </p>
+            </div>
+
+            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all hover:border-orange-500">
+                <h2 class="text-3xl font-bold mb-4 text-stone-900 dark:text-white">
+                    Boutique
+                </h2>
+                <p class="text-stone-500 dark:text-stone-400 mb-2">
+                    Objetos de diseño y cacao fino.
+                </p>
+                <p class="text-stone-500 dark:text-stone-400 font-medium">Lunes a domingo</p>
+                <p class="text-3xl font-black text-orange-600 dark:text-orange-500">
+                    11:00 am – 5:00 pm
+                </p>
+            </div>
+
+            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all hover:border-orange-500">
+                <h2 class="text-3xl font-bold mb-4 text-stone-900 dark:text-white">
+                    Chocolatería
+                </h2>
+                <p class="text-stone-500 dark:text-stone-400 mb-2">
+                    Bebidas ancestrales y repostería.
+                </p>
+                <p class="text-stone-500 dark:text-stone-400 font-medium">Lunes a domingo</p>
+                <p class="text-3xl font-black text-orange-600 dark:text-orange-500">
+                    11:00 am – 5:00 pm
+                </p>
+            </div>
+
+            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all hover:border-orange-500">
+                <h2 class="text-3xl font-bold mb-4 text-stone-900 dark:text-white">
+                    Visitas Guiadas
+                </h2>
+                <p class="text-stone-500 dark:text-stone-400 mb-2">
+                    Recorridos cada hora.
+                </p>
+                <p class="text-stone-500 dark:text-stone-400 font-medium">11:00 am – 4:00 pm</p>
+                <p class="text-xs uppercase tracking-widest text-orange-600 dark:text-orange-500 font-black mt-4">
+                    Grupos: contacto@mucho.org.mx
+                </p>
+            </div>
+
+            <div class="bg-stone-50 dark:bg-[#0c0a09] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl md:col-span-2">
+                <h2 class="text-3xl font-bold mb-6 text-stone-900 dark:text-white flex items-center gap-4">
+                    Estacionamiento 🚗
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="text-xs uppercase tracking-widest text-stone-500 mb-2 font-bold">Parquímetros</p>
+                        <p class="text-xl font-bold text-stone-800 dark:text-stone-200">
+                            Lunes a viernes <br/>
+                            <span class="text-orange-600 dark:text-orange-500">8:00 am – 8:00 pm</span>
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-xs uppercase tracking-widest text-stone-500 mb-2 font-bold">Opciones Públicas</p>
+                        <p class="text-stone-700 dark:text-stone-300">
+                            Pensiones disponibles sobre las calles de <span class="font-bold">Lucerna</span> y <span class="font-bold">Lisboa</span>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</Layout>

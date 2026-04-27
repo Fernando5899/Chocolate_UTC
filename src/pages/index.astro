@@ -2,63 +2,109 @@
 import Layout from '../layouts/Layout.astro';
 
 const curiosidades = [
-	{
-		titulo: "La Moneda Divina",
-		desc: "En el imperio Azteca, el cacao era tan valioso que se usaba como moneda. Un conejo costaba 10 granos; un esclavo, 100 granos."
-	},
-	{
-		titulo: "El Bebaje de los Guerreros",
-		desc: "Moctezuma bebía el 'xocolātl' amargo y picante en copas de oro puro. Se creía que otorgaba fuerza sobrehumana antes de la batalla."
-	},
-	{
-		titulo: "La Mutación de Porcelana",
-		desc: "Existe una extraña mutación genética llamada 'Cacao Porcelana' cuyos granos son completamente blancos. Produce el chocolate más caro del mundo."
-	}
+    {
+        titulo: "Museo inclusivo y creativo",
+        desc: "El museo recibe visitantes diversos y cuenta con un equipo creativo formado también por estudiantes y practicantes.",
+        imagen: "https://res.cloudinary.com/doctzmnzv/image/upload/v1777301437/76_ybip6w.webp"
+    },
+    {
+        titulo: "Tienda de chocolate artesanal",
+        desc: "MUCHO Chocolate ofrece productos de artesanos, chocolateros y distintos tipos de cacao y coberturas.",
+        imagen: "https://res.cloudinary.com/doctzmnzv/image/upload/v1777301172/4_drb9rp.jpg"
+    },
+    {
+        titulo: "Galería para eventos y convivencia",
+        desc: "La Galería del Chocolate es un espacio elegante donde se realizan eventos y las personas conviven disfrutando chocolate.",
+        imagen: "https://res.cloudinary.com/doctzmnzv/image/upload/v1777301182/8_w5x4vs.jpg"
+    }
 ];
 ---
 
 <Layout title="Museo de Chocolate | Inicio">
-	<section class="relative h-[85vh] -mt-12 mb-32 overflow-hidden flex items-center justify-center">
-		<div class="absolute inset-0 z-0">
-			<img
-				src="https://images.unsplash.com/photo-1548324372-f673327d559e?q=80&w=2070&auto=format&fit=crop"
-				alt="Granos de Cacao"
-				class="w-full h-full object-cover opacity-60 dark:opacity-40 grayscale hover:grayscale-0 transition-all duration-1000"
-			/>
-			<div class="absolute inset-0 bg-gradient-to-t from-stone-100 dark:from-[#0c0a09] via-transparent to-transparent"></div>
-		</div>
 
-		<div class="relative z-10 text-center px-8 max-w-5xl mx-auto">
-			<span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.5em] text-sm md:text-base font-bold mb-6 block drop-shadow-md">Mesoamérica Vive</span>
-			<h1 class="text-6xl md:text-8xl font-black mb-8 leading-tight italic text-stone-900 dark:text-white drop-shadow-xl">El Oro de los Dioses</h1>
-			<p class="text-xl md:text-2xl text-stone-800 dark:text-stone-300 mb-12 font-light max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-				Una inmersión profunda en la historia, el aroma y la trascendencia del cacao, desde las selvas sagradas hasta el paladar contemporáneo.
-			</p>
+    <section class="relative h-[85vh] -mt-12 mb-32 overflow-hidden flex items-center justify-center">
+        <div class="absolute inset-0 z-0">
+            <img
+                src="https://res.cloudinary.com/doctzmnzv/image/upload/v1777301198/39_lrnql3.jpg"
+                alt="Granos de Cacao"
+                class="w-full h-full object-cover opacity-60 dark:opacity-40 grayscale hover:grayscale-0 transition-all duration-1000"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-stone-100 dark:from-[#0c0a09] via-transparent to-transparent"></div>
+        </div>
 
-			<div class="flex flex-col md:flex-row gap-6 justify-center">
-				<a href="/visita/boletos" class="bg-stone-900 dark:bg-white text-white dark:text-black px-12 py-5 rounded-full font-black uppercase text-xs md:text-sm tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-2xl">
-					Adquirir Boletos
-				</a>
-				<a href="/tienda/chocolates" class="bg-white/80 dark:bg-black/50 backdrop-blur-md border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white px-12 py-5 rounded-full font-black uppercase text-xs md:text-sm tracking-widest hover:border-orange-500 transition-all">
-					Explorar Galería
-				</a>
-			</div>
-		</div>
-	</section>
+        <div class="relative z-10 text-center px-8 max-w-5xl mx-auto">
+            <span class="mt-10 text-orange-600 dark:text-orange-500 uppercase tracking-[0.5em] text-sm md:text-base font-bold mb-6 block drop-shadow-md">
+                UN MUSEO PARA VIVIRSE CON TODOS LOS SENTIDOS
+            </span>
 
-	<section class="max-w-7xl mx-auto px-8 mb-40">
-		<div class="text-center mb-20">
-			<h2 class="text-5xl md:text-6xl font-black italic mb-6 text-stone-900 dark:text-white">Secretos del Cacao</h2>
-			<p class="text-lg text-stone-500 dark:text-stone-400 max-w-2xl mx-auto">Mitos, realidades y la botánica oculta detrás de la semilla que conquistó al mundo entero.</p>
-		</div>
+            <h1 class="text-6xl md:text-8xl font-black mb-8 leading-tight italic text-stone-900 dark:text-white drop-shadow-xl">
+                MUCHO
+            </h1>
 
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-			{curiosidades.map(curioso => (
-				<div class="bg-white/60 dark:bg-[#110e0d]/60 backdrop-blur-lg p-12 rounded-[40px] border border-white/50 dark:border-stone-800 shadow-2xl hover:-translate-y-2 transition-all duration-500 group">
-					<h3 class="text-3xl font-bold font-serif mb-6 text-stone-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">{curioso.titulo}</h3>
-					<p class="text-stone-600 dark:text-stone-400 text-base leading-relaxed">{curioso.desc}</p>
-				</div>
-			))}
-		</div>
-	</section>
+            <p class="text-xl md:text-2xl text-stone-800 dark:text-stone-300 mb-12 font-light max-w-3xl mx-auto leading-relaxed drop-shadow-md">
+                El museo es un lugar de intercambio de ideas, que inspira, educa y promueve manifestaciones culturales relacionadas al cacao y al chocolate.
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-6 justify-center">
+                <a href="/visita/boletos" class="bg-stone-900 dark:bg-white text-white dark:text-black px-12 py-5 rounded-full font-black uppercase text-xs md:text-sm tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-2xl">
+                    Adquirir Boletos
+                </a>
+
+                <a href="/tienda/chocolates" class="bg-white/80 dark:bg-black/50 backdrop-blur-md border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white px-12 py-5 rounded-full font-black uppercase text-xs md:text-sm tracking-widest hover:border-orange-500 transition-all">
+                    Boutique del Chocolate
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-8 mb-40">
+
+        <div class="text-center mb-20">
+            <h2 class="text-5xl md:text-6xl font-black italic mb-6 text-stone-900 dark:text-white">
+                Vive el MUCHO
+            </h2>
+
+            <p class="text-lg text-stone-500 dark:text-stone-400 max-w-2xl mx-auto">
+                Fundación Mucho A.C. fue creada en 2012 como una institución cultural y educativa.<br />
+                MUCHO es un lugar para la inspiración y la creatividad.<br />
+                El museo es una institución inclusiva.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+            {curiosidades.map((curioso) => (
+                <div class="relative group h-[350px] rounded-[40px] overflow-hidden shadow-2xl cursor-pointer">
+
+                    <img
+                        src={curioso.imagen}
+                        alt={curioso.titulo}
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+
+                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/80 transition-all duration-500"></div>
+
+                    <div class="relative z-10 p-8 text-white h-full flex flex-col justify-end
+                                opacity-0 group-hover:opacity-100 transition-all duration-500">
+
+                        <h3 class="text-2xl font-bold mb-4 translate-y-6 group-hover:translate-y-0 transition-all duration-500">
+                            {curioso.titulo}
+                        </h3>
+
+                        <p class="text-sm leading-relaxed text-white/80 translate-y-6 group-hover:translate-y-0 transition-all duration-700">
+                            {curioso.desc}
+                        </p>
+                    </div>
+
+                    <div class="absolute bottom-8 left-8 z-10 text-white group-hover:opacity-0 transition-opacity duration-300">
+                        <h3 class="text-xl font-bold drop-shadow-lg">{curioso.titulo}</h3>
+                    </div>
+
+                </div>
+            ))}
+
+        </div>
+
+    </section>
+
 </Layout>
