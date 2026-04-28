@@ -35,149 +35,143 @@ const folioCorto = orden.id.slice(-8).toUpperCase();
 ---
 
 <Layout title={`Ticket #${folioCorto} | Museo de Chocolate`}>
-    <div class="min-h-screen bg-stone-200 dark:bg-[#0a0807] flex items-center justify-center py-20 px-4 transition-colors duration-500">
+    <div class="min-h-[90vh] bg-stone-100 dark:bg-[#0c0a09] flex items-center justify-center py-24 px-6 transition-colors duration-500 relative">
 
-        <div id="ticket-imprimible" class="w-full max-w-md bg-white dark:bg-[#110e0d] rounded-[40px] shadow-2xl relative overflow-hidden flex flex-col print:shadow-none print:m-0">
+        <div id="ticket-imprimible" class="w-full max-w-sm bg-white rounded-3xl shadow-2xl relative overflow-hidden flex flex-col print:shadow-none print:m-0 mx-auto">
 
-            <div class="bg-[#1c1917] pt-14 pb-10 px-8 text-center relative z-10">
-                <h1 class="text-4xl font-serif italic font-black text-white mb-2 drop-shadow-md">
+            <div class="bg-[#1c1917] pt-14 pb-12 px-8 text-center relative z-10 rounded-b-3xl">
+                <h1 class="text-3xl font-serif italic font-black text-white mb-2 tracking-tight">
                     Museo de Chocolate
                 </h1>
                 <p class="text-[9px] uppercase tracking-[0.4em] font-black text-orange-500">
                     Pase de Admisión Oficial
                 </p>
+
+                <div class="absolute -bottom-4 -left-4 w-8 h-8 bg-stone-100 dark:bg-[#0c0a09] rounded-full z-20 print:hidden"></div>
+                <div class="absolute -bottom-4 -right-4 w-8 h-8 bg-stone-100 dark:bg-[#0c0a09] rounded-full z-20 print:hidden"></div>
             </div>
 
-            <div class="relative bg-white dark:bg-[#110e0d] h-2 z-20">
-                <div class="absolute inset-0 bg-orange-600 h-1.5 top-0"></div>
+            <div class="h-0 border-t-2 border-dashed border-stone-200 mx-8 mt-2 relative z-10"></div>
 
-                <div class="absolute -left-4 -top-3 w-8 h-8 bg-stone-200 dark:bg-[#0a0807] rounded-full shadow-inner transition-colors duration-500"></div>
+            <div class="p-8 md:p-10 z-10 bg-white flex-grow">
 
-                <div class="absolute -right-4 -top-3 w-8 h-8 bg-stone-200 dark:bg-[#0a0807] rounded-full shadow-inner transition-colors duration-500"></div>
-            </div>
-
-            <div class="p-8 md:p-10 z-10 bg-white dark:bg-[#110e0d]">
-
-                <div class="flex justify-between items-start mb-8 border-b border-stone-100 dark:border-stone-800/80 pb-6">
-                    <div>
-                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-1">Titular del Pase</span>
-                        <h2 class="text-xl md:text-2xl font-serif italic font-black text-stone-900 dark:text-white leading-tight">
+                <div class="flex justify-between items-start mb-8 border-b border-stone-100 pb-6">
+                    <div class="max-w-[65%]">
+                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-2">Titular del Pase</span>
+                        <h2 class="text-xl font-serif italic font-black text-stone-900 leading-tight truncate" title={orden.clienteNombre || orden.user?.name || 'Visitante Distinguido'}>
                             {orden.clienteNombre || orden.user?.name || 'Visitante Distinguido'}
                         </h2>
                     </div>
                     <div class="text-right">
-                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-1">Fecha</span>
-                        <p class="text-sm font-bold text-stone-600 dark:text-stone-300 font-mono tracking-widest">{fechaFormateada}</p>
+                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-2">Fecha</span>
+                        <p class="text-sm font-bold text-stone-900 font-mono tracking-widest">{fechaFormateada}</p>
                     </div>
                 </div>
 
-                <div class="mb-8">
-                    <span class="block text-[8px] uppercase tracking-[0.4em] font-black text-orange-600 dark:text-orange-500 mb-4">
+                <div class="mb-10">
+                    <span class="block text-[8px] uppercase tracking-[0.4em] font-black text-orange-600 mb-4">
                         Manifiesto de Compra
                     </span>
 
-                    <div class="space-y-3">
+                    <div class="space-y-4">
                         {orden.detalles && orden.detalles.length > 0 ? (
                             orden.detalles.map((detalle: any) => (
-                                    <div class="flex justify-between items-center">
-                                        <p class="text-sm font-serif italic text-stone-600 dark:text-stone-300 line-clamp-1 pr-4">
-                                            <span class="font-sans font-black text-stone-400 text-xs mr-1">{detalle.cantidad}x</span>
+                                    <div class="flex justify-between items-center gap-4">
+                                        <p class="text-sm font-serif italic text-stone-600 truncate flex-1">
+                                            <span class="font-sans font-black text-stone-400 text-[10px] mr-2">{detalle.cantidad}x</span>
                                             {detalle.chocolate?.nombre || 'Boleto de Acceso'}
                                         </p>
-                                        <span class="text-sm font-black text-stone-900 dark:text-white font-mono">
+                                        <span class="text-sm font-black text-stone-900 font-mono shrink-0">
                                         ${(Number(detalle.precio) * detalle.cantidad).toFixed(2)}
                                     </span>
                                     </div>
                             ))
                         ) : (
                                 <div class="flex justify-between items-center">
-                                    <p class="text-sm font-serif italic text-stone-600 dark:text-stone-300">
-                                        <span class="font-sans font-black text-stone-400 text-xs mr-1">1x</span>
-                                        Acceso General Digital
+                                    <p class="text-sm font-serif italic text-stone-600">
+                                        <span class="font-sans font-black text-stone-400 text-xs mr-2">1x</span>
+                                        Acceso Digital
                                     </p>
-                                    <span class="text-sm font-black text-stone-900 dark:text-white font-mono">${Number(orden.total).toFixed(2)}</span>
+                                    <span class="text-sm font-black text-stone-900 font-mono">${Number(orden.total).toFixed(2)}</span>
                                 </div>
                         )}
                     </div>
                 </div>
 
-                <div class="border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-3xl p-6 flex justify-between items-center mb-10 bg-stone-50 dark:bg-[#0c0a09] transition-colors">
+                <div class="border border-stone-200 rounded-2xl p-6 flex justify-between items-center mb-10 bg-stone-50">
                     <div>
-                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-1">Total Pagado</span>
-                        <p class="text-4xl font-black text-stone-900 dark:text-white tracking-tighter">
+                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-1">Aporte Total</span>
+                        <p class="text-3xl font-black text-stone-900 tracking-tighter">
                             ${Number(orden.total).toFixed(2)}
                         </p>
                     </div>
                     <div class="text-right">
                         <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-2">Folio</span>
-                        <p class="text-xs font-black text-stone-900 dark:text-white bg-white dark:bg-stone-800 px-3 py-1.5 rounded-md border border-stone-200 dark:border-stone-700 font-mono tracking-widest">
+                        <p class="text-[10px] font-black text-stone-900 bg-white px-3 py-1.5 rounded border border-stone-200 font-mono tracking-widest">
                             #{folioCorto}
                         </p>
                     </div>
                 </div>
 
-                <div class="text-center flex flex-col items-center mb-8">
+                <div class="text-center flex flex-col items-center mb-2">
                     <span class="block text-[8px] uppercase tracking-[0.4em] font-black text-stone-400 mb-6">
-                        Escaneo de Seguridad UTC
+                        Control de Acceso
                     </span>
 
-                    <div class="bg-white p-4 rounded-3xl shadow-xl border border-stone-100 print:shadow-none print:border-stone-300">
+                    <div class="p-2 border-2 border-stone-100 rounded-2xl print:border-none">
                         <img
-                                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${orden.id}&color=1c1917&margin=0`}
-                                alt={`QR Orden ${folioCorto}`}
-                                class="w-40 h-40 object-contain mix-blend-multiply"
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${orden.id}&color=1c1917&bgcolor=ffffff&margin=0`}
+                                alt={`QR Folio ${folioCorto}`}
+                                class="w-36 h-36 object-contain mix-blend-multiply"
                         />
                     </div>
                 </div>
 
+            </div>
+
+            <div class="p-8 bg-white border-t border-dashed border-stone-200">
                 <button
                         onclick="window.print()"
-                        class="w-full bg-[#1c1917] dark:bg-white text-white dark:text-black font-black py-5 rounded-xl uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 hover:dark:bg-orange-600 hover:text-white transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3 print:hidden"
+                        class="w-full bg-[#1c1917] text-white font-black py-4 rounded-full uppercase text-[9px] tracking-[0.3em] hover:bg-orange-600 transition-colors shadow-lg active:scale-95 flex items-center justify-center gap-3 print:hidden"
                 >
-                    Descargar Ticket PDF
+                    Descargar PDF
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                 </button>
 
+                <div class="mt-6 text-center print:hidden">
+                    <a href="/cuenta/mis-boletos" class="text-[9px] uppercase tracking-[0.3em] font-black text-stone-400 hover:text-orange-600 transition-colors border-b border-transparent hover:border-orange-600 pb-1">
+                        ← Regresar a Taquilla
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <a href="/cuenta/mis-boletos" class="fixed bottom-8 left-8 w-12 h-12 bg-[#1c1917] dark:bg-white text-white dark:text-black rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform print:hidden z-50">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-        </a>
+        </div>
 
     </div>
 </Layout>
 
 <style is:global>
-    /* Estilos exclusivos para la conversión a PDF (Impresión) */
     @media print {
         body * {
-            visibility: hidden; /* Oculta todo el layout original (NavBar, Footer, etc) */
+            visibility: hidden;
         }
         #ticket-imprimible, #ticket-imprimible * {
-            visibility: visible; /* Muestra solo el boleto */
+            visibility: visible;
         }
         #ticket-imprimible {
             position: absolute;
             left: 50%;
             top: 50%;
-            transform: translate(-50%, -50%); /* Lo centra en la hoja carta */
+            transform: translate(-50%, -50%);
             width: 100%;
-            max-width: 400px;
+            max-width: 350px; /* Un poco más angosto para hoja física */
             box-shadow: none !important;
-            -webkit-print-color-adjust: exact; /* Fuerza a imprimir los fondos oscuros/naranjas en Chrome/Safari */
-            print-color-adjust: exact; /* Fuerza a imprimir los fondos oscuros/naranjas en Firefox */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
-        /* Forzamos el fondo oscuro en papel */
-        .bg-\[\#1c1917\] {
-            background-color: #1c1917 !important;
-        }
-        .bg-orange-600 {
-            background-color: #ea580c !important;
-        }
+        .bg-\[\#1c1917\] { background-color: #1c1917 !important; }
+        .text-white { color: #ffffff !important; }
     }
 </style>
