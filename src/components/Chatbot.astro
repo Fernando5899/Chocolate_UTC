@@ -4,16 +4,16 @@
     💬
 </button>
 
-<div id="chatbot-window" class="fixed bottom-24 right-6 w-[350px] h-[500px] bg-white dark:bg-[#110e0d] rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 flex flex-col hidden z-[100] overflow-hidden transition-all duration-300 transform origin-bottom-right">
+<div id="chatbot-window" class="fixed bottom-24 right-6 w-[350px] h-[500px] bg-white dark:bg-[#110e0d] rounded-[32px] shadow-2xl border border-stone-200 dark:border-stone-800 flex flex-col hidden z-[100] overflow-hidden transition-all duration-300 transform origin-bottom-right">
 
-    <div class="bg-stone-900 dark:bg-stone-800 p-4 text-center border-b border-orange-600">
-        <h3 class="text-white font-serif italic text-lg">Curador Virtual</h3>
-        <p class="text-orange-500 text-[9px] uppercase tracking-widest font-black">Asistente con IA</p>
+    <div class="bg-stone-900 dark:bg-[#0c0a09] p-6 text-center border-b border-orange-600/30">
+        <h3 class="text-white font-serif italic font-black text-2xl tracking-tight">Curador Virtual</h3>
+        <p class="text-orange-500 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Asistente con IA</p>
     </div>
 
-    <div id="chatbot-messages" class="flex-grow p-4 overflow-y-auto bg-stone-50 dark:bg-[#0c0a09] space-y-4 text-sm font-sans">
+    <div id="chatbot-messages" class="flex-grow p-5 overflow-y-auto bg-stone-50 dark:bg-[#0c0a09] space-y-4 text-sm font-serif">
         <div class="flex justify-start">
-            <div class="bg-stone-200 dark:bg-stone-800 text-stone-900 dark:text-white px-4 py-3 rounded-2xl rounded-tl-none max-w-[85%] shadow-sm">
+            <div class="bg-stone-200 dark:bg-stone-800 text-stone-900 dark:text-white px-4 py-3 rounded-2xl rounded-tl-none max-w-[85%] shadow-sm leading-relaxed italic">
                 ¡Hola! Soy el Curador del Museo. ¿En qué te puedo ayudar hoy con tu expedición por el mundo del chocolate?
             </div>
         </div>
@@ -21,9 +21,17 @@
 
     <div class="p-4 bg-white dark:bg-[#110e0d] border-t border-stone-200 dark:border-stone-800">
         <form id="chatbot-form" class="flex gap-2">
-            <input type="text" id="chatbot-input" placeholder="Pregunta sobre el museo..." class="flex-grow bg-stone-100 dark:bg-stone-900 text-stone-900 dark:text-white px-4 py-3 rounded-full outline-none focus:border-orange-500 border border-transparent transition-colors text-xs" autocomplete="off" />
-            <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-md disabled:opacity-50" id="chatbot-submit">
-                ↑
+            <input 
+                type="text" 
+                id="chatbot-input" 
+                placeholder="Pregunta sobre el museo..." 
+                class="flex-grow bg-stone-100 dark:bg-stone-900 text-stone-900 dark:text-white px-5 py-3 rounded-full outline-none focus:ring-1 focus:ring-orange-500 border border-transparent transition-all text-xs font-medium" 
+                autocomplete="off" 
+            />
+            <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg hover:shadow-orange-600/20 disabled:opacity-50" id="chatbot-submit">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
             </button>
         </form>
     </div>
@@ -37,7 +45,6 @@
     const messagesContainer = document.getElementById('chatbot-messages');
     const submitBtn = document.getElementById('chatbot-submit') as HTMLButtonElement;
 
-    // Abrir/Cerrar chat
     toggleBtn?.addEventListener('click', () => {
         chatWindow?.classList.toggle('hidden');
         if (!chatWindow?.classList.contains('hidden')) {
@@ -45,7 +52,6 @@
         }
     });
 
-    // Función para añadir burbujas de texto al chat
     function addMessage(text: string, isUser: boolean) {
         if (!messagesContainer) return;
 
@@ -53,38 +59,34 @@
         div.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
 
         const bubble = document.createElement('div');
-        bubble.className = `px-4 py-3 rounded-2xl max-w-[85%] shadow-sm text-sm ${
+        // APLICAMOS font-serif Y ESTILOS DE MUSEO A LA RESPUESTA
+        bubble.className = `font-serif px-4 py-3 rounded-2xl max-w-[85%] shadow-sm text-sm leading-relaxed ${
             isUser
-                ? 'bg-orange-600 text-white rounded-tr-none'
-                : 'bg-stone-200 dark:bg-stone-800 text-stone-900 dark:text-white rounded-tl-none'
+                ? 'bg-orange-600 text-white rounded-tr-none not-italic'
+                : 'bg-stone-200 dark:bg-stone-800 text-stone-900 dark:text-white rounded-tl-none italic font-medium'
         }`;
         bubble.textContent = text;
 
         div.appendChild(bubble);
         messagesContainer.appendChild(div);
-
-        // Auto-scroll hacia abajo
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    // Enviar mensaje a la API
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const text = input.value.trim();
         if (!text) return;
 
-        // Mostrar mensaje del usuario
         addMessage(text, true);
         input.value = '';
         submitBtn.disabled = true;
 
-        // Mostrar indicador de "Escribiendo..."
         const typingId = 'typing-' + Date.now();
         if (messagesContainer) {
             messagesContainer.insertAdjacentHTML('beforeend', `
                 <div id="${typingId}" class="flex justify-start">
-                    <div class="bg-stone-200 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-4 py-3 rounded-2xl rounded-tl-none shadow-sm text-xs italic">
-                        El curador está pensando...
+                    <div class="bg-stone-200 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-4 py-3 rounded-2xl rounded-tl-none shadow-sm text-[11px] font-serif italic animate-pulse">
+                        El curador está consultando los archivos...
                     </div>
                 </div>
             `);
@@ -99,8 +101,6 @@
             });
 
             const data = await response.json();
-
-            // Quitar el "Escribiendo..."
             document.getElementById(typingId)?.remove();
 
             if (data.respuesta) {

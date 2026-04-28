@@ -3,92 +3,121 @@ import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title="Horarios | Museo de Chocolate">
-    <div class="max-w-5xl mx-auto px-8 py-20 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-8 py-24 md:py-32 transition-colors duration-500">
 
-        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 text-center transition-colors duration-500">
-            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-4">
-                Planea tu visita
+        <header class="mb-24 text-center max-w-3xl mx-auto transition-colors duration-500">
+            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.5em] text-[10px] md:text-xs font-black mb-4 block">
+                Logística de Visita
             </span>
 
-            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white mb-6 transition-colors duration-500">
+            <h1 class="text-6xl md:text-8xl font-serif italic font-black text-stone-900 dark:text-white mb-8 leading-[0.9] tracking-tight">
                 Horarios
             </h1>
 
-            <p class="text-lg text-stone-500 dark:text-stone-400 max-w-2xl mx-auto transition-colors duration-500">
-                Consulta los horarios del museo, tienda y cafetería para organizar tu experiencia.
+            <p class="text-lg md:text-xl text-stone-600 dark:text-stone-400 font-serif italic leading-relaxed">
+                "Consulta los tiempos de nuestra casa, la boutique y los servicios adicionales para organizar una expedición perfecta."
             </p>
         </header>
 
-        <div class="grid md:grid-cols-2 gap-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-12">
 
-            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all hover:border-orange-500">
-                <h2 class="text-3xl font-bold mb-4 text-stone-900 dark:text-white">
+            <div class="bg-white dark:bg-[#110e0d] p-10 md:p-14 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:border-orange-500/40 hover:-translate-y-2 group">
+                <span class="text-[9px] uppercase tracking-[0.3em] font-black text-stone-400 mb-4 block">Salas de Exhibición</span>
+                <h2 class="text-4xl font-serif italic font-black mb-6 text-stone-900 dark:text-white group-hover:text-orange-600 transition-colors">
                     Museo
                 </h2>
-                <p class="text-stone-500 dark:text-stone-400 mb-2 font-medium">Lunes a domingo</p>
-                <p class="text-3xl font-black text-orange-600 dark:text-orange-500">
-                    11:00 am – 5:00 pm
-                </p>
+                <div class="space-y-1">
+                    <p class="text-stone-500 dark:text-stone-400 font-serif italic text-sm">Lunes a domingo</p>
+                    <p class="text-4xl font-black text-orange-600 dark:text-orange-500 tracking-tighter">
+                        11:00 am – 5:00 pm
+                    </p>
+                </div>
             </div>
 
-            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all hover:border-orange-500">
-                <h2 class="text-3xl font-bold mb-4 text-stone-900 dark:text-white">
+            <div class="bg-white dark:bg-[#110e0d] p-10 md:p-14 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:border-orange-500/40 hover:-translate-y-2 group">
+                <span class="text-[9px] uppercase tracking-[0.3em] font-black text-stone-400 mb-4 block">Colección y Diseño</span>
+                <h2 class="text-4xl font-serif italic font-black mb-6 text-stone-900 dark:text-white group-hover:text-orange-600 transition-colors">
                     Boutique
                 </h2>
-                <p class="text-stone-500 dark:text-stone-400 mb-2">
-                    Objetos de diseño y cacao fino.
+                <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 font-serif italic leading-relaxed">
+                    "Objetos de diseño, libros especializados y nuestra selección de cacao fino para llevar a casa."
                 </p>
-                <p class="text-stone-500 dark:text-stone-400 font-medium">Lunes a domingo</p>
-                <p class="text-3xl font-black text-orange-600 dark:text-orange-500">
-                    11:00 am – 5:00 pm
-                </p>
+                <div class="space-y-1">
+                    <p class="text-stone-500 dark:text-stone-400 font-serif italic text-sm">Lunes a domingo</p>
+                    <p class="text-4xl font-black text-orange-600 dark:text-orange-500 tracking-tighter">
+                        11:00 am – 5:00 pm
+                    </p>
+                </div>
             </div>
 
-            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all hover:border-orange-500">
-                <h2 class="text-3xl font-bold mb-4 text-stone-900 dark:text-white">
-                    Chocolatería
+            <div class="bg-white dark:bg-[#110e0d] p-10 md:p-14 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:border-orange-500/40 hover:-translate-y-2 group">
+                <span class="text-[9px] uppercase tracking-[0.3em] font-black text-stone-400 mb-4 block">Experiencia Sensorial</span>
+                <h2 class="text-4xl font-serif italic font-black mb-6 text-stone-900 dark:text-white group-hover:text-orange-600 transition-colors">
+                    Cafetería
                 </h2>
-                <p class="text-stone-500 dark:text-stone-400 mb-2">
-                    Bebidas ancestrales y repostería.
+                <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 font-serif italic leading-relaxed">
+                    "Bebidas ancestrales, repostería artesanal y preparaciones únicas para degustar la tradición."
                 </p>
-                <p class="text-stone-500 dark:text-stone-400 font-medium">Lunes a domingo</p>
-                <p class="text-3xl font-black text-orange-600 dark:text-orange-500">
-                    11:00 am – 5:00 pm
-                </p>
+                <div class="space-y-1">
+                    <p class="text-stone-500 dark:text-stone-400 font-serif italic text-sm">Lunes a domingo</p>
+                    <p class="text-4xl font-black text-orange-600 dark:text-orange-500 tracking-tighter">
+                        11:00 am – 5:00 pm
+                    </p>
+                </div>
             </div>
 
-            <div class="bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all hover:border-orange-500">
-                <h2 class="text-3xl font-bold mb-4 text-stone-900 dark:text-white">
-                    Visitas Guiadas
+            <div class="bg-white dark:bg-[#110e0d] p-10 md:p-14 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:border-orange-500/40 hover:-translate-y-2 group">
+                <span class="text-[9px] uppercase tracking-[0.3em] font-black text-stone-400 mb-4 block">Recorridos de Curaduría</span>
+                <h2 class="text-4xl font-serif italic font-black mb-6 text-stone-900 dark:text-white group-hover:text-orange-600 transition-colors">
+                    Guías
                 </h2>
-                <p class="text-stone-500 dark:text-stone-400 mb-2">
-                    Recorridos cada hora.
+                <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 font-serif italic leading-relaxed">
+                    Recorridos especializados cada hora. Descubre los secretos del cacao con nuestros expertos.
                 </p>
-                <p class="text-stone-500 dark:text-stone-400 font-medium">11:00 am – 4:00 pm</p>
-                <p class="text-xs uppercase tracking-widest text-orange-600 dark:text-orange-500 font-black mt-4">
-                    Grupos: contacto@mucho.org.mx
-                </p>
-            </div>
-
-            <div class="bg-stone-50 dark:bg-[#0c0a09] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl md:col-span-2">
-                <h2 class="text-3xl font-bold mb-6 text-stone-900 dark:text-white flex items-center gap-4">
-                    Estacionamiento 🚗
-                </h2>
-
-                <div class="grid md:grid-cols-2 gap-8">
+                <div class="flex items-end justify-between">
                     <div>
-                        <p class="text-xs uppercase tracking-widest text-stone-500 mb-2 font-bold">Parquímetros</p>
-                        <p class="text-xl font-bold text-stone-800 dark:text-stone-200">
-                            Lunes a viernes <br/>
-                            <span class="text-orange-600 dark:text-orange-500">8:00 am – 8:00 pm</span>
-                        </p>
+                        <p class="text-stone-500 dark:text-stone-400 font-serif italic text-sm mb-1">Frecuencia Diaria</p>
+                        <p class="text-2xl font-black text-stone-900 dark:text-white">11:00 am – 4:00 pm</p>
                     </div>
-                    <div>
-                        <p class="text-xs uppercase tracking-widest text-stone-500 mb-2 font-bold">Opciones Públicas</p>
-                        <p class="text-stone-700 dark:text-stone-300">
-                            Pensiones disponibles sobre las calles de <span class="font-bold">Lucerna</span> y <span class="font-bold">Lisboa</span>.
-                        </p>
+                    <a href="mailto:contacto@mucho.org.mx" class="text-[8px] uppercase tracking-widest font-black text-orange-600 border-b border-orange-600 pb-1 hover:text-stone-900 dark:hover:text-white transition-colors">Informes Grupos</a>
+                </div>
+            </div>
+
+            <div class="bg-stone-50 dark:bg-[#0c0a09] p-12 md:p-16 rounded-[50px] border-2 border-dashed border-stone-200 dark:border-stone-800 shadow-2xl md:col-span-2 transition-all group overflow-hidden relative">
+                
+                <div class="relative z-10">
+                    <h2 class="text-4xl font-serif italic font-black mb-10 text-stone-900 dark:text-white flex items-center gap-5">
+                        Logística de Arribo <span class="text-3xl opacity-50 group-hover:rotate-12 transition-transform duration-500">🚗</span>
+                    </h2>
+
+                    <div class="grid md:grid-cols-2 gap-12 lg:gap-20">
+                        <div class="space-y-4">
+                            <p class="text-[10px] uppercase tracking-[0.4em] text-orange-600 font-black">Zona de Parquímetros</p>
+                            <p class="text-3xl font-black text-stone-800 dark:text-stone-100 tracking-tighter leading-none">
+                                Lun – Vie <br/>
+                                <span class="text-stone-400">08:00 – 20:00</span>
+                            </p>
+                            <p class="text-xs text-stone-500 font-serif italic mt-4">"Ubicación preferente sobre la calle de Milán y alrededores."</p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <p class="text-[10px] uppercase tracking-[0.4em] text-orange-600 font-black">Pensiones Públicas</p>
+                            <div class="space-y-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-px bg-stone-300 dark:bg-stone-700"></div>
+                                    <p class="text-lg font-serif italic text-stone-700 dark:text-stone-300">Calle Lucerna</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-px bg-stone-300 dark:bg-stone-700"></div>
+                                    <p class="text-lg font-serif italic text-stone-700 dark:text-stone-300">Calle Lisboa</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <div class="absolute -bottom-10 -right-10 text-[180px] opacity-[0.02] dark:opacity-[0.05] font-black select-none pointer-events-none">
+                    MUCHO
                 </div>
             </div>
 

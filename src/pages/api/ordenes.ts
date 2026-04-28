@@ -13,18 +13,30 @@ const transporter = nodemailer.createTransport({
 
 export const POST: APIRoute = async ({ request }) => {
     try {
-        // 1. VALIDACIÓN DE SESIÓN (REGLA DE NEGOCIO OBLIGATORIA)
+        // 1. VALIDACIÓN DE SESIÓN (Usamos el EMAIL, que Auth.js siempre entrega)
         const session = await getSession(request);
 
-        if (!session || !session.user || !session.user.id) {
+        if (!session || !session.user || !session.user.email) {
             return new Response(
                 JSON.stringify({ error: 'Acceso denegado. Debes iniciar sesión para realizar una compra.' }),
                 { status: 401 }
             );
         }
 
+        // 2. EL PUENTE SEGURO: Buscamos el ID real del usuario en la base de datos
+        const usuarioDb = await prisma.user.findUnique({
+            where: { email: session.user.email }
+        });
+
+        if (!usuarioDb) {
+            return new Response(
+                JSON.stringify({ error: 'No se encontró tu perfil en la base de datos.' }),
+                { status: 404 }
+            );
+        }
+
         const body = await request.json();
-        // Extraemos los datos del cuerpo, pero ignoramos el userId que venga de ahí por seguridad
+        // Ya no necesitamos pedir el userId desde el frontend
         const { clienteNombre, email, estadoEnvio, direccion, codigoPostal, total, items } = body;
 
         // --- TRANSACCIÓN ATÓMICA BLINDADA ---
@@ -58,8 +70,8 @@ export const POST: APIRoute = async ({ request }) => {
                     direccion,
                     codigoPostal,
                     total,
-                    // Usamos el ID verificado de la sesión de Auth.js
-                    userId: session.user!.id,
+                    // 3. Inyectamos el ID verificado que sacamos de Prisma
+                    userId: usuarioDb.id,
                     detalles: {
                         create: items.map((item: any) => {
                             const esBoleto = item.id.includes('ticket') || item.id.includes('boleto');

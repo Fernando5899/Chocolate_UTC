@@ -2,7 +2,6 @@
 import Layout from '../../layouts/Layout.astro';
 import prisma from '../../lib/prisma';
 
-// 1. LA BÓVEDA SE COMUNICA CON EL CARRITO
 // Consultamos el inventario real en este milisegundo
 const inventarioVivo = await prisma.chocolate.findMany({
     select: { id: true, stock: true }
@@ -13,55 +12,64 @@ const inventarioVivo = await prisma.chocolate.findMany({
 
     <div id="datos-inventario" data-stock={JSON.stringify(inventarioVivo)} class="hidden"></div>
 
-    <div class="max-w-5xl mx-auto py-12 px-8 transition-colors duration-500">
-        <h1 class="text-5xl font-black italic text-stone-900 dark:text-white mb-12 transition-colors duration-500 tracking-tighter">Tu Carrito 🛒</h1>
+    <div class="max-w-6xl mx-auto py-24 px-8 transition-colors duration-500">
+        
+        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 flex items-center justify-between">
+            <div>
+                <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-[10px] font-black block mb-4">Expedición</span>
+                <h1 class="text-5xl md:text-7xl font-serif italic font-black text-stone-900 dark:text-white tracking-tight">Tu Carrito</h1>
+            </div>
+            <span class="text-6xl md:text-7xl opacity-80 drop-shadow-sm">🛒</span>
+        </header>
 
-        <div id="carrito-vacio" class="hidden text-center py-24 px-8 bg-white dark:bg-[#110e0d]/80 backdrop-blur-md rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-2xl transition-colors duration-500">
+        <div id="carrito-vacio" class="hidden text-center py-32 px-8 bg-white dark:bg-[#110e0d]/80 backdrop-blur-md rounded-[50px] border border-stone-200 dark:border-stone-800 shadow-2xl">
             <span class="text-7xl mb-8 block opacity-40 grayscale">🛍️</span>
-            <h2 class="text-3xl font-bold italic text-stone-900 dark:text-white mb-4">Tu expedición está vacía</h2>
-            <p class="text-stone-500 dark:text-stone-400 mb-10 max-w-sm mx-auto">Parece que aún no has seleccionado ninguna delicia de nuestro catálogo.</p>
-            <a href="/tienda/chocolates" class="bg-stone-900 dark:bg-white text-white dark:text-black font-bold py-4 px-10 rounded-full uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all inline-block shadow-lg active:scale-95 cursor-pointer">
+            <h2 class="text-3xl font-serif italic font-black text-stone-900 dark:text-white mb-4">Tu expedición está vacía</h2>
+            <p class="text-stone-500 dark:text-stone-400 mb-12 max-w-md mx-auto font-serif italic text-lg">Parece que aún no has seleccionado ninguna delicia de nuestra colección curada.</p>
+            <a href="/tienda/chocolates" class="bg-stone-900 dark:bg-white text-white dark:text-black font-black py-5 px-12 rounded-full uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 hover:text-white dark:hover:bg-orange-600 transition-all inline-block shadow-xl active:scale-95 cursor-pointer">
                 Explorar la Galería
             </a>
         </div>
 
-        <div id="carrito-lleno" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div id="carrito-lleno" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-12">
 
-            <div class="lg:col-span-2 space-y-6" id="lista-productos">
+            <div class="lg:col-span-7 xl:col-span-8 space-y-6" id="lista-productos">
                 </div>
 
-            <div class="lg:col-span-1">
-                <div class="bg-white dark:bg-[#110e0d] p-10 rounded-3xl shadow-xl border border-stone-200 dark:border-stone-800 sticky top-28 transition-colors duration-500 overflow-hidden w-full">
-                    <h2 class="text-2xl font-bold italic text-stone-900 dark:text-white mb-8 border-b border-stone-100 dark:border-stone-800/80 pb-6 transition-colors duration-500">Resumen</h2>
+            <div class="lg:col-span-5 xl:col-span-4">
+                <div class="bg-stone-50 dark:bg-[#0c0a09] p-10 rounded-[40px] shadow-2xl border border-stone-200 dark:border-stone-800 sticky top-32 overflow-hidden w-full transition-colors duration-500">
+                    <h2 class="text-3xl font-serif italic font-black text-stone-900 dark:text-white mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">Resumen</h2>
 
-                    <div class="flex justify-between mb-4 text-stone-600 dark:text-stone-400 text-sm uppercase tracking-widest font-bold">
+                    <div class="flex justify-between mb-4 text-stone-500 uppercase tracking-widest text-[10px] font-bold">
                         <span>Subtotal</span>
-                        <span id="subtotal-texto" class="dark:text-stone-300 font-mono">$0.00</span>
+                        <span id="subtotal-texto" class="dark:text-stone-300 font-mono font-black text-sm">$0.00</span>
                     </div>
 
-                    <div class="flex justify-between mb-8 text-stone-600 dark:text-stone-400 text-sm uppercase tracking-widest font-bold">
-                        <span>Envío (CDMX)</span>
-                        <span class="text-orange-500 dark:text-orange-400 text-right">Calculando<br/>en pago...</span>
+                    <div class="flex justify-between mb-8 text-orange-600 dark:text-orange-500 uppercase tracking-widest text-[10px] font-bold">
+                        <span>Logística (CDMX)</span>
+                        <span class="text-right font-black text-sm">Calculando...</span>
                     </div>
 
-                    <div class="flex flex-col mb-10 pt-8 border-t border-stone-100 dark:border-stone-800/80 transition-colors duration-500 gap-2 overflow-hidden w-full">
-                        <span class="text-xs font-bold text-stone-500 uppercase tracking-[0.2em] text-left block w-full">
-                            Total Estimado
+                    <div class="flex flex-col mb-10 pt-8 border-t border-stone-200 dark:border-stone-800 gap-2 overflow-hidden w-full">
+                        <span class="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em] text-left block w-full mb-1">
+                            Aporte Total Estimado
                         </span>
                         
-                        <span id="total-texto" class="text-4xl lg:text-5xl font-black text-stone-900 dark:text-white transition-colors duration-500 text-right w-full tracking-tighter truncate block" title="Monto a pagar">
+                        <span id="total-texto" class="text-5xl font-serif italic font-black text-stone-900 dark:text-white text-right w-full tracking-tighter truncate block drop-shadow-sm" title="Monto a pagar">
                             $0.00
                         </span>
                     </div>
 
-                    <a href="/tienda/checkout" class="block w-full text-center bg-stone-900 dark:bg-white text-white dark:text-black font-black py-5 px-6 rounded-full hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-xl cursor-pointer uppercase text-[10px] tracking-[0.3em] active:scale-95">
+                    <a href="/tienda/checkout" class="block w-full text-center bg-stone-900 dark:bg-white text-white dark:text-black font-black py-5 px-6 rounded-full hover:bg-orange-600 dark:hover:bg-orange-600 dark:hover:text-white transition-all shadow-xl cursor-pointer uppercase text-[10px] tracking-[0.3em] active:scale-95">
                         Proceder al Pago
                     </a>
 
-                    <p class="text-[10px] text-stone-400 dark:text-stone-500 uppercase tracking-widest text-center mt-8 flex flex-col items-center gap-2 font-bold">
-                        <span>🔒 Expedición Segura</span>
-                        <span class="opacity-70 text-center leading-tight">Sincronizado con base de datos en tiempo real.</span>
-                    </p>
+                    <div class="text-center mt-8 pt-8 border-t border-stone-200 dark:border-stone-800">
+                        <span class="text-[9px] font-black uppercase tracking-[0.4em] text-stone-400 block mb-2 flex items-center justify-center gap-2">
+                            <span>🔒</span> Expedición Segura
+                        </span>
+                        <p class="text-xs font-serif italic text-stone-500">Sincronizado con el inventario del museo en tiempo real.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -79,7 +87,6 @@ const inventarioVivo = await prisma.chocolate.findMany({
         carrito.subscribe((items) => {
             const arrayItems = Object.values(items);
 
-            // Si no hay items, mostramos la pantalla vacía
             if (arrayItems.length === 0) {
                 containerVacio?.classList.remove('hidden');
                 containerLleno?.classList.add('hidden');
@@ -98,23 +105,44 @@ const inventarioVivo = await prisma.chocolate.findMany({
                     total += subtotalItem;
 
                     const itemHTML = `
-                        <div class="flex flex-col sm:flex-row items-center gap-6 bg-white dark:bg-[#110e0d] p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-lg transition-all duration-300">
-                            <div class="w-28 h-28 bg-stone-100 dark:bg-[#0c0a09] border border-stone-100 dark:border-stone-800/50 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0">
-                                ${item.imagenUrl && item.imagenUrl !== "null" ? `<img src="${item.imagenUrl}" alt="${item.nombre}" class="w-full h-full object-cover grayscale opacity-80 hover:grayscale-0 transition-all duration-500"/>` : `<span class="text-4xl opacity-50 grayscale">🍫</span>`}
+                        <div class="flex flex-col sm:flex-row items-center gap-6 bg-white dark:bg-[#110e0d] p-6 rounded-[30px] border border-stone-200 dark:border-stone-800 shadow-xl group transition-all hover:border-orange-500/50">
+                            
+                            <div class="w-32 h-32 bg-stone-100 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0">
+                                ${item.imagenUrl && item.imagenUrl !== "null" ? `<img src="${item.imagenUrl}" alt="${item.nombre}" class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"/>` : `<span class="text-5xl opacity-30 grayscale">🍫</span>`}
                             </div>
                             
                             <div class="flex-grow text-center sm:text-left">
-                                <h3 class="font-bold font-serif text-2xl text-stone-900 dark:text-white mb-1 transition-colors duration-500 line-clamp-2">${item.nombre}</h3>
-                                <p class="text-stone-500 dark:text-stone-400 font-medium text-sm font-mono">$${item.precio.toFixed(2)} c/u</p>
+                                <h3 class="font-black font-serif italic text-2xl text-stone-900 dark:text-white mb-2 line-clamp-2">${item.nombre}</h3>
+                                <p class="text-stone-500 dark:text-stone-400 text-[11px] font-black tracking-widest uppercase mb-1">Costo Unitario</p>
+                                <p class="text-stone-900 dark:text-stone-300 font-mono font-bold">$${item.precio.toFixed(2)}</p>
                             </div>
                             
-                            <div class="flex flex-col items-center sm:items-end gap-4 shrink-0">
-                                <span class="font-black text-2xl text-stone-900 dark:text-white transition-colors duration-500 font-mono">$${subtotalItem.toFixed(2)}</span>
+                            <div class="flex flex-col items-center sm:items-end gap-5 shrink-0 pl-4 sm:border-l sm:border-stone-100 sm:dark:border-stone-800">
+                                <div class="text-right w-full">
+                                    <span class="text-[9px] font-black text-stone-400 uppercase tracking-widest block mb-1">Subtotal</span>
+                                    <span class="font-black text-2xl text-stone-900 dark:text-white font-mono">$${subtotalItem.toFixed(2)}</span>
+                                </div>
                                 
-                                <div class="flex items-center bg-stone-50 dark:bg-[#0c0a09] rounded-full border border-stone-200 dark:border-stone-800 overflow-hidden shadow-sm">
-                                    <button class="btn-restar w-10 h-10 flex items-center justify-center font-black text-stone-500 dark:text-stone-400 hover:text-orange-500 dark:hover:text-orange-400 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors cursor-pointer" data-id="${item.id}">-</button>
-                                    <span class="w-10 text-center font-bold text-sm text-stone-900 dark:text-white">${item.cantidad}</span>
-                                    <button class="btn-sumar w-10 h-10 flex items-center justify-center font-black text-stone-500 dark:text-stone-400 hover:text-orange-500 dark:hover:text-orange-400 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors cursor-pointer" data-id="${item.id}">+</button>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center bg-stone-100 dark:bg-[#0c0a09] rounded-full border border-stone-200 dark:border-stone-800 overflow-hidden shadow-inner">
+                                        <button class="btn-restar w-10 h-10 flex items-center justify-center font-black text-stone-500 hover:text-white hover:bg-orange-600 transition-colors" data-id="${item.id}">-</button>
+                                        
+                                        <input 
+                                            type="number" 
+                                            class="input-cantidad w-12 text-center bg-transparent font-bold text-sm text-stone-900 dark:text-white outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none font-mono" 
+                                            value="${item.cantidad}" 
+                                            data-id="${item.id}"
+                                            min="1"
+                                        />
+
+                                        <button class="btn-sumar w-10 h-10 flex items-center justify-center font-black text-stone-500 hover:text-white hover:bg-orange-600 transition-colors" data-id="${item.id}">+</button>
+                                    </div>
+
+                                    <button class="btn-eliminar p-2 text-stone-300 hover:text-red-500 dark:text-stone-700 dark:hover:text-red-500 transition-colors" data-id="${item.id}" title="Eliminar de la expedición">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -127,62 +155,79 @@ const inventarioVivo = await prisma.chocolate.findMany({
                     totalTexto.textContent = `$${total.toFixed(2)}`;
                 }
 
-                asignarEventosBotones();
+                asignarEventos();
             }
         });
 
-        function asignarEventosBotones() {
-            // 1. LEEMOS EL INVENTARIO REAL QUE NOS MANDÓ EL SERVIDOR
+        // La lógica de asignación de eventos se mantiene idéntica a la que ya teníamos (segura y validada)
+        function asignarEventos() {
             const stockData = document.getElementById('datos-inventario')?.getAttribute('data-stock') || '[]';
             const inventarioDB = JSON.parse(stockData).reduce((acc: any, item: any) => {
                 acc[item.id] = item.stock;
                 return acc;
             }, {});
 
-            // 2. LÓGICA DEL BOTÓN DE SUMAR
+            document.querySelectorAll('.input-cantidad').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const target = e.target as HTMLInputElement;
+                    const id = target.getAttribute('data-id');
+                    let nuevaCantidad = parseInt(target.value);
+                    
+                    if (id) {
+                        const items = carrito.get();
+                        const nombreItem = items[id].nombre;
+                        const limiteFisico = id.includes('ticket') ? 10 : (inventarioDB[id] || 0);
+
+                        if (isNaN(nuevaCantidad) || nuevaCantidad < 1) nuevaCantidad = 1;
+                        if (nuevaCantidad > limiteFisico) {
+                            alert(`⚠️ Solo hay ${limiteFisico} unidades disponibles de "${nombreItem}".`);
+                            nuevaCantidad = limiteFisico;
+                        }
+
+                        carrito.set({
+                            ...items,
+                            [id]: { ...items[id], cantidad: nuevaCantidad }
+                        });
+                    }
+                });
+            });
+
             document.querySelectorAll('.btn-sumar').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = (e.currentTarget as HTMLButtonElement).getAttribute('data-id');
                     if (id) {
                         const items = carrito.get();
-                        const itemActual = items[id];
-
-                        // Si es boleto, el límite son 10 por hora. Si es chocolate, leemos la Base de Datos.
+                        const nombreItem = items[id].nombre;
                         const limiteFisico = id.includes('ticket') ? 10 : (inventarioDB[id] || 0);
-
-                        // AQUÍ ESTÁ EL CANDADO: Solo suma si tiene menos del límite
-                        if (itemActual.cantidad < limiteFisico) {
-                            carrito.set({
-                                ...items,
-                                [id]: { ...itemActual, cantidad: itemActual.cantidad + 1 }
-                            });
+                        
+                        if (items[id].cantidad < limiteFisico) {
+                            carrito.set({ ...items, [id]: { ...items[id], cantidad: items[id].cantidad + 1 } });
                         } else {
-                            alert(`⚠️ Inventario Máximo Alcanzado. Solo existen ${limiteFisico} unidades físicas disponibles en el museo en este momento.`);
+                            alert(`⚠️ Inventario máximo alcanzado para "${nombreItem}".`);
                         }
                     }
                 });
             });
 
-            // 3. LÓGICA DEL BOTÓN DE RESTAR
             document.querySelectorAll('.btn-restar').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = (e.currentTarget as HTMLButtonElement).getAttribute('data-id');
+                    if (id && carrito.get()[id].cantidad > 1) {
+                        const items = carrito.get();
+                        carrito.set({ ...items, [id]: { ...items[id], cantidad: items[id].cantidad - 1 } });
+                    }
+                });
+            });
+
+            document.querySelectorAll('.btn-eliminar').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = (e.currentTarget as HTMLButtonElement).getAttribute('data-id');
                     if (id) {
                         const items = carrito.get();
-                        const itemActual = items[id];
-
-                        if (itemActual.cantidad > 1) {
-                            carrito.set({
-                                ...items,
-                                [id]: { ...itemActual, cantidad: itemActual.cantidad - 1 }
-                            });
-                        } else {
-                            // Si llega a cero, lo borramos con estilo
-                            if(confirm(`¿Deseas retirar ${itemActual.nombre} de tu expedición?`)){
-                                const nuevosItems = { ...items };
-                                delete nuevosItems[id];
-                                carrito.set(nuevosItems);
-                            }
+                        if (confirm(`¿Retirar "${items[id].nombre}" de tu expedición?`)) {
+                            const nuevosItems = { ...items };
+                            delete nuevosItems[id];
+                            carrito.set(nuevosItems);
                         }
                     }
                 });

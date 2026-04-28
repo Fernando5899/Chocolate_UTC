@@ -1,104 +1,118 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-// Importamos la estructura base del calendario desde nuestros archivos locales
 import 'flatpickr/dist/flatpickr.min.css';
 ---
 
-<Layout title="Taquilla Digital | Museo">
-    <div class="max-w-5xl mx-auto px-8 py-20 transition-colors duration-500">
-        <header class="mb-16 border-b border-stone-200 dark:border-stone-800 pb-10 text-center transition-colors duration-500">
-            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.4em] text-sm font-bold block mb-4">Planea tu visita</span>
-            <h1 class="text-6xl font-black italic text-stone-900 dark:text-white mb-6 transition-colors duration-500">Taquilla Digital</h1>
-            <p class="text-lg text-stone-500 dark:text-stone-400 max-w-2xl mx-auto transition-colors duration-500">
+<Layout title="Taquilla Digital | Museo de Chocolate">
+    <div class="max-w-7xl mx-auto px-8 py-24 md:py-32 transition-colors duration-500">
+        
+        <header class="mb-24 text-center max-w-3xl mx-auto transition-colors duration-500">
+            <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.5em] text-[10px] md:text-xs font-black mb-4 block">
+                Planea tu expedición
+            </span>
+            <h1 class="text-6xl md:text-8xl font-serif italic font-black text-stone-900 dark:text-white mb-8 leading-[0.9]">
+                Taquilla Digital
+            </h1>
+            <p class="text-lg md:text-xl text-stone-600 dark:text-stone-400 font-serif italic leading-relaxed">
                 Reserva tu entrada al mundo del cacao. Selecciona la fecha de tu expedición para ver los horarios disponibles.
             </p>
         </header>
 
-        <div class="bg-white/60 dark:bg-[#110e0d]/60 backdrop-blur-xl p-8 rounded-[40px] border border-white/50 dark:border-stone-800 shadow-xl mb-12 flex flex-col md:flex-row gap-8 transition-colors duration-500">
+        <div class="bg-white/70 dark:bg-[#110e0d]/70 backdrop-blur-2xl p-10 md:p-14 rounded-[50px] border border-white/50 dark:border-stone-800 shadow-2xl mb-20 flex flex-col md:flex-row gap-10 transition-all duration-500">
 
             <div class="flex-1">
-                <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">1. Fecha de Visita</label>
-                <input type="text" id="input-fecha" placeholder="Selecciona un día..." required class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all cursor-pointer" />
+                <label class="block text-[9px] uppercase tracking-[0.3em] text-stone-400 mb-4 font-black">1. Fecha de Visita</label>
+                <div class="relative group">
+                    <input type="text" id="input-fecha" placeholder="Selecciona un día..." required class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-5 rounded-2xl outline-none focus:ring-1 focus:ring-orange-500 text-sm font-bold text-stone-900 dark:text-white transition-all cursor-pointer" />
+                    <span class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity">📅</span>
+                </div>
             </div>
 
             <div class="flex-1">
-                <label class="block text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3 font-bold">2. Horario de Acceso</label>
-                <select id="selector-hora" disabled class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-4 rounded-2xl outline-none focus:border-orange-500 text-base text-stone-900 dark:text-white transition-all cursor-not-allowed disabled:opacity-50 appearance-none">
-                    <option value="" disabled selected>Primero selecciona una fecha...</option>
-                </select>
-                <p id="info-horario" class="text-[10px] uppercase tracking-widest text-orange-600 dark:text-orange-500 mt-3 font-bold hidden"></p>
+                <label class="block text-[9px] uppercase tracking-[0.3em] text-stone-400 mb-4 font-black">2. Horario de Acceso</label>
+                <div class="relative group">
+                    <select id="selector-hora" disabled class="w-full bg-stone-50 dark:bg-[#0c0a09] border border-stone-200 dark:border-stone-800 p-5 rounded-2xl outline-none focus:ring-1 focus:ring-orange-500 text-sm font-bold text-stone-900 dark:text-white transition-all cursor-not-allowed disabled:opacity-50 appearance-none">
+                        <option value="" disabled selected>Primero selecciona una fecha...</option>
+                    </select>
+                    <span class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity">▼</span>
+                </div>
+                <p id="info-horario" class="text-[10px] uppercase tracking-[0.2em] text-orange-600 dark:text-orange-500 mt-4 font-black hidden animate-pulse"></p>
             </div>
         </div>
 
-        <div id="alerta-error" class="hidden mb-10 p-6 rounded-2xl border bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-center font-bold text-sm shadow-lg">
+        <div id="alerta-error" class="hidden mb-12 p-6 rounded-3xl border-2 bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400 text-center font-black uppercase tracking-widest text-xs shadow-xl">
             ⚠️ Selecciona una fecha y un horario de acceso antes de reservar.
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-left mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-left mb-12">
 
-            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 flex flex-col justify-between">
+            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 md:p-12 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:border-orange-500/50 hover:-translate-y-2 flex flex-col justify-between group">
                 <div>
-                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Entrada General</h3>
-                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Acceso completo a salas permanentes y exposiciones temporales.</p>
-                    <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
-                        <li>- Duración estimada: 2 Horas</li>
-                        <li>- Mayores de 5 años</li>
+                    <span class="text-[9px] uppercase tracking-[0.4em] font-black text-stone-400 mb-4 block">Individual</span>
+                    <h3 class="text-4xl font-serif italic font-black text-stone-900 dark:text-white mb-4 drop-shadow-sm transition-colors group-hover:text-orange-500">Entrada General</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-8 font-serif italic leading-relaxed">"Acceso completo a salas permanentes y exposiciones temporales de la colección."</p>
+                    <ul class="text-[9px] font-black text-stone-400 dark:text-stone-500 space-y-3 mb-10 uppercase tracking-widest">
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-orange-600/40"></span> Duración: 2 Horas</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-orange-600/40"></span> Mayores de 5 años</li>
                     </ul>
                 </div>
-                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
-                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$85 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
-                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-general" data-nombre="Entrada General" data-precio="85">
+                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-8 mt-auto">
+                    <span class="text-4xl font-black text-stone-900 dark:text-white font-mono tracking-tighter">$85 <span class="text-[10px] text-stone-400 font-black uppercase tracking-widest ml-1">MXN</span></span>
+                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-10 py-4 rounded-full font-black uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 hover:dark:bg-orange-600 hover:text-white transition-all shadow-xl active:scale-95 cursor-pointer" data-id="ticket-general" data-nombre="Entrada General" data-precio="85">
                         Reservar 🎟️
                     </button>
                 </div>
             </div>
 
-            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 flex flex-col justify-between">
+            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 md:p-12 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:border-orange-500/50 hover:-translate-y-2 flex flex-col justify-between group">
                 <div>
-                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Estudiantes / INAPAM</h3>
-                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Válido únicamente presentando credencial física en puerta.</p>
-                    <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
-                        <li>- Duración estimada: 2 Horas</li>
-                        <li>- Requiere Identificación Oficial</li>
+                    <span class="text-[9px] uppercase tracking-[0.4em] font-black text-stone-400 mb-4 block">Preferencial</span>
+                    <h3 class="text-4xl font-serif italic font-black text-stone-900 dark:text-white mb-4 drop-shadow-sm transition-colors group-hover:text-orange-500">Estudiantes / INAPAM</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-8 font-serif italic leading-relaxed">"Válido únicamente presentando credencial física vigente al momento del acceso."</p>
+                    <ul class="text-[9px] font-black text-stone-400 dark:text-stone-500 space-y-3 mb-10 uppercase tracking-widest">
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-orange-600/40"></span> Duración: 2 Horas</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-orange-600/40"></span> Requiere ID Física</li>
                     </ul>
                 </div>
-                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
-                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$60 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
-                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-estudiante" data-nombre="Estudiante/INAPAM" data-precio="60">
+                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-8 mt-auto">
+                    <span class="text-4xl font-black text-stone-900 dark:text-white font-mono tracking-tighter">$60 <span class="text-[10px] text-stone-400 font-black uppercase tracking-widest ml-1">MXN</span></span>
+                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-10 py-4 rounded-full font-black uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 hover:dark:bg-orange-600 hover:text-white transition-all shadow-xl active:scale-95 cursor-pointer" data-id="ticket-estudiante" data-nombre="Estudiante/INAPAM" data-precio="60">
                         Reservar 🎟️
                     </button>
                 </div>
             </div>
 
-            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 flex flex-col justify-between">
+            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 md:p-12 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:border-orange-500/50 hover:-translate-y-2 flex flex-col justify-between group">
                 <div>
-                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Uno + Tres</h3>
-                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Acceso completo a salas permanentes y exposiciones temporales.</p>
-                    <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
-                       <li>- 1 Adulto + 3 Niños (+5 años)</li>
-                       <li>- Duración estimada: 2 Horas</li>
+                    <span class="text-[9px] uppercase tracking-[0.4em] font-black text-stone-400 mb-4 block">Paquete</span>
+                    <h3 class="text-4xl font-serif italic font-black text-stone-900 dark:text-white mb-4 drop-shadow-sm transition-colors group-hover:text-orange-500">Uno + Tres</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-8 font-serif italic leading-relaxed">"Acceso completo grupal. Ideal para pequeñas expediciones de exploración."</p>
+                    <ul class="text-[9px] font-black text-stone-400 dark:text-stone-500 space-y-3 mb-10 uppercase tracking-widest">
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-orange-600/40"></span> 1 Adulto + 3 Niños</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-orange-600/40"></span> Duración: 2 Horas</li>
                     </ul>
                 </div>
-                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
-                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$240 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
-                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-unotres" data-nombre="Paquete: Uno + Tres" data-precio="240">
+                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-8 mt-auto">
+                    <span class="text-4xl font-black text-stone-900 dark:text-white font-mono tracking-tighter">$240 <span class="text-[10px] text-stone-400 font-black uppercase tracking-widest ml-1">MXN</span></span>
+                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-10 py-4 rounded-full font-black uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 hover:dark:bg-orange-600 hover:text-white transition-all shadow-xl active:scale-95 cursor-pointer" data-id="ticket-unotres" data-nombre="Paquete: Uno + Tres" data-precio="240">
                         Reservar 🎟️
                     </button>
                 </div>
             </div>
 
-            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-orange-500 dark:hover:border-orange-500 flex flex-col justify-between">
+            <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 md:p-12 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:border-orange-500/50 hover:-translate-y-2 flex flex-col justify-between group">
                 <div>
-                    <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2 transition-colors duration-500">Paquete Familiar</h3>
-                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 transition-colors duration-500">Acceso completo a salas permanentes y exposiciones temporales.</p>
-                    <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
-                        <li>- 2 Adultos + 2 Niños (+5 años)</li>
-                        <li>- Duración estimada: 2 Horas</li>
+                    <span class="text-[9px] uppercase tracking-[0.4em] font-black text-stone-400 mb-4 block">Familiar</span>
+                    <h3 class="text-4xl font-serif italic font-black text-stone-900 dark:text-white mb-4 drop-shadow-sm transition-colors group-hover:text-orange-500">Paquete Familiar</h3>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm mb-8 font-serif italic leading-relaxed">"Acceso completo para el núcleo familiar. Compartan la magia del chocolate."</p>
+                    <ul class="text-[9px] font-black text-stone-400 dark:text-stone-500 space-y-3 mb-10 uppercase tracking-widest">
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-orange-600/40"></span> 2 Adultos + 2 Niños</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-orange-600/40"></span> Duración: 2 Horas</li>
                     </ul>
                 </div>
-                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6 transition-colors duration-500">
-                    <span class="text-4xl font-black text-stone-900 dark:text-white transition-colors duration-500">$240 <span class="text-sm text-stone-500 dark:text-stone-400 font-normal">MXN</span></span>
-                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:dark:bg-orange-500 hover:text-white transition-all shadow-lg active:scale-95 cursor-pointer" data-id="ticket-familiar" data-nombre="Paquete Familiar" data-precio="240">
+                <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-8 mt-auto">
+                    <span class="text-4xl font-black text-stone-900 dark:text-white font-mono tracking-tighter">$240 <span class="text-[10px] text-stone-400 font-black uppercase tracking-widest ml-1">MXN</span></span>
+                    <button class="btn-agregar bg-stone-900 dark:bg-white text-white dark:text-black px-10 py-4 rounded-full font-black uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 hover:dark:bg-orange-600 hover:text-white transition-all shadow-xl active:scale-95 cursor-pointer" data-id="ticket-familiar" data-nombre="Paquete Familiar" data-precio="240">
                         Reservar 🎟️
                     </button>
                 </div>
@@ -106,51 +120,57 @@ import 'flatpickr/dist/flatpickr.min.css';
 
         </div>
 
-        <div class="tarjeta-boleto bg-white dark:bg-[#110e0d] p-10 rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:border-green-500 dark:hover:border-green-500 flex flex-col justify-between">
-            <div>
-                <h3 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-2">Acceso Gratuito</h3>
-                <p class="text-stone-500 dark:text-stone-400 text-sm mb-6">Beneficios especiales para ciertos visitantes.</p>
-                <ul class="text-xs font-bold text-stone-400 dark:text-stone-500 space-y-2 mb-8 uppercase tracking-widest">
-                    <li>- Personas con discapacidad</li>
-                    <li>- Niños menores de 4 años</li>
-                    <li>- Miembros del ICOM</li>
-                </ul>
-            </div>
-            <div class="flex justify-between items-center border-t border-stone-100 dark:border-stone-800/80 pt-6">
-                <span class="text-4xl font-black text-green-600 dark:text-green-400">GRATIS</span>
-            </div>
+        <div class="tarjeta-boleto bg-stone-50 dark:bg-[#0c0a09] p-10 md:p-14 rounded-[40px] border-2 border-dashed border-stone-200 dark:border-stone-800 transition-all flex flex-col items-center text-center max-w-4xl mx-auto mt-4">
+            
+            <span class="bg-green-500/10 text-green-600 dark:text-green-500 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-6 border border-green-500/20">
+                Tarifa $0.00 MXN
+            </span>
+            
+            <h3 class="text-3xl md:text-4xl font-serif italic font-black text-stone-900 dark:text-white mb-4">
+                Acceso de Cortesía
+            </h3>
+            
+            <p class="text-stone-500 dark:text-stone-400 text-sm md:text-base font-serif italic max-w-lg mb-8">
+                Beneficios exclusivos otorgados por el patronato del museo para garantizar el acceso a la cultura a todos.
+            </p>
+            
+            <ul class="flex flex-wrap justify-center gap-x-8 gap-y-4 text-[9px] md:text-[10px] font-black text-stone-400 uppercase tracking-widest">
+                <li class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500/50"></span> Personas con discapacidad
+                </li>
+                <li class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500/50"></span> Menores de 4 años
+                </li>
+                <li class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500/50"></span> Miembros del ICOM
+                </li>
+            </ul>
+            
         </div>
     </div>
     
     <script>
         import { carrito } from '../../store/carrito';
         import { agregarAlCarrito } from '../../store/carrito';
-
-        // Importamos la librería y el idioma desde el disco duro local
         import flatpickr from 'flatpickr';
         import { Spanish } from 'flatpickr/dist/l10n/es.js';
 
         const LIMITE_BOLETOS_POR_PERSONA = 10;
-
         const inputFecha = document.getElementById('input-fecha') as HTMLInputElement;
         const selectHora = document.getElementById('selector-hora') as HTMLSelectElement;
         const infoHorario = document.getElementById('info-horario');
         const alertaError = document.getElementById('alerta-error');
 
-        // INICIALIZACIÓN DE FLATPICKR
         flatpickr("#input-fecha", {
-            locale: Spanish, // Usamos el idioma importado
+            locale: Spanish,
             minDate: "today",
-            disableMobile: "true",
+            disableMobile: true,
             onChange: function(selectedDates: Date[]) {
                 if (selectedDates.length === 0) return;
-
                 const diaSemana = selectedDates[0].getDay();
-
                 selectHora.innerHTML = '<option value="" disabled selected>Elige un horario disponible...</option>';
                 selectHora.disabled = false;
                 selectHora.classList.remove('cursor-not-allowed');
-
                 if (infoHorario) infoHorario.classList.remove('hidden');
 
                 if (diaSemana >= 1 && diaSemana <= 5) {
@@ -163,7 +183,6 @@ import 'flatpickr/dist/flatpickr.min.css';
             }
         });
 
-        // Procesamiento de la Reserva
         document.querySelectorAll('.btn-agregar').forEach(btn => {
             btn.addEventListener('click', () => {
                 const fecha = inputFecha?.value;
@@ -171,13 +190,12 @@ import 'flatpickr/dist/flatpickr.min.css';
 
                 if (!fecha || !hora) {
                     alertaError?.classList.remove('hidden');
-                    inputFecha.classList.add('border-red-500');
-                    selectHora.classList.add('border-red-500');
-
+                    inputFecha.classList.add('ring-2', 'ring-red-500');
+                    selectHora.classList.add('ring-2', 'ring-red-500');
                     setTimeout(() => {
                         alertaError?.classList.add('hidden');
-                        inputFecha.classList.remove('border-red-500');
-                        selectHora.classList.remove('border-red-500');
+                        inputFecha.classList.remove('ring-2', 'ring-red-500');
+                        selectHora.classList.remove('ring-2', 'ring-red-500');
                     }, 3000);
                     return;
                 }
@@ -188,12 +206,11 @@ import 'flatpickr/dist/flatpickr.min.css';
 
                 if (baseId && baseNombre) {
                     const idUnico = `${baseId}-${fecha}-${hora.replace(/[:\s]/g, '')}`;
-
                     const itemsActuales = carrito.get();
                     const boletosEnCarrito = itemsActuales[idUnico]?.cantidad || 0;
 
                     if (boletosEnCarrito >= LIMITE_BOLETOS_POR_PERSONA) {
-                        alert(`🚫 Por políticas de seguridad, no puedes adquirir más de ${LIMITE_BOLETOS_POR_PERSONA} entradas del mismo tipo por horario.`);
+                        alert(`🚫 Por políticas de seguridad, no puedes adquirir más de ${LIMITE_BOLETOS_POR_PERSONA} entradas del mismo tipo.`);
                         return;
                     }
 
@@ -208,16 +225,14 @@ import 'flatpickr/dist/flatpickr.min.css';
                     });
 
                     const originalText = btn.innerHTML;
-                    btn.innerHTML = '¡Agregado! ✅';
-                    btn.classList.replace('bg-stone-900', 'bg-green-600');
-                    btn.classList.replace('dark:bg-white', 'dark:bg-green-500');
-                    btn.classList.add('text-white');
+                    btn.innerHTML = 'En Carrito ✅';
+                    btn.classList.add('bg-orange-500', 'text-white');
+                    btn.classList.remove('bg-stone-900', 'dark:bg-white', 'dark:text-black');
 
                     setTimeout(() => {
                         btn.innerHTML = originalText;
-                        btn.classList.replace('bg-green-600', 'bg-stone-900');
-                        btn.classList.replace('dark:bg-green-500', 'dark:bg-white');
-                        btn.classList.remove('text-white');
+                        btn.classList.remove('bg-orange-500', 'text-white');
+                        btn.classList.add('bg-stone-900', 'dark:bg-white', 'dark:text-black');
                     }, 1500);
                 }
             });
@@ -226,79 +241,25 @@ import 'flatpickr/dist/flatpickr.min.css';
 </Layout>
 
 <style is:global>
-    /* Fondo General del Calendario */
+    /* CALENDARIO PREMIUM UNIFICADO */
     .flatpickr-calendar {
         background: #ffffff !important;
         border: 1px solid #e7e5e4 !important;
-        border-radius: 24px !important;
-        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25) !important;
-        font-family: 'Inter', sans-serif !important;
-        padding: 10px !important;
-        /* SOLUCIÓN: Ancho fijo exacto para contener los 7 días sin deformarlos */
-        width: 330px !important;
+        border-radius: 32px !important;
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15) !important;
+        padding: 20px !important;
+        width: 350px !important;
     }
-
-    /* Modo Oscuro del Calendario */
     html.dark .flatpickr-calendar {
         background: #110e0d !important;
         border-color: #292524 !important;
-        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.7) !important;
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.8) !important;
     }
-
-    /* Mes y Año (Cabecera) */
-    .flatpickr-months .flatpickr-month {
-        background: transparent !important;
-        color: #1c1917 !important;
-        margin-bottom: 10px !important;
-    }
-    html.dark .flatpickr-months .flatpickr-month {
-        color: #ffffff !important;
-    }
-    .flatpickr-current-month .flatpickr-monthDropdown-months {
-        font-weight: 800 !important;
-    }
-
-    /* Días de la semana (L, M, M, J...) */
-    span.flatpickr-weekday {
-        color: #78716c !important;
-        font-weight: 700 !important;
-    }
-
-    /* Los días normales */
-    .flatpickr-day {
-        color: #44403c !important;
-        border-radius: 12px !important;
-        border: 1px solid transparent !important;
-    }
-    html.dark .flatpickr-day {
-        color: #d6d3d1 !important;
-    }
-
-    /* Hover sobre los días */
-    .flatpickr-day:hover {
-        background: #f5f5f4 !important;
-        border-color: #f5f5f4 !important;
-        color: #1c1917 !important;
-    }
-    html.dark .flatpickr-day:hover {
-        background: #292524 !important;
-        border-color: #292524 !important;
-        color: #ffffff !important;
-    }
-
-    /* EL DÍA SELECCIONADO (Acento Naranja del Museo) */
-    .flatpickr-day.selected, .flatpickr-day.selected:hover {
+    .flatpickr-day.selected {
         background: #ea580c !important;
         border-color: #ea580c !important;
-        color: #ffffff !important;
-        font-weight: bold;
+        border-radius: 12px !important;
     }
-
-    /* Flechas de Mes Anterior/Siguiente */
-    .flatpickr-prev-month, .flatpickr-next-month {
-        fill: #78716c !important;
-    }
-    .flatpickr-prev-month:hover svg, .flatpickr-next-month:hover svg {
-        fill: #ea580c !important;
-    }
+    .flatpickr-months .flatpickr-month { color: #1c1917 !important; }
+    html.dark .flatpickr-months .flatpickr-month { color: #ffffff !important; }
 </style>

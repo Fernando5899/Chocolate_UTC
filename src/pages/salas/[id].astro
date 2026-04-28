@@ -10,15 +10,21 @@ const galeriaSegura = Array.isArray(sala.galeria) ? sala.galeria as string[] : [
 ---
 
 <Layout title={`${sala.nombre} | Museo de Chocolate`}>
-    <div class="relative w-full h-[60vh] md:h-[70vh] bg-stone-200 dark:bg-stone-900 flex items-end overflow-hidden">
-        <img src={sala.imagenUrl} alt={`Portada de la sala ${sala.nombre}`} class="absolute inset-0 w-full h-full object-cover opacity-80 dark:opacity-40" />
-        <div class="absolute inset-0 bg-linear-to-b from-transparent to-white dark:to-[#0c0a09]"></div>
+    <div class="relative w-full h-[60vh] md:h-[75vh] bg-stone-200 dark:bg-stone-900 flex items-end overflow-hidden">
+        <img src={sala.imagenUrl} alt={`Portada de la sala ${sala.nombre}`} class="absolute inset-0 w-full h-full object-cover opacity-80 dark:opacity-50 scale-105" />
+        
+        <div class="absolute inset-0 bg-gradient-to-t from-stone-50 via-stone-50/40 to-transparent dark:from-[#0c0a09] dark:via-[#0c0a09]/60"></div>
 
-        <div class="relative z-10 max-w-7xl mx-auto px-8 pb-20">
-            <nav class="text-[10px] font-bold uppercase tracking-widest text-orange-600 dark:text-orange-500 mb-4">
-                <a href="/exposiciones">Exposiciones</a> / <span class="text-stone-900 dark:text-white">{sala.nombre}</span>
-            </nav>
-            <h1 class="text-7xl md:text-9xl font-serif italic text-stone-900 dark:text-white drop-shadow-sm">{sala.nombre}</h1>
+        <div class="relative z-10 max-w-7xl mx-auto px-8 pb-20 w-full">
+            
+            <a href="/exposiciones" class="inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-stone-900 dark:text-white bg-white/60 dark:bg-black/50 backdrop-blur-md px-6 py-3 rounded-full hover:bg-orange-600 hover:text-white dark:hover:bg-orange-600 transition-all duration-300 border border-stone-300 dark:border-stone-700 hover:border-orange-600 dark:hover:border-orange-600 mb-6 w-fit group shadow-lg">
+                <span class="text-lg leading-none group-hover:-translate-x-1 transition-transform">←</span> 
+                Volver a las Exposiciones
+            </a>
+
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif italic font-black text-stone-900 dark:text-white leading-tight drop-shadow-md max-w-4xl">
+                {sala.nombre}
+            </h1>
         </div>
     </div>
 
@@ -29,7 +35,7 @@ const galeriaSegura = Array.isArray(sala.galeria) ? sala.galeria as string[] : [
                     <span class="text-[10px] font-bold uppercase tracking-widest">Contexto Histórico</span>
                     <div class="h-px bg-stone-300 dark:bg-stone-800 grow"></div>
                 </div>
-                <div class="prose prose-stone dark:prose-invert md:prose-2xl font-serif mx-auto first-letter:text-8xl first-letter:font-bold first-letter:text-orange-500 first-letter:mr-3 first-letter:float-left">
+                <div class="prose prose-stone dark:prose-invert md:prose-xl font-serif mx-auto first-letter:text-6xl md:first-letter:text-7xl first-letter:font-bold first-letter:text-orange-500 first-letter:mr-3 first-letter:float-left">
                     <p class="leading-relaxed text-justify wrap-break-word">{sala.historia}</p>
                 </div>
             </section>
@@ -37,10 +43,10 @@ const galeriaSegura = Array.isArray(sala.galeria) ? sala.galeria as string[] : [
 
     <section class="bg-stone-50 dark:bg-stone-900/20 py-24 border-t border-stone-200 dark:border-stone-800">
         <div class="max-w-7xl mx-auto px-8">
-            <h2 class="text-4xl font-serif italic mb-12 text-center text-stone-900 dark:text-white">Imágenes de la Sala</h2>
+            <h2 class="text-4xl font-serif italic mb-12 text-center text-stone-900 dark:text-white font-bold">Imágenes de la Sala</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                 {galeriaSegura.map((img, i) => (
-                        <div class="group relative aspect-4/5 rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-2xl transition-all btn-visor" data-index={i}>
+                        <div class="group relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-2xl transition-all btn-visor hover:-translate-y-1" data-index={i}>
                             <img src={img} alt={`Imagen ${i + 1} de la colección`} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
                             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -52,7 +58,7 @@ const galeriaSegura = Array.isArray(sala.galeria) ? sala.galeria as string[] : [
         </div>
     </section>
 
-    <div id="visor" class="fixed inset-0 bg-white dark:bg-black z-100 hidden opacity-0 transition-opacity duration-300 flex-col touch-none">
+    <div id="visor" class="fixed inset-0 bg-white dark:bg-black z-[100] hidden opacity-0 transition-opacity duration-300 flex-col touch-none">
 
         <div class="p-6 flex justify-between items-center z-50">
             <div class="text-stone-500 dark:text-stone-400 font-bold tracking-widest text-[10px] uppercase">

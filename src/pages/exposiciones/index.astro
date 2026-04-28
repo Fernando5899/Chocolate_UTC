@@ -9,39 +9,175 @@ const salas = await prisma.sala.findMany({
 ---
 
 <Layout title="Exposiciones | Museo del Chocolate">
-    <div class="max-w-7xl mx-auto px-8 py-20">
+    <style>
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
 
-        <header class="mb-16">
-            <h1 class="text-5xl md:text-6xl font-black italic text-stone-900 dark:text-white mb-4">Exposiciones Permanentes</h1>
-            <p class="text-xl text-stone-600 dark:text-stone-400">Un recorrido cronológico por la historia del cacao. Desliza para explorar la colección curada del museo.</p>
-        </header>
+    <div class="max-w-[100vw] overflow-hidden py-24 md:py-32 flex flex-col">
+        
+        <div class="max-w-7xl mx-auto px-8 w-full">
+            <header class="mb-16 max-w-3xl">
+                <span class="text-orange-600 dark:text-orange-500 uppercase tracking-[0.5em] text-[10px] md:text-xs font-black mb-4 block">
+                    Colección Permanente
+                </span>
+                <h1 class="text-6xl md:text-8xl font-serif italic font-black text-stone-900 dark:text-white mb-8 leading-[0.9]">
+                    Exposiciones
+                </h1>
+                <p class="text-lg md:text-xl text-stone-600 dark:text-stone-400 font-serif italic leading-relaxed">
+                    Un recorrido cronológico por la historia del cacao. Desliza libremente para explorar la colección curada del museo.
+                </p>
+            </header>
+        </div>
 
         {salas.length === 0 ? (
-                <div class="text-center p-16 md:p-24 bg-stone-100 dark:bg-[#110e0d] rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-inner transition-colors duration-500">
-                    <span class="text-6xl mb-6 block grayscale opacity-60">🚧</span>
-                    <h2 class="text-3xl font-bold font-serif text-stone-900 dark:text-white mb-4 italic">Salas en Remodelación</h2>
-                    <p class="text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed">
-                        Nuestros curadores y especialistas están preparando las nuevas exhibiciones de la temporada.
-                        Las piezas históricas se encuentran actualmente en la bóveda de preservación para su mantenimiento.
-                        <br><br>
-                        <span class="font-bold text-orange-600 dark:text-orange-500">¡Vuelve pronto para descubrir la nueva cara del museo!</span>
+            <div class="max-w-7xl mx-auto px-8 w-full">
+                <div class="text-center p-16 md:p-32 bg-stone-100 dark:bg-[#110e0d] rounded-[50px] border border-stone-200 dark:border-stone-800 transition-all duration-500">
+                    <span class="text-7xl mb-8 block grayscale opacity-40">🏺</span>
+                    <h2 class="text-3xl font-black font-serif text-stone-900 dark:text-white mb-4 italic">Salas en Remodelación</h2>
+                    <p class="text-stone-500 dark:text-stone-400 max-w-md mx-auto font-serif italic">
+                        Nuestros curadores están preparando las nuevas exhibiciones. Vuelve pronto para descubrir la nueva cara del museo.
                     </p>
                 </div>
+            </div>
         ) : (
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="relative w-full">
+                <div 
+                    id="carrusel-salas" 
+                    class="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide px-8 cursor-grab active:cursor-grabbing py-8"
+                    style="scroll-behavior: auto; -webkit-overflow-scrolling: touch;"
+                >
                     {salas.map((sala) => (
-                            <a href={`/salas/${sala.id}`} class="group relative h-[400px] overflow-hidden rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-500 hover:-translate-y-2">
-                                <img src={sala.imagenUrl} class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 dark:opacity-70" alt={sala.nombre} />
+                        <a 
+                            href={`/salas/${sala.id}`} 
+                            class="item-sala group relative flex-none w-[80vw] md:w-[450px] aspect-square overflow-hidden rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:-translate-y-3 select-none"
+                            draggable="false"
+                        >
+                            <img 
+                                src={sala.imagenUrl} 
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-100 dark:opacity-60 grayscale group-hover:grayscale-0 pointer-events-none" 
+                                alt={sala.nombre} 
+                                draggable="false"
+                            />
 
-                                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
-                                    <span class="text-orange-500 font-bold tracking-widest uppercase text-[10px] mb-3">Sala de Exhibición</span>
-                                    <h2 class="text-4xl font-serif text-white italic drop-shadow-lg line-clamp-1">{sala.nombre}</h2>
-                                    <p class="text-stone-200 mt-3 line-clamp-2 text-sm">{sala.descripcion}</p>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity duration-500 group-hover:opacity-100"></div>
+
+                            <div class="absolute inset-0 p-8 md:p-12 flex flex-col justify-end pointer-events-none">
+                                <span class="text-orange-500 font-black tracking-[0.4em] uppercase text-[9px] mb-4 transform -translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                                    Sala de Exhibición
+                                </span>
+                                
+                                <h2 class="text-3xl md:text-5xl font-serif text-white italic font-black leading-tight drop-shadow-2xl">
+                                    {sala.nombre}
+                                </h2>
+                                
+                                <p class="text-stone-300 mt-4 line-clamp-2 text-sm font-serif italic opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100">
+                                    {sala.descripcion}
+                                </p>
+
+                                <div class="mt-6 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-1000 delay-200">
+                                    <div class="h-px bg-orange-500 w-12"></div>
+                                    <span class="text-white text-[10px] font-black uppercase tracking-widest">Explorar Sala</span>
                                 </div>
-                            </a>
+                            </div>
+                        </a>
                     ))}
                 </div>
+            </div>
         )}
 
     </div>
+
+    <script>
+        const slider = document.getElementById('carrusel-salas');
+
+        if (slider && slider.children.length > 0) {
+            // 1. CLONACIÓN PARA EL BUCLE INFINITO
+            // Copiamos todas las tarjetas originales y las agregamos al final
+            const items = Array.from(slider.children);
+            items.forEach(item => {
+                const clone = item.cloneNode(true) as HTMLElement;
+                slider.appendChild(clone);
+            });
+
+            let isDown = false;
+            let startX: number;
+            let scrollLeft: number;
+            let autoScrollInterval: ReturnType<typeof setInterval>;
+
+            // 2. LÓGICA DE TELETRANSPORTACIÓN (Seamless Loop)
+            const handleInfiniteScroll = () => {
+                // El punto medio exacto es la mitad del ancho total con los clones
+                const midpoint = slider.scrollWidth / 2;
+
+                // Si navegamos hacia la derecha y cruzamos la mitad, regresamos al inicio
+                if (slider.scrollLeft >= midpoint) {
+                    slider.scrollLeft -= midpoint;
+                } 
+                // Si navegamos hacia la izquierda y llegamos al tope (0), saltamos a la mitad
+                else if (slider.scrollLeft <= 0) {
+                    slider.scrollLeft += midpoint;
+                }
+            };
+
+            // Escuchamos el scroll nativo en todo momento
+            slider.addEventListener('scroll', handleInfiniteScroll);
+
+            // Para evitar que inicie pegado al borde izquierdo absoluto, le damos un pequeño empujón inicial
+            slider.scrollLeft = 1;
+
+            // 3. AUTO-ROTACIÓN
+            const startAutoScroll = () => {
+                if (autoScrollInterval) clearInterval(autoScrollInterval);
+                autoScrollInterval = setInterval(() => {
+                    if (!isDown) {
+                        slider.scrollLeft += 1; // Mueve 1px hacia la derecha constantemente
+                    }
+                }, 20); // Velocidad (menor = más rápido)
+            };
+
+            const pauseAutoScroll = () => clearInterval(autoScrollInterval);
+
+            startAutoScroll();
+
+            // 4. LÓGICA DE ARRASTRE (MOUSE)
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.classList.add('active:cursor-grabbing');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+                pauseAutoScroll();
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                if(isDown) isDown = false;
+                slider.classList.remove('active:cursor-grabbing');
+                startAutoScroll();
+            });
+
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('active:cursor-grabbing');
+                startAutoScroll();
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2.5; // Multiplicador de velocidad al arrastrar
+                slider.scrollLeft = scrollLeft - walk;
+            });
+
+            // 5. LÓGICA TÁCTIL (TELÉFONOS) Y HOVER
+            slider.addEventListener('touchstart', pauseAutoScroll, { passive: true });
+            slider.addEventListener('touchend', startAutoScroll);
+            slider.addEventListener('mouseenter', pauseAutoScroll); // Se pausa si el usuario pone el mouse encima para leer
+        }
+    </script>
 </Layout>
