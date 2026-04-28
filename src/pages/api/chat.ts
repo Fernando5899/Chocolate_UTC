@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
 
         // Llamada a la API de ChatGPT
         const completacion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
+            model: "gpt-5.5",
             messages: [
                 {
                     role: "system",
