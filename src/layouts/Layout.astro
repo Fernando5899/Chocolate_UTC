@@ -32,7 +32,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
     </script>
 </head>
 
-<body class="bg-stone-50 text-stone-900 dark:bg-[#0c0a09] dark:text-stone-100 transition-colors duration-500 min-h-screen flex flex-col font-sans selection:bg-orange-500/30">
+<body class="bg-stone-50 text-stone-900 dark:bg-[#0c0a09] dark:text-stone-100 transition-colors duration-500 min-h-screen flex flex-col font-sans selection:bg-orange-500/30 relative">
 
 <nav class="bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 sticky top-0 z-[100]">
     <div class="max-w-7xl mx-auto px-5 md:px-8 py-4 md:py-6 flex justify-between items-center">
@@ -150,6 +150,15 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
 <Chatbot />
 
+<div id="fnaf-easteregg" class="fixed inset-0 z-[9999] hidden bg-black items-center justify-center flex-col cursor-pointer">
+    <video id="fnaf-video" class="w-full h-full object-cover opacity-90" preload="auto">
+        <source src="/Fnaf3.mp4" type="video/mp4" />
+    </video>
+    <p class="absolute bottom-10 text-white/30 text-[10px] font-mono tracking-widest uppercase animate-pulse">
+        [ Click para saltar ]
+    </p>
+</div>
+
 <script>
     import { carrito } from '../store/carrito';
 
@@ -206,6 +215,49 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
     botonesSalir.forEach(btn => {
         btn.addEventListener('click', () => {
             carrito.set({});
+        });
+    });
+
+    // 🐰 5. LÓGICA DEL EASTER EGG (FNAF)
+    document.addEventListener('DOMContentLoaded', () => {
+        const navLinks = document.querySelectorAll('nav a');
+        const overlay = document.getElementById('fnaf-easteregg');
+        const video = document.getElementById('fnaf-video') as HTMLVideoElement;
+
+        // Probabilidad (1.0 = 100% de las veces. Cámbialo a 0.1 para que sea sorpresa al entregarlo)
+        const PROBABILIDAD = 0.2; 
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const url = link.getAttribute('href');
+                
+                // Ignorar enlaces que no sean internos (como anclas o enlaces vacíos)
+                if (!url || url.startsWith('http') || url.startsWith('#')) return;
+
+                if (Math.random() <= PROBABILIDAD) {
+                    e.preventDefault(); 
+
+                    overlay?.classList.remove('hidden');
+                    overlay?.classList.add('flex');
+
+                    // Reiniciar y reproducir video
+                    video.currentTime = 0;
+                    video.play().catch(() => {
+                        // Si el navegador bloquea el autoplay por políticas, lo mandamos a la URL directo
+                        window.location.href = url;
+                    });
+
+                    // Cuando acabe el video, redirigir
+                    video.onended = () => {
+                        window.location.href = url;
+                    };
+
+                    // Si se asustan y dan clic, saltar el video
+                    overlay?.addEventListener('click', () => {
+                        window.location.href = url;
+                    });
+                }
+            });
         });
     });
 </script>
