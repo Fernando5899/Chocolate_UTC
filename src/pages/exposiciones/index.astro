@@ -17,11 +17,6 @@ const salas = await prisma.sala.findMany({
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        /* Bloqueamos el "rebote" nativo de los celulares que a veces traba el scroll */
-        .no-bounce {
-            overscroll-behavior-x: none;
-            touch-action: pan-y;
-        }
     </style>
 
     <div class="max-w-[100vw] overflow-hidden py-24 md:py-32 flex flex-col">
@@ -35,7 +30,7 @@ const salas = await prisma.sala.findMany({
                     Exposiciones
                 </h1>
                 <p class="text-lg md:text-xl text-stone-600 dark:text-stone-400 font-serif italic leading-relaxed">
-                    Un recorrido cronológico por la historia del cacao. Desliza libremente para explorar la colección curada del museo.
+                    Un recorrido cronológico por la historia del cacao. Desliza para explorar la colección curada del museo.
                 </p>
             </header>
         </div>
@@ -54,13 +49,13 @@ const salas = await prisma.sala.findMany({
             <div class="relative w-full">
                 <div 
                     id="carrusel-salas" 
-                    class="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide px-8 py-8 no-bounce cursor-grab active:cursor-grabbing"
-                    style="-webkit-overflow-scrolling: touch;"
+                    class="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide px-8 pb-12 pt-4 cursor-grab active:cursor-grabbing snap-x snap-mandatory"
+                    style="scroll-behavior: auto; -webkit-overflow-scrolling: touch;"
                 >
                     {salas.map((sala) => (
                         <a 
                             href={`/salas/${sala.id}`} 
-                            class="item-sala group relative flex-none w-[80vw] md:w-[450px] aspect-square overflow-hidden rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:-translate-y-3 select-none"
+                            class="item-sala group relative flex-none w-[85vw] md:w-[450px] aspect-square overflow-hidden rounded-[50px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:-translate-y-3 select-none snap-center"
                             draggable="false"
                         >
                             <img 
@@ -81,7 +76,7 @@ const salas = await prisma.sala.findMany({
                                     {sala.nombre}
                                 </h2>
                                 
-                                <p class="text-stone-300 mt-4 line-clamp-2 text-sm font-serif italic opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100">
+                                <p class="text-stone-300 mt-4 line-clamp-2 text-sm md:text-base font-serif italic opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100">
                                     {sala.descripcion}
                                 </p>
 
@@ -100,75 +95,43 @@ const salas = await prisma.sala.findMany({
 
     <script>
         const slider = document.getElementById('carrusel-salas');
+        let isDown = false;
+        let startX: number;
+        let scrollLeft: number;
+        let autoScrollInterval: ReturnType<typeof setInterval>;
 
-        if (slider && slider.children.length > 0) {
-            
-            const items = Array.from(slider.children);
-            
-            // Creamos una pista larga para que el celular tenga espacio de sobra para deslizar
-            const clonesNecesarios = 3; 
-            
-            for (let i = 0; i < clonesNecesarios; i++) {
-                items.forEach(item => {
-                    const clone = item.cloneNode(true) as HTMLElement;
-                    slider.appendChild(clone);
-                });
-            }
-
-            let isDown = false;
-            let startX = 0;
-            let scrollLeftRef = 0; 
-            let autoScrollInterval: ReturnType<typeof setInterval> | null = null;
-            let touchTimeout: ReturnType<typeof setTimeout> | null = null;
-
-            const handleInfiniteScroll = () => {
-                const segmentWidth = slider.scrollWidth / (clonesNecesarios + 1);
-
-                // Límite Derecho
-                if (slider.scrollLeft >= segmentWidth * clonesNecesarios) {
-                    slider.scrollLeft -= segmentWidth;
-                    scrollLeftRef -= segmentWidth; 
-                } 
-                // Límite Izquierdo
-                else if (slider.scrollLeft <= 1) {
-                    slider.scrollLeft += segmentWidth;
-                    scrollLeftRef += segmentWidth; 
-                }
-            };
-
-            slider.addEventListener('scroll', handleInfiniteScroll);
-
+        if (slider) {
+            // --- LÓGICA DE AUTO-ROTACIÓN ESTABLE ---
             const startAutoScroll = () => {
                 if (autoScrollInterval) clearInterval(autoScrollInterval);
                 autoScrollInterval = setInterval(() => {
                     if (!isDown) {
                         slider.scrollLeft += 1;
+                        // Si llega al final exacto, rebobina suavemente al inicio
+                        if (slider.scrollLeft >= (slider.scrollWidth - slider.clientWidth - 1)) {
+                            slider.scrollTo({ left: 0, behavior: 'smooth' });
+                        }
                     }
-                }, 20); 
+                }, 30); 
             };
 
             const pauseAutoScroll = () => {
-                if (autoScrollInterval) clearInterval(autoScrollInterval);
+                clearInterval(autoScrollInterval);
             };
 
-            // Posicionamos a la mitad para tener margen de arrastre inmediato
-            setTimeout(() => {
-                const segmentWidth = slider.scrollWidth / (clonesNecesarios + 1);
-                slider.scrollLeft = segmentWidth;
-                startAutoScroll();
-            }, 100);
+            startAutoScroll();
 
-            // --- LÓGICA DE MOUSE (SOLO PARA COMPUTADORA) ---
+            // --- LÓGICA DE ARRASTRE (MOUSE EN PC) ---
             slider.addEventListener('mousedown', (e) => {
                 isDown = true;
                 slider.classList.add('active:cursor-grabbing');
                 startX = e.pageX - slider.offsetLeft;
-                scrollLeftRef = slider.scrollLeft; 
+                scrollLeft = slider.scrollLeft;
                 pauseAutoScroll();
             });
 
             slider.addEventListener('mouseleave', () => {
-                if(isDown) isDown = false;
+                isDown = false;
                 slider.classList.remove('active:cursor-grabbing');
                 startAutoScroll();
             });
@@ -184,21 +147,16 @@ const salas = await prisma.sala.findMany({
                 e.preventDefault();
                 const x = e.pageX - slider.offsetLeft;
                 const walk = (x - startX) * 2; 
-                slider.scrollLeft = scrollLeftRef - walk; 
+                slider.scrollLeft = scrollLeft - walk;
             });
 
-            // --- LÓGICA TÁCTIL (SOLO PARA CELULARES) ---
-            // Dejamos que el CSS nativo arrastre, solo controlamos el encendido/apagado del motor
-            slider.addEventListener('touchstart', () => {
-                pauseAutoScroll();
-                if (touchTimeout) clearTimeout(touchTimeout);
-            }, { passive: true });
-
+            // --- LÓGICA TÁCTIL (CELULARES) ---
+            // Apagamos el motor automático al tocar la pantalla y dejamos que el celular haga su magia nativa.
+            slider.addEventListener('touchstart', pauseAutoScroll, { passive: true });
             slider.addEventListener('touchend', () => {
-                // Esperamos 1 segundo a que la inercia del dedo termine antes de volver a moverlo automático
-                touchTimeout = setTimeout(startAutoScroll, 1000);
-            }, { passive: true });
-
+                setTimeout(startAutoScroll, 1500); // Espera 1.5s antes de volver a moverse solo
+            });
+            
             slider.addEventListener('mouseenter', pauseAutoScroll);
         }
     </script>
