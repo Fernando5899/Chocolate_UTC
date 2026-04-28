@@ -97,60 +97,70 @@ const salas = await prisma.sala.findMany({
         const slider = document.getElementById('carrusel-salas');
 
         if (slider && slider.children.length > 0) {
-            // 1. CLONACIÓN PARA EL BUCLE INFINITO
-            // Copiamos todas las tarjetas originales y las agregamos al final
+            
             const items = Array.from(slider.children);
-            items.forEach(item => {
-                const clone = item.cloneNode(true) as HTMLElement;
-                slider.appendChild(clone);
-            });
+            
+            // Clonamos los elementos para crear la ilusión del bucle.
+            // Si hay poquitas salas (ej. 2), clonamos varias veces para que no se rompa la ilusión.
+            const clonesNecesarios = items.length <= 2 ? 3 : 1; 
+            
+            for (let i = 0; i < clonesNecesarios; i++) {
+                items.forEach(item => {
+                    const clone = item.cloneNode(true) as HTMLElement;
+                    slider.appendChild(clone);
+                });
+            }
 
             let isDown = false;
-            let startX: number;
-            let scrollLeft: number;
-            let autoScrollInterval: ReturnType<typeof setInterval>;
+            let startX = 0;
+            // ESTA ES LA VARIABLE MÁGICA: Sincroniza el mouse con la teletransportación
+            let scrollLeftRef = 0; 
+            let autoScrollInterval: ReturnType<typeof setInterval> | null = null;
 
-            // 2. LÓGICA DE TELETRANSPORTACIÓN (Seamless Loop)
             const handleInfiniteScroll = () => {
-                // El punto medio exacto es la mitad del ancho total con los clones
-                const midpoint = slider.scrollWidth / 2;
+                const segmentWidth = slider.scrollWidth / (clonesNecesarios + 1);
 
-                // Si navegamos hacia la derecha y cruzamos la mitad, regresamos al inicio
-                if (slider.scrollLeft >= midpoint) {
-                    slider.scrollLeft -= midpoint;
+                // Límite Derecho
+                if (slider.scrollLeft >= segmentWidth * clonesNecesarios) {
+                    slider.scrollLeft -= segmentWidth;
+                    scrollLeftRef -= segmentWidth; // Sincronizamos la memoria del arrastre
                 } 
-                // Si navegamos hacia la izquierda y llegamos al tope (0), saltamos a la mitad
-                else if (slider.scrollLeft <= 0) {
-                    slider.scrollLeft += midpoint;
+                // Límite Izquierdo
+                else if (slider.scrollLeft <= 1) {
+                    slider.scrollLeft += segmentWidth;
+                    scrollLeftRef += segmentWidth; // Sincronizamos la memoria del arrastre
                 }
             };
 
-            // Escuchamos el scroll nativo en todo momento
             slider.addEventListener('scroll', handleInfiniteScroll);
 
-            // Para evitar que inicie pegado al borde izquierdo absoluto, le damos un pequeño empujón inicial
-            slider.scrollLeft = 1;
-
-            // 3. AUTO-ROTACIÓN
             const startAutoScroll = () => {
                 if (autoScrollInterval) clearInterval(autoScrollInterval);
                 autoScrollInterval = setInterval(() => {
                     if (!isDown) {
-                        slider.scrollLeft += 1; // Mueve 1px hacia la derecha constantemente
+                        slider.scrollLeft += 1;
                     }
-                }, 20); // Velocidad (menor = más rápido)
+                }, 20); // Velocidad
             };
 
-            const pauseAutoScroll = () => clearInterval(autoScrollInterval);
+            const pauseAutoScroll = () => {
+                if (autoScrollInterval) clearInterval(autoScrollInterval);
+            };
 
-            startAutoScroll();
+            // Damos un pequeño retraso al cargar y posicionamos el carrusel a la mitad
+            // Así el usuario tiene pista para hacer scroll hacia la izquierda inmediatamente.
+            setTimeout(() => {
+                const segmentWidth = slider.scrollWidth / (clonesNecesarios + 1);
+                slider.scrollLeft = segmentWidth;
+                startAutoScroll();
+            }, 100);
 
-            // 4. LÓGICA DE ARRASTRE (MOUSE)
+            // --- LÓGICA DE ARRASTRE (MOUSE) ---
             slider.addEventListener('mousedown', (e) => {
                 isDown = true;
                 slider.classList.add('active:cursor-grabbing');
                 startX = e.pageX - slider.offsetLeft;
-                scrollLeft = slider.scrollLeft;
+                scrollLeftRef = slider.scrollLeft; // Guardamos el punto de inicio
                 pauseAutoScroll();
             });
 
@@ -170,14 +180,14 @@ const salas = await prisma.sala.findMany({
                 if (!isDown) return;
                 e.preventDefault();
                 const x = e.pageX - slider.offsetLeft;
-                const walk = (x - startX) * 2.5; // Multiplicador de velocidad al arrastrar
-                slider.scrollLeft = scrollLeft - walk;
+                const walk = (x - startX) * 2; // Multiplicador de velocidad
+                slider.scrollLeft = scrollLeftRef - walk; // Usamos la referencia sincronizada
             });
 
-            // 5. LÓGICA TÁCTIL (TELÉFONOS) Y HOVER
+            // --- LÓGICA TÁCTIL Y HOVER ---
             slider.addEventListener('touchstart', pauseAutoScroll, { passive: true });
             slider.addEventListener('touchend', startAutoScroll);
-            slider.addEventListener('mouseenter', pauseAutoScroll); // Se pausa si el usuario pone el mouse encima para leer
+            slider.addEventListener('mouseenter', pauseAutoScroll);
         }
     </script>
 </Layout>
