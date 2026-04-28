@@ -17,6 +17,11 @@ const salas = await prisma.sala.findMany({
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        /* Bloqueamos el "rebote" nativo de los celulares que a veces traba el scroll */
+        .no-bounce {
+            overscroll-behavior-x: none;
+            touch-action: pan-y;
+        }
     </style>
 
     <div class="max-w-[100vw] overflow-hidden py-24 md:py-32 flex flex-col">
@@ -49,8 +54,8 @@ const salas = await prisma.sala.findMany({
             <div class="relative w-full">
                 <div 
                     id="carrusel-salas" 
-                    class="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide px-8 cursor-grab active:cursor-grabbing py-8"
-                    style="scroll-behavior: auto; -webkit-overflow-scrolling: touch;"
+                    class="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide px-8 py-8 no-bounce cursor-grab active:cursor-grabbing"
+                    style="-webkit-overflow-scrolling: touch;"
                 >
                     {salas.map((sala) => (
                         <a 
@@ -100,9 +105,8 @@ const salas = await prisma.sala.findMany({
             
             const items = Array.from(slider.children);
             
-            // Clonamos los elementos para crear la ilusión del bucle.
-            // Si hay poquitas salas (ej. 2), clonamos varias veces para que no se rompa la ilusión.
-            const clonesNecesarios = items.length <= 2 ? 3 : 1; 
+            // Creamos una pista larga para que el celular tenga espacio de sobra para deslizar
+            const clonesNecesarios = 3; 
             
             for (let i = 0; i < clonesNecesarios; i++) {
                 items.forEach(item => {
@@ -113,9 +117,9 @@ const salas = await prisma.sala.findMany({
 
             let isDown = false;
             let startX = 0;
-            // ESTA ES LA VARIABLE MÁGICA: Sincroniza el mouse con la teletransportación
             let scrollLeftRef = 0; 
             let autoScrollInterval: ReturnType<typeof setInterval> | null = null;
+            let touchTimeout: ReturnType<typeof setTimeout> | null = null;
 
             const handleInfiniteScroll = () => {
                 const segmentWidth = slider.scrollWidth / (clonesNecesarios + 1);
@@ -123,12 +127,12 @@ const salas = await prisma.sala.findMany({
                 // Límite Derecho
                 if (slider.scrollLeft >= segmentWidth * clonesNecesarios) {
                     slider.scrollLeft -= segmentWidth;
-                    scrollLeftRef -= segmentWidth; // Sincronizamos la memoria del arrastre
+                    scrollLeftRef -= segmentWidth; 
                 } 
                 // Límite Izquierdo
                 else if (slider.scrollLeft <= 1) {
                     slider.scrollLeft += segmentWidth;
-                    scrollLeftRef += segmentWidth; // Sincronizamos la memoria del arrastre
+                    scrollLeftRef += segmentWidth; 
                 }
             };
 
@@ -140,27 +144,26 @@ const salas = await prisma.sala.findMany({
                     if (!isDown) {
                         slider.scrollLeft += 1;
                     }
-                }, 20); // Velocidad
+                }, 20); 
             };
 
             const pauseAutoScroll = () => {
                 if (autoScrollInterval) clearInterval(autoScrollInterval);
             };
 
-            // Damos un pequeño retraso al cargar y posicionamos el carrusel a la mitad
-            // Así el usuario tiene pista para hacer scroll hacia la izquierda inmediatamente.
+            // Posicionamos a la mitad para tener margen de arrastre inmediato
             setTimeout(() => {
                 const segmentWidth = slider.scrollWidth / (clonesNecesarios + 1);
                 slider.scrollLeft = segmentWidth;
                 startAutoScroll();
             }, 100);
 
-            // --- LÓGICA DE ARRASTRE (MOUSE) ---
+            // --- LÓGICA DE MOUSE (SOLO PARA COMPUTADORA) ---
             slider.addEventListener('mousedown', (e) => {
                 isDown = true;
                 slider.classList.add('active:cursor-grabbing');
                 startX = e.pageX - slider.offsetLeft;
-                scrollLeftRef = slider.scrollLeft; // Guardamos el punto de inicio
+                scrollLeftRef = slider.scrollLeft; 
                 pauseAutoScroll();
             });
 
@@ -180,13 +183,22 @@ const salas = await prisma.sala.findMany({
                 if (!isDown) return;
                 e.preventDefault();
                 const x = e.pageX - slider.offsetLeft;
-                const walk = (x - startX) * 2; // Multiplicador de velocidad
-                slider.scrollLeft = scrollLeftRef - walk; // Usamos la referencia sincronizada
+                const walk = (x - startX) * 2; 
+                slider.scrollLeft = scrollLeftRef - walk; 
             });
 
-            // --- LÓGICA TÁCTIL Y HOVER ---
-            slider.addEventListener('touchstart', pauseAutoScroll, { passive: true });
-            slider.addEventListener('touchend', startAutoScroll);
+            // --- LÓGICA TÁCTIL (SOLO PARA CELULARES) ---
+            // Dejamos que el CSS nativo arrastre, solo controlamos el encendido/apagado del motor
+            slider.addEventListener('touchstart', () => {
+                pauseAutoScroll();
+                if (touchTimeout) clearTimeout(touchTimeout);
+            }, { passive: true });
+
+            slider.addEventListener('touchend', () => {
+                // Esperamos 1 segundo a que la inercia del dedo termine antes de volver a moverlo automático
+                touchTimeout = setTimeout(startAutoScroll, 1000);
+            }, { passive: true });
+
             slider.addEventListener('mouseenter', pauseAutoScroll);
         }
     </script>
