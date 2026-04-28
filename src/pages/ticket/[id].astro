@@ -1,134 +1,183 @@
 ---
-// Ya no importamos Layout.astro, porque queremos una página totalmente limpia
+import Layout from '../../layouts/Layout.astro';
 import prisma from '../../lib/prisma';
-import '../../styles/global.css'; // Importamos Tailwind directamente
+import { getSession } from 'auth-astro/server';
 
+const session = await getSession(Astro.request);
 const { id } = Astro.params;
 
+if (!id) return Astro.redirect('/');
+
+// 1. CONSULTA A BASE DE DATOS (Con 'as any' para calmar a TypeScript)
 const orden = await prisma.orden.findUnique({
-    where: { id },
+    where: { id: id },
     include: {
         detalles: {
             include: {
                 chocolate: true
             }
-        }
+        },
+        user: true
     }
 }) as any;
 
 if (!orden) return Astro.redirect('/404');
 
-const detalles = orden.detalles || [];
+// Formateamos la fecha al estilo del ticket (DD/MM/YYYY)
+const fechaFormateada = new Date(orden.fecha).toLocaleDateString('es-MX', {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric'
+});
+
+// Extraemos un folio corto del ID
+const folioCorto = orden.id.slice(-8).toUpperCase();
 ---
 
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Pase de Acceso | Museo de Chocolate</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-</head>
-<body class="bg-stone-200 dark:bg-[#0c0a09] min-h-screen flex justify-center items-center py-8 px-4 font-sans selection:bg-orange-500 selection:text-white transition-colors duration-500">
+<Layout title={`Ticket #${folioCorto} | Museo de Chocolate`}>
+    <div class="min-h-screen bg-stone-200 dark:bg-[#0a0807] flex items-center justify-center py-20 px-4 transition-colors duration-500">
 
-<div class="w-full max-w-md bg-white dark:bg-[#110e0d] shadow-2xl rounded-[40px] relative overflow-hidden border border-stone-300 dark:border-stone-800">
+        <div id="ticket-imprimible" class="w-full max-w-md bg-white dark:bg-[#110e0d] rounded-[40px] shadow-2xl relative overflow-hidden flex flex-col print:shadow-none print:m-0">
 
-    <div class="bg-stone-900 dark:bg-black p-10 text-center relative border-b border-orange-600/30">
-        <h1 class="text-white font-serif italic font-black text-3xl tracking-tight">Museo de Chocolate</h1>
-        <p class="text-orange-500 uppercase tracking-[0.4em] text-[9px] font-black mt-3">Pase de Admisión Oficial</p>
-
-        <div class="absolute -bottom-5 -left-5 w-10 h-10 bg-stone-200 dark:bg-[#0c0a09] rounded-full border-t border-r border-stone-300 dark:border-stone-800 transition-colors duration-500"></div>
-        <div class="absolute -bottom-5 -right-5 w-10 h-10 bg-stone-200 dark:bg-[#0c0a09] rounded-full border-t border-l border-stone-300 dark:border-stone-800 transition-colors duration-500"></div>
-    </div>
-
-    <div class="p-10 pt-12 space-y-8">
-        
-        <div class="flex justify-between items-end border-b border-stone-200 dark:border-stone-800 pb-6">
-            <div>
-                <span class="text-[9px] uppercase font-black text-stone-400 block tracking-[0.2em] mb-1">Titular del Pase</span>
-                <p class="text-xl font-serif font-black text-stone-900 dark:text-white italic leading-none truncate max-w-[200px]">{orden.clienteNombre}</p>
+            <div class="bg-[#1c1917] pt-14 pb-10 px-8 text-center relative z-10">
+                <h1 class="text-4xl font-serif italic font-black text-white mb-2 drop-shadow-md">
+                    Museo de Chocolate
+                </h1>
+                <p class="text-[9px] uppercase tracking-[0.4em] font-black text-orange-500">
+                    Pase de Admisión Oficial
+                </p>
             </div>
-            <div class="text-right">
-                <span class="text-[9px] uppercase font-black text-stone-400 block tracking-[0.2em] mb-1">Fecha</span>
-                <span class="font-mono text-xs font-bold text-stone-600 dark:text-stone-300">{new Date(orden.fecha).toLocaleDateString('es-MX')}</span>
-            </div>
-        </div>
 
-        <div class="space-y-4">
-            <span class="text-[9px] font-black uppercase tracking-[0.3em] text-orange-600 block mb-2">Manifiesto de Compra</span>
-            {detalles.map((item: any) => (
-                <div class="flex justify-between text-sm items-center">
-                    <span class="dark:text-stone-300 text-stone-600 font-serif italic">
-                        <span class="font-sans font-bold text-stone-400 text-xs mr-2">{item.cantidad}x</span> 
-                        {item.chocolate ? item.chocolate.nombre : (item.nombreItem || "Pase de Admisión")}
+            <div class="relative bg-white dark:bg-[#110e0d] h-2 z-20">
+                <div class="absolute inset-0 bg-orange-600 h-1.5 top-0"></div>
+
+                <div class="absolute -left-4 -top-3 w-8 h-8 bg-stone-200 dark:bg-[#0a0807] rounded-full shadow-inner transition-colors duration-500"></div>
+
+                <div class="absolute -right-4 -top-3 w-8 h-8 bg-stone-200 dark:bg-[#0a0807] rounded-full shadow-inner transition-colors duration-500"></div>
+            </div>
+
+            <div class="p-8 md:p-10 z-10 bg-white dark:bg-[#110e0d]">
+
+                <div class="flex justify-between items-start mb-8 border-b border-stone-100 dark:border-stone-800/80 pb-6">
+                    <div>
+                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-1">Titular del Pase</span>
+                        <h2 class="text-xl md:text-2xl font-serif italic font-black text-stone-900 dark:text-white leading-tight">
+                            {orden.clienteNombre || orden.user?.name || 'Visitante Distinguido'}
+                        </h2>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-1">Fecha</span>
+                        <p class="text-sm font-bold text-stone-600 dark:text-stone-300 font-mono tracking-widest">{fechaFormateada}</p>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <span class="block text-[8px] uppercase tracking-[0.4em] font-black text-orange-600 dark:text-orange-500 mb-4">
+                        Manifiesto de Compra
                     </span>
-                    <span class="font-bold font-mono text-stone-900 dark:text-white">${(item.precioUnit * item.cantidad).toFixed(2)}</span>
+
+                    <div class="space-y-3">
+                        {orden.detalles && orden.detalles.length > 0 ? (
+                            orden.detalles.map((detalle: any) => (
+                                    <div class="flex justify-between items-center">
+                                        <p class="text-sm font-serif italic text-stone-600 dark:text-stone-300 line-clamp-1 pr-4">
+                                            <span class="font-sans font-black text-stone-400 text-xs mr-1">{detalle.cantidad}x</span>
+                                            {detalle.chocolate?.nombre || 'Boleto de Acceso'}
+                                        </p>
+                                        <span class="text-sm font-black text-stone-900 dark:text-white font-mono">
+                                        ${(Number(detalle.precio) * detalle.cantidad).toFixed(2)}
+                                    </span>
+                                    </div>
+                            ))
+                        ) : (
+                                <div class="flex justify-between items-center">
+                                    <p class="text-sm font-serif italic text-stone-600 dark:text-stone-300">
+                                        <span class="font-sans font-black text-stone-400 text-xs mr-1">1x</span>
+                                        Acceso General Digital
+                                    </p>
+                                    <span class="text-sm font-black text-stone-900 dark:text-white font-mono">${Number(orden.total).toFixed(2)}</span>
+                                </div>
+                        )}
+                    </div>
                 </div>
-            ))}
-        </div>
 
-        <div class="bg-stone-50 dark:bg-[#0c0a09] p-6 rounded-3xl border border-stone-200 dark:border-stone-800 flex justify-between items-center">
-            <div>
-                <span class="text-[9px] font-black text-stone-400 uppercase tracking-[0.3em] block mb-1">Aporte Total</span>
-                <span class="text-3xl font-black text-stone-900 dark:text-white font-mono tracking-tighter">${orden.total.toFixed(2)}</span>
-            </div>
-            <div class="text-right">
-                <span class="text-[9px] font-black text-stone-400 uppercase tracking-[0.3em] block mb-1">Folio</span>
-                <span class="text-sm font-mono font-bold text-stone-600 dark:text-stone-400">#{orden.id.slice(-8).toUpperCase()}</span>
-            </div>
-        </div>
-
-        <div class="text-center pt-6">
-            <span class="text-[9px] font-black uppercase tracking-[0.4em] text-stone-400 block mb-6">Escaneo de Seguridad UTC</span>
-            <div class="flex justify-center">
-                <div class="bg-white p-3 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-800 inline-block">
-                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${orden.id}&color=1c1917`} class="w-32 h-32 rounded-lg" alt="Código QR Institucional" />
+                <div class="border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-3xl p-6 flex justify-between items-center mb-10 bg-stone-50 dark:bg-[#0c0a09] transition-colors">
+                    <div>
+                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-1">Total Pagado</span>
+                        <p class="text-4xl font-black text-stone-900 dark:text-white tracking-tighter">
+                            ${Number(orden.total).toFixed(2)}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-[8px] uppercase tracking-[0.3em] font-black text-stone-400 mb-2">Folio</span>
+                        <p class="text-xs font-black text-stone-900 dark:text-white bg-white dark:bg-stone-800 px-3 py-1.5 rounded-md border border-stone-200 dark:border-stone-700 font-mono tracking-widest">
+                            #{folioCorto}
+                        </p>
+                    </div>
                 </div>
+
+                <div class="text-center flex flex-col items-center mb-8">
+                    <span class="block text-[8px] uppercase tracking-[0.4em] font-black text-stone-400 mb-6">
+                        Escaneo de Seguridad UTC
+                    </span>
+
+                    <div class="bg-white p-4 rounded-3xl shadow-xl border border-stone-100 print:shadow-none print:border-stone-300">
+                        <img
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${orden.id}&color=1c1917&margin=0`}
+                                alt={`QR Orden ${folioCorto}`}
+                                class="w-40 h-40 object-contain mix-blend-multiply"
+                        />
+                    </div>
+                </div>
+
+                <button
+                        onclick="window.print()"
+                        class="w-full bg-[#1c1917] dark:bg-white text-white dark:text-black font-black py-5 rounded-xl uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 hover:dark:bg-orange-600 hover:text-white transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3 print:hidden"
+                >
+                    Descargar Ticket PDF
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </button>
+
             </div>
         </div>
 
-        <div class="no-print pt-4">
-            <button onclick="window.print()" class="w-full bg-stone-900 dark:bg-white text-white dark:text-black py-5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] hover:bg-orange-600 dark:hover:bg-orange-600 dark:hover:text-white transition-all cursor-pointer shadow-xl active:scale-95 mb-4">
-                Descargar Ticket PDF
-            </button>
-            <div class="text-center">
-                <a href="/tienda/chocolates" class="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 hover:text-orange-500 transition-colors border-b border-transparent hover:border-orange-500 pb-1">
-                    Volver a la tienda
-                </a>
-            </div>
-        </div>
+        <a href="/cuenta/mis-boletos" class="fixed bottom-8 left-8 w-12 h-12 bg-[#1c1917] dark:bg-white text-white dark:text-black rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform print:hidden z-50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+
     </div>
-</div>
+</Layout>
 
-<style>
+<style is:global>
+    /* Estilos exclusivos para la conversión a PDF (Impresión) */
     @media print {
-        .no-print { display: none !important; }
-        body { 
-            background: white !important; 
-            display: block;
-            padding: 0;
-            margin: 0;
+        body * {
+            visibility: hidden; /* Oculta todo el layout original (NavBar, Footer, etc) */
         }
-        .shadow-2xl, .shadow-sm, .shadow-xl { box-shadow: none !important; }
-        /* Expandimos el ticket y quitamos bordes para la impresión en A4 o Ticketera */
-        .max-w-md {
-            max-width: 100% !important;
-            border: none !important;
-            border-radius: 0 !important;
+        #ticket-imprimible, #ticket-imprimible * {
+            visibility: visible; /* Muestra solo el boleto */
         }
-        /* Ocultamos las perforaciones simuladas al imprimir */
-        .rounded-full.border-t { display: none !important; }
+        #ticket-imprimible {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); /* Lo centra en la hoja carta */
+            width: 100%;
+            max-width: 400px;
+            box-shadow: none !important;
+            -webkit-print-color-adjust: exact; /* Fuerza a imprimir los fondos oscuros/naranjas en Chrome/Safari */
+            print-color-adjust: exact; /* Fuerza a imprimir los fondos oscuros/naranjas en Firefox */
+        }
+        /* Forzamos el fondo oscuro en papel */
+        .bg-\[\#1c1917\] {
+            background-color: #1c1917 !important;
+        }
+        .bg-orange-600 {
+            background-color: #ea580c !important;
+        }
     }
 </style>
-
-<script>
-    // Recuperamos el tema para que la vista aislada respete si el usuario usa Dark Mode
-    const theme = localStorage.getItem('theme') || 'dark';
-    if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-    }
-</script>
-
-</body>
-</html>

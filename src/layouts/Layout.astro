@@ -17,9 +17,9 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
     <meta name="description" content="Portal Institucional del Museo de Chocolate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
+
     <title>{title}</title>
 
     <script is:inline>
@@ -34,7 +34,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
 <body class="bg-stone-50 text-stone-900 dark:bg-[#0c0a09] dark:text-stone-100 transition-colors duration-500 min-h-screen flex flex-col font-sans selection:bg-orange-500/30 relative">
 
-<nav class="bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 sticky top-0 z-[100]">
+<nav class="bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-5 md:px-8 py-4 md:py-6 flex justify-between items-center">
 
         <a href="/" class="flex flex-col z-50 group">
@@ -53,7 +53,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
             <a href="/tienda/carrito" class="flex items-center gap-2 text-stone-600 dark:text-stone-300 hover:text-orange-500 transition-all group">
                 Carrito
-                <span class="contador-carrito inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 border border-stone-300 dark:border-stone-700 rounded-full text-[10px] font-mono leading-none transition-all group-hover:border-orange-500">0</span>
+                <span class="contador-carrito inline-flex items-center justify-center h-6 min-w-6 px-2 border border-stone-300 dark:border-stone-700 rounded-full text-[10px] font-mono leading-none transition-all group-hover:border-orange-500">0</span>
             </a>
 
             <button class="theme-toggle p-2 rounded-lg border border-stone-300 dark:border-stone-800 hover:border-orange-500 transition-all cursor-pointer bg-transparent">
@@ -93,7 +93,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
         </div>
     </div>
 
-    <div id="menu-movil" class="hidden md:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0c0a09] border-b border-stone-200 dark:border-stone-800 shadow-2xl transition-all duration-300 z-[90]">
+    <div id="menu-movil" class="hidden md:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0c0a09] border-b border-stone-200 dark:border-stone-800 shadow-2xl transition-all duration-300 z-40">
         <div class="px-8 py-8 flex flex-col gap-6 uppercase text-xs font-black tracking-[0.2em]">
             <a href="/" class="text-stone-600 dark:text-stone-300 hover:text-orange-500">Inicio</a>
             <a href="/exposiciones" class="text-stone-600 dark:text-stone-300 hover:text-orange-500">Exposiciones</a>
@@ -103,7 +103,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
             <a href="/tienda/carrito" class="flex justify-between items-center text-stone-600 dark:text-stone-300 hover:text-orange-500 border-t border-stone-200 dark:border-stone-800 pt-6">
                 Carrito
-                <span class="contador-carrito inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 bg-stone-900 dark:bg-white text-white dark:text-black rounded-full text-[11px] font-mono leading-none">0</span>
+                <span class="contador-carrito inline-flex items-center justify-center h-6 min-w-6 px-2 bg-stone-900 dark:bg-white text-white dark:text-black rounded-full text-[11px] font-mono leading-none">0</span>
             </a>
 
             <div class="border-t border-stone-200 dark:border-stone-800 pt-6 flex flex-col gap-6">
@@ -150,12 +150,19 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
 <Chatbot />
 
-<div id="fnaf-easteregg" class="fixed inset-0 z-[9999] hidden bg-black items-center justify-center flex-col cursor-pointer">
-    <video id="fnaf-video" class="w-full h-full object-cover opacity-90" preload="auto">
-        <source src="/Fnaf3.mp4" type="video/mp4" />
-    </video>
-    <p class="absolute bottom-10 text-white/30 text-[10px] font-mono tracking-widest uppercase animate-pulse">
-        [ Click para saltar ]
+<div id="fnaf-easteregg" class="fixed inset-0 hidden bg-black/95 items-center justify-center flex-col cursor-pointer p-4 transition-opacity duration-300" style="z-index: 9999;">
+
+    <div class="w-full max-w-4xl aspect-video bg-black rounded-lg overflow-hidden shadow-2xl relative flex items-center justify-center">
+        <video id="fnaf-video"
+               class="w-full h-full object-contain"
+               preload="auto"
+               playsinline>
+            <source src="/Fnaf3.mp4" type="video/mp4" />
+        </video>
+    </div>
+
+    <p class="mt-8 text-white/40 text-[10px] font-mono tracking-widest uppercase animate-pulse">
+        [ Haz clic para saltar ]
     </p>
 </div>
 
@@ -201,7 +208,7 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
 
         contadores.forEach(contador => {
             contador.textContent = totalItems > 99 ? '99+' : totalItems.toString();
-            
+
             if (totalItems > 0) {
                 contador.classList.add('border-orange-500', 'text-orange-600', 'dark:text-orange-500');
             } else {
@@ -218,41 +225,35 @@ const isAdmin = session?.user?.email === 'fernando.jose.reynosa@gmail.com';
         });
     });
 
-    // 🐰 5. LÓGICA DEL EASTER EGG (FNAF)
+    // 5. LÓGICA DEL EASTER EGG (FNAF)
     document.addEventListener('DOMContentLoaded', () => {
         const navLinks = document.querySelectorAll('nav a');
         const overlay = document.getElementById('fnaf-easteregg');
         const video = document.getElementById('fnaf-video') as HTMLVideoElement;
 
-        // Probabilidad (1.0 = 100% de las veces. Cámbialo a 0.1 para que sea sorpresa al entregarlo)
-        const PROBABILIDAD = 0.2; 
+        const PROBABILIDAD = 0.4;
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 const url = link.getAttribute('href');
-                
-                // Ignorar enlaces que no sean internos (como anclas o enlaces vacíos)
+
                 if (!url || url.startsWith('http') || url.startsWith('#')) return;
 
                 if (Math.random() <= PROBABILIDAD) {
-                    e.preventDefault(); 
+                    e.preventDefault();
 
                     overlay?.classList.remove('hidden');
                     overlay?.classList.add('flex');
 
-                    // Reiniciar y reproducir video
                     video.currentTime = 0;
                     video.play().catch(() => {
-                        // Si el navegador bloquea el autoplay por políticas, lo mandamos a la URL directo
                         window.location.href = url;
                     });
 
-                    // Cuando acabe el video, redirigir
                     video.onended = () => {
                         window.location.href = url;
                     };
 
-                    // Si se asustan y dan clic, saltar el video
                     overlay?.addEventListener('click', () => {
                         window.location.href = url;
                     });
