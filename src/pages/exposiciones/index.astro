@@ -30,7 +30,7 @@ const salas = await prisma.sala.findMany({
                     Exposiciones
                 </h1>
                 <p class="text-lg md:text-xl text-stone-600 dark:text-stone-400 font-serif italic leading-relaxed">
-                    Un recorrido cronológico por la historia del cacao. Desliza para explorar la colección curada del museo.
+                    Un recorrido cronológico por la historia del cacao. Desliza libremente para explorar la colección curada del museo.
                 </p>
             </header>
         </div>
@@ -49,13 +49,13 @@ const salas = await prisma.sala.findMany({
             <div class="relative w-full">
                 <div 
                     id="carrusel-salas" 
-                    class="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide px-8 pb-12 pt-4 cursor-grab active:cursor-grabbing snap-x snap-mandatory"
+                    class="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide px-8 cursor-grab active:cursor-grabbing py-8"
                     style="scroll-behavior: auto; -webkit-overflow-scrolling: touch;"
                 >
                     {salas.map((sala) => (
                         <a 
                             href={`/salas/${sala.id}`} 
-                            class="item-sala group relative flex-none w-[85vw] md:w-[450px] aspect-square overflow-hidden rounded-[50px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:-translate-y-3 select-none snap-center"
+                            class="item-sala group relative flex-none w-[80vw] md:w-[450px] aspect-square overflow-hidden rounded-[40px] border border-stone-200 dark:border-stone-800 shadow-xl transition-all duration-700 hover:-translate-y-3 select-none"
                             draggable="false"
                         >
                             <img 
@@ -76,7 +76,7 @@ const salas = await prisma.sala.findMany({
                                     {sala.nombre}
                                 </h2>
                                 
-                                <p class="text-stone-300 mt-4 line-clamp-2 text-sm md:text-base font-serif italic opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100">
+                                <p class="text-stone-300 mt-4 line-clamp-2 text-sm font-serif italic opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100">
                                     {sala.descripcion}
                                 </p>
 
@@ -95,69 +95,99 @@ const salas = await prisma.sala.findMany({
 
     <script>
         const slider = document.getElementById('carrusel-salas');
-        let isDown = false;
-        let startX: number;
-        let scrollLeft: number;
-        let autoScrollInterval: ReturnType<typeof setInterval>;
 
-        if (slider) {
-            // --- LÓGICA DE AUTO-ROTACIÓN ESTABLE ---
-            const startAutoScroll = () => {
-                if (autoScrollInterval) clearInterval(autoScrollInterval);
-                autoScrollInterval = setInterval(() => {
-                    if (!isDown) {
-                        slider.scrollLeft += 1;
-                        // Si llega al final exacto, rebobina suavemente al inicio
-                        if (slider.scrollLeft >= (slider.scrollWidth - slider.clientWidth - 1)) {
-                            slider.scrollTo({ left: 0, behavior: 'smooth' });
-                        }
+        if (slider && slider.children.length > 0) {
+            const items = Array.from(slider.children);
+            
+            // MULTIPLICADOR DE BUCLE: Clonamos varias veces para dar margen al scroll
+            const numClones = 3;
+            for(let i = 0; i < numClones; i++){
+                items.forEach(item => slider.appendChild(item.cloneNode(true)));
+            }
+
+            let isDown = false;
+            let startX = 0;
+            let scrollLeft = 0;
+            let isAutoScrolling = true;
+            let frameId: number;
+
+            // Función ultra-precisa para saber la medida de un bloque original (incluyendo los espacios/gaps)
+            const getPuntoDeCorte = () => {
+                const primerOriginal = slider.children[0] as HTMLElement;
+                const primerClon = slider.children[items.length] as HTMLElement;
+                return primerClon.offsetLeft - primerOriginal.offsetLeft;
+            };
+
+            // MOTOR DE FLUIDEZ A 60 FPS
+            const autoScrollFluid = () => {
+                if (isAutoScrolling && !isDown) {
+                    slider.scrollLeft += 1; // Velocidad suave
+
+                    const puntoDeCorte = getPuntoDeCorte();
+                    
+                    // Salto Mágico Invisible: Ocurre solo cuando el celular NO está tocando
+                    if (slider.scrollLeft >= puntoDeCorte * 2) { 
+                        slider.scrollLeft -= puntoDeCorte;
+                    } else if (slider.scrollLeft <= 0) {
+                        slider.scrollLeft += puntoDeCorte;
                     }
-                }, 30); 
+                }
+                frameId = requestAnimationFrame(autoScrollFluid);
             };
 
-            const pauseAutoScroll = () => {
-                clearInterval(autoScrollInterval);
-            };
+            // Despegamos el motor gráfico
+            frameId = requestAnimationFrame(autoScrollFluid);
 
-            startAutoScroll();
+            // Centramos el carrusel secretamente para que puedas dar swipe a la izquierda al instante
+            setTimeout(() => {
+                slider.scrollLeft = getPuntoDeCorte();
+            }, 50);
 
-            // --- LÓGICA DE ARRASTRE (MOUSE EN PC) ---
+            // --- PC MOUSE (DRAG & DROP) ---
             slider.addEventListener('mousedown', (e) => {
                 isDown = true;
+                isAutoScrolling = false;
                 slider.classList.add('active:cursor-grabbing');
                 startX = e.pageX - slider.offsetLeft;
                 scrollLeft = slider.scrollLeft;
-                pauseAutoScroll();
             });
 
             slider.addEventListener('mouseleave', () => {
                 isDown = false;
                 slider.classList.remove('active:cursor-grabbing');
-                startAutoScroll();
+                isAutoScrolling = true;
             });
 
             slider.addEventListener('mouseup', () => {
                 isDown = false;
                 slider.classList.remove('active:cursor-grabbing');
-                startAutoScroll();
+                isAutoScrolling = true;
             });
 
             slider.addEventListener('mousemove', (e) => {
                 if (!isDown) return;
                 e.preventDefault();
                 const x = e.pageX - slider.offsetLeft;
-                const walk = (x - startX) * 2; 
+                const walk = (x - startX) * 2;
                 slider.scrollLeft = scrollLeft - walk;
             });
 
-            // --- LÓGICA TÁCTIL (CELULARES) ---
-            // Apagamos el motor automático al tocar la pantalla y dejamos que el celular haga su magia nativa.
-            slider.addEventListener('touchstart', pauseAutoScroll, { passive: true });
+            // --- CELULAR (TÁCTIL NATIVO Y SEGURO) ---
+            let touchTimeout: ReturnType<typeof setTimeout>;
+
+            slider.addEventListener('touchstart', () => {
+                // Al tocar, apagamos nuestro motor JS y dejamos que Safari/Chrome tomen el control total
+                isAutoScrolling = false;
+                if (touchTimeout) clearTimeout(touchTimeout);
+            }, { passive: true });
+
             slider.addEventListener('touchend', () => {
-                setTimeout(startAutoScroll, 1500); // Espera 1.5s antes de volver a moverse solo
-            });
-            
-            slider.addEventListener('mouseenter', pauseAutoScroll);
+                // Esperamos 2 segundos completos después de soltar para que la "inercia" del celular termine
+                // Antes de volver a prender nuestro motor
+                touchTimeout = setTimeout(() => {
+                    isAutoScrolling = true;
+                }, 2000);
+            }, { passive: true });
         }
     </script>
 </Layout>
