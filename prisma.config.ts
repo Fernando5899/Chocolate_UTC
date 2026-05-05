@@ -1,4 +1,4 @@
-import 'dotenv/config'; // <-- ¡Esta es la línea que faltaba!
+import 'dotenv/config'; // Para cargar las variables de entorno desde el archivo .env
 import { defineConfig } from "@prisma/config";
 
 export default defineConfig({

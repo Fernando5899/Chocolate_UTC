@@ -9,7 +9,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // ¡NADA DE URL AQUÍ!
 }
 
 // --- MÓDULO: CATÁLOGO DEL MUSEO ---
@@ -48,7 +47,7 @@ model User {
   emailVerified DateTime?
   image         String?
 
-  // 🆕 CAMPOS DE PERFIL PARA ENVÍOS NACIONALES
+  // CAMPOS DE PERFIL PARA ENVÍOS NACIONALES
   telefono     String?
   direccion    String?
   ciudad       String?
@@ -58,8 +57,6 @@ model User {
   accounts Account[]
   sessions Session[]
   ordenes  Orden[] // Relación: Un usuario puede ver su historial de compras
-
-  // 🔗 NUEVA RELACIÓN: Un usuario tiene un historial de ventas
   ventas   Venta[]
 }
 
@@ -101,8 +98,6 @@ model Orden {
   codigoPostal  String
   total         Float
   detalles      DetalleOrden[]
-
-  // 🔗 VINCULACIÓN OPCIONAL CON USUARIO REGISTRADO
   userId String?
   user   User?   @relation(fields: [userId], references: [id])
 }
@@ -112,11 +107,11 @@ model DetalleOrden {
   ordenId     String
   orden       Orden     @relation(fields: [ordenId], references: [id])
 
-  // 1. Hacemos que el chocolate sea OPCIONAL (nota los signos ?)
+  // Hacemos que el chocolate sea OPCIONAL
   chocolateId String?
   chocolate   Chocolate? @relation(fields: [chocolateId], references: [id])
 
-  // 2. Campo nuevo para guardar el nombre si es un boleto
+  // Campo para guardar el nombre si es un boleto
   nombreItem  String?
 
   cantidad    Int
@@ -144,7 +139,6 @@ model Venta {
   items     Json     // Aquí guardaremos el arreglo de chocolates comprados
   createdAt DateTime @default(now())
 
-  // 🛡️ RELACIÓN OBLIGATORIA: La venta ya no flota, pertenece a un User sí o sí
   userId    String
   user      User     @relation(fields: [userId], references: [id])
 }
